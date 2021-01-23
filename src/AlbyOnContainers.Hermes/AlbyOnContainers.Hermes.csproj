@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <UserSecretsId>dotnet-AlbyOnContainers.Hermes-10B6E14D-541F-4380-81D9-259A31F8BEA7</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.1.4-develop.3245" />
+        <PackageReference Include="MassTransit.Autofac" Version="7.1.4-develop.3245" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.4-develop.3245" />
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+        <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
+        <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
+        <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0-dev-00773" />
+        <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2-dev-00741" />
+        <PackageReference Include="Serilog.Enrichers.Thread" Version="3.2.0-dev-00747" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.0-dev-00174" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AlbyOnContainers.Shared.Messages\AlbyOnContainers.Shared.Messages.csproj" />
+    </ItemGroup>
+    
+</Project>

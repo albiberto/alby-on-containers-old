@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Hermes", "src\AlbyOnContainers.Hermes\AlbyOnContainers.Hermes.csproj", "{09077173-8922-4423-A4C1-B6F2E1C9A74C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.IdentityServer", "src\AlbyOnContainers.IdentityServer\AlbyOnContainers.IdentityServer.csproj", "{709197EA-0547-4E06-BBEE-CA52450A8B09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Shared.Messages", "src\AlbyOnContainers.Shared.Messages\AlbyOnContainers.Shared.Messages.csproj", "{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09077173-8922-4423-A4C1-B6F2E1C9A74C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09077173-8922-4423-A4C1-B6F2E1C9A74C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09077173-8922-4423-A4C1-B6F2E1C9A74C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09077173-8922-4423-A4C1-B6F2E1C9A74C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{709197EA-0547-4E06-BBEE-CA52450A8B09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{709197EA-0547-4E06-BBEE-CA52450A8B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{709197EA-0547-4E06-BBEE-CA52450A8B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{709197EA-0547-4E06-BBEE-CA52450A8B09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
