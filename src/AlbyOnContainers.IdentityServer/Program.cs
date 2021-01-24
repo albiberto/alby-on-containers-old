@@ -10,31 +10,41 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 
 namespace IdentityServer
 {
     internal static class Program
     {
-        static readonly string Env = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
+        static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
         static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", false, true)
-            .AddJsonFile($"appsettings.{Env}.json", true, true)
+            .AddEnvironmentVariables()
             .Build();
-        
+
         static async Task Main(string[] args)
         {
+            var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Stagging", StringComparison.InvariantCultureIgnoreCase)
+                ? LogEventLevel.Information
+                : LogEventLevel.Warning;
+
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(Configuration)
+                .Enrich.WithMachineName()
+                .Enrich.WithEnvironmentName()
+                .Enrich.WithEnvironmentUserName()
+                .Enrich.WithApplicationName()
+                .WriteTo.Console()
+                .WriteTo.Seq(Configuration.GetConnectionString("Seq"), minLevel)
                 .CreateLogger();
-            
+
             try
             {
-                Log.Information("Giano Starting");
+                Log.Information("IdentityServer Starting");
 
                 var host = CreateHostBuilder(args);
-                
+
                 Log.Information("Starting Migrations");
 
                 await host.MigrateAsync<ApplicationDbContext>(async (context, services) =>
@@ -49,18 +59,18 @@ namespace IdentityServer
                 await host.MigrateAsync<PersistedGrantDbContext>((_, __) => Task.CompletedTask);
 
                 Log.Information("Migrations Applied");
-                
+
                 await host.RunAsync();
-                
-                Log.Information("Giano Started");
+
+                Log.Information("IdentityServer Started");
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "Giano Fatal Failed!");
+                Log.Fatal(e, "IdentityServer Fatal Failed!");
             }
             finally
             {
-                Log.Information("Giano Stopping!");
+                Log.Information("IdentityServer Stopping!");
                 Log.CloseAndFlush();
             }
         }

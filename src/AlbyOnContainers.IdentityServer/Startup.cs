@@ -1,6 +1,5 @@
 using System.Reflection;
 using IdentityServer.Extensions;
-using IdentityServer.Models;
 using IdentityServer.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -32,10 +31,10 @@ namespace IdentityServer
             services.AddHealthCheck(sunshineConnection);
 
             services.AddOptions(Configuration);
-            
+
             services.AddMediatR(typeof(Startup));
-            services.AddMassTransit();
-            
+            services.AddMassTransit(Configuration);
+
             services.AddTransient<IRedirectService, RedirectService>();
 
             services.AddControllersWithViews();
