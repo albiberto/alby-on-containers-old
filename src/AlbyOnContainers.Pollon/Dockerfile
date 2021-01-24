@@ -6,10 +6,10 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
-COPY ["AlbyOnContainers.Pollon/AlbyOnContainers.Pollon.csproj", "AlbyOnContainers.Pollon/"]
-RUN dotnet restore "AlbyOnContainers.Pollon/AlbyOnContainers.Pollon.csproj"
+COPY ["src/AlbyOnContainers.Pollon/AlbyOnContainers.Pollon.csproj", "src/AlbyOnContainers.Pollon/"]
+RUN dotnet restore "src/AlbyOnContainers.Pollon/AlbyOnContainers.Pollon.csproj"
 COPY . .
-WORKDIR "/src/AlbyOnContainers.Pollon"
+WORKDIR "/src/src/AlbyOnContainers.Pollon"
 RUN dotnet build "AlbyOnContainers.Pollon.csproj" -c Release -o /app/build
 
 FROM build AS publish
