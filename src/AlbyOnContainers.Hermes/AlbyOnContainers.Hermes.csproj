@@ -3,6 +3,8 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <UserSecretsId>dotnet-AlbyOnContainers.Hermes-10B6E14D-541F-4380-81D9-259A31F8BEA7</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerfileContext>..\..</DockerfileContext>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,6 +13,7 @@
         <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.4-develop.3245" />
         <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
         <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0-dev-00773" />
