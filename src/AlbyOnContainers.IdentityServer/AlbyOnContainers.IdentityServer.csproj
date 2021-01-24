@@ -9,9 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AspNetCore.HealthChecks.UI" Version="5.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="5.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="5.0.1" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
-        <PackageReference Include="AspNetCore.HealthChecks.UI.PostgreSQL.Storage" Version="5.0.1" />
         <PackageReference Include="IdentityServer4" Version="4.1.1" />
         <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.1" />
         <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.1" />
@@ -20,9 +20,6 @@
         <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.4-develop.3232" />
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
-        <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="5.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
@@ -30,6 +27,7 @@
         <PackageReference Include="Polly" Version="7.2.1" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
         <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
+        <PackageReference Include="Serilog.Enrichers.ApplicationName" Version="0.1.0-rc0000" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0-dev-00773" />
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2-dev-00741" />
         <PackageReference Include="Serilog.Enrichers.Thread" Version="3.2.0-dev-00747" />

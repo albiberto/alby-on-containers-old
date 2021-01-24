@@ -8,21 +8,33 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "IdentityServer.DEV": {
+      "commandName": "Project",
       "launchBrowser": true,
+      "dotnetRunMessages": "true",
+      "applicationUrl": "https://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "IdentityServer": {
+    "IdentityServer.STAGING": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+      "launchBrowser": false,
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+      "applicationUrl": "https://localhost:5001",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Staging",
+        "CONNECTIONSTRINGS__SEQ": "http://localhost:5341",
+        "CONNECTIONSTRINGS__HULK": "Host=localhost;Database=hulk;Username=robotboy;Password=robotboy;Port=5432",
+        "CONNECTIONSTRINGS__SUNSHINE": "Host=localhost;Database=sunshine;Username=robotboy;Password=robotboy;Port=5432",
+        "TOKENLIFETIMEOPTIONS__DAYS": "365",
+        "TOKENLIFETIMEOPTIONS__MINUTES": "120",
+        "RABBITMQ__HOST": "localhost",
+        "RABBITMQ__USERNAME": "guest",
+        "RABBITMQ__PASSWORD": "guest",
+        "EMAILOPTIONS__NAME": "AlbyOnContainers IdentityServer.STAG",
+        "EMAILOPTIONS__EMAIL": "cowboysteamts@gmail.com"
+      }
     },
     "Docker": {
       "commandName": "Docker",

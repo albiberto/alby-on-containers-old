@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.IdentitySe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Shared.Messages", "src\AlbyOnContainers.Shared.Messages\AlbyOnContainers.Shared.Messages.csproj", "{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Pollon", "AlbyOnContainers.Pollon\AlbyOnContainers.Pollon.csproj", "{D82526AF-D816-437B-B435-4F3E3B95DCAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA0B1A18-6017-4A8C-89DB-AEC9706C7513}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D82526AF-D816-437B-B435-4F3E3B95DCAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D82526AF-D816-437B-B435-4F3E3B95DCAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D82526AF-D816-437B-B435-4F3E3B95DCAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D82526AF-D816-437B-B435-4F3E3B95DCAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

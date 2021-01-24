@@ -1,11 +1,9 @@
 ﻿using System;
 using IdentityServer.Certificate;
 using IdentityServer.Devspaces;
-using IdentityServer.Handlers;
 using IdentityServer.Infrastructure;
 using IdentityServer.Models;
 using IdentityServer.Options;
-using IdentityServer.Senders;
 using IdentityServer.Services;
 using IdentityServer4.Services;
 using MassTransit;
@@ -69,36 +67,29 @@ namespace IdentityServer.Extensions
         {
             services.AddHealthChecks()
                 .AddCheck("self", () => HealthCheckResult.Healthy())
-                .AddNpgSql(connection, name: "IdentityDB-check", tags: new[] {"IdentityDB"});
-
-            services
-                .AddHealthChecksUI()
-                .AddPostgreSqlStorage(connection);
+                .AddNpgSql(connection, name: "postgres", tags: new[] {"IdentityDB"});
         }
 
         public static void AddOptions(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions<TokenLifetimeOptions>()
-                .Bind(configuration.GetSection("TokenLifetime"))
+                .Bind(configuration.GetSection("TokenLifetimeOptions"))
                 .ValidateDataAnnotations();
 
-            services.AddOptions<EmailSender.Options>()
-                .Bind(configuration.GetSection("SmtpClient"));
-
-            services.AddOptions<RegisterHandler.Options>()
-                .Bind(configuration.GetSection("Email"));
+            services.AddOptions<EmailOptions>()
+                .Bind(configuration.GetSection("EmailOptions"));
         }
-        
-        public static void AddMassTransit(this IServiceCollection services)
+
+        public static void AddMassTransit(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("localhost", config =>
+                    cfg.Host(configuration["RabbitMQ:Host"], config =>
                     {
-                        config.Username("guest");
-                        config.Password("guest");
+                        config.Username(configuration["RabbitMQ:Username"]);
+                        config.Password(configuration["RabbitMQ:Password"]);
                     });
 
                     cfg.ExchangeType = "fanout";
