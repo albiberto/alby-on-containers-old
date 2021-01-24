@@ -66,7 +66,7 @@ namespace IdentityServer.Extensions
         public static void AddHealthCheck(this IServiceCollection services, string connection)
         {
             services.AddHealthChecks()
-                .AddCheck("self", () => HealthCheckResult.Healthy())
+                .AddCheck("self", () => HealthCheckResult.Healthy(), new[] {"IdentityServer"})
                 .AddNpgSql(connection, name: "postgres", tags: new[] {"IdentityDB"});
         }
 

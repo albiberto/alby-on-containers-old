@@ -23,6 +23,7 @@ namespace AlbyOnContainers.Pollon
                 .AddHealthChecksUI(setup =>
                 {
                     setup.AddHealthCheckEndpoint("IdentityServer", Configuration["HealthChecks:IdentityServerUrl"]);
+                    setup.AddHealthCheckEndpoint("Hermes", Configuration["HealthChecks:HermesUrl"]);
                     setup.SetEvaluationTimeInSeconds(int.Parse(Configuration["HealthChecks:SetEvaluationTimeInSeconds"]));
                     setup.SetMinimumSecondsBetweenFailureNotifications(int.Parse(Configuration["HealthChecks:SetMinimumSecondsBetweenFailureNotifications"]));
                 })

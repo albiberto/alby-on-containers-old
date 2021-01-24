@@ -22,13 +22,12 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var hulkConnection = Configuration.GetConnectionString("Hulk");
-            var sunshineConnection = Configuration.GetConnectionString("Sunshine");
+            var connection = Configuration.GetConnectionString("Hulk");
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-            services.AddIdentity(hulkConnection, migrationsAssembly);
-            services.AddIdentityServer(hulkConnection, migrationsAssembly, Configuration.GetValue("EnableDevspaces", false));
-            services.AddHealthCheck(sunshineConnection);
+            services.AddIdentity(connection, migrationsAssembly);
+            services.AddIdentityServer(connection, migrationsAssembly, Configuration.GetValue("EnableDevspaces", false));
+            services.AddHealthCheck(connection);
 
             services.AddOptions(Configuration);
 
