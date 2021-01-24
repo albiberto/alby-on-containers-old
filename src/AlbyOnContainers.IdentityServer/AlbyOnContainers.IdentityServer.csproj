@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <RootNamespace>IdentityServer</RootNamespace>
+        <UserSecretsId>878df6ea-fec2-4c58-a500-49cf24c8c1d6</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerfileContext>..\..</DockerfileContext>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,6 +25,7 @@
         <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="5.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.1" />
         <PackageReference Include="Polly" Version="7.2.1" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
