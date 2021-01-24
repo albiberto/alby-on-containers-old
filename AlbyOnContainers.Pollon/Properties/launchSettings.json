@@ -1,26 +1,31 @@
-﻿{
+{
   "profiles": {
     "AlbyOnContainers.Pollon.DEV": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5100",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": "true",
+      "applicationUrl": "http://localhost:5100"
     },
     "AlbyOnContainers.Pollon.STAG": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
-      "launchBrowser": false,
-      "applicationUrl": "http://localhost:5100",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Stagging",
-        "CONNECTIONSRINGS": "Host=localhost;Database=pollon;Username=robotboy;Password=robotboy;Port=5432",
-        "HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS": "240",
+        "HEALTHCHECKS__IDENTITYSERVERURL": "https://localhost:5001/identity-server/healthz",
         "HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS": "60",
-        "HEALTHCHECKS__IDENTITYSERVERURL": "https://localhost:5001/identity-server/healthz"
-      }
+        "HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS": "240",
+        "ASPNETCORE_ENVIRONMENT": "Stagging",
+        "CONNECTIONSRINGS": "Host=localhost;Database=pollon;Username=robotboy;Password=robotboy;Port=5432"
+      },
+      "dotnetRunMessages": "true",
+      "applicationUrl": "http://localhost:5100"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true
     }
   }
 }

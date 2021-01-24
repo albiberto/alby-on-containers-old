@@ -2,12 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
     
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.UI" Version="5.0.1" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
         <PackageReference Include="AspNetCore.HealthChecks.UI.PostgreSQL.Storage" Version="5.0.1" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     </ItemGroup>
 
 </Project>
