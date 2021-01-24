@@ -1,14 +1,30 @@
 {
   "profiles": {
-    "AlbyOnContainers.Hermes": {
+    "AlbyOnContainers.Hermes.DEV": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "applicationUrl": "https://localhost:5002",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": "true"
-    },
-    "Docker": {
-      "commandName": "Docker"
+      "AlbyOnContainers.Hermes.STAG": {
+        "commandName": "Project",
+        "dotnetRunMessages": "true",
+        "applicationUrl": "https://localhost:5002",
+        "environmentVariables": {
+          "DOTNET_ENVIRONMENT": "Staging",
+          "EMAILOPTIONS__SMTPSERVER": "smtp.gmail.com",
+          "EMAILOPTIONS__SMTPPORT": 587,
+          "EMAILOPTIONS__SMTPUSERNAME": "cowboysteam@gmail.com",
+          "EMAILOPTIONS__SMTPPASSWORD": "",
+          "EMAILOPTIONS__DEFAULTSENDERNAME": "Identity",
+          "EMAILOPTIONS__DEFAULTSENDEREMAIL": "cowboysteam@gmail.com",
+          "EMAILOPTIONS__USESSL": false
+        }
+      },
+      "Docker": {
+        "commandName": "Docker"
+      }
     }
   }
 }

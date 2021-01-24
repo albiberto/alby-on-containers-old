@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
         <PackageReference Include="MassTransit.AspNetCore" Version="7.1.4-develop.3245" />
         <PackageReference Include="MassTransit.Autofac" Version="7.1.4-develop.3245" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.4-develop.3245" />
@@ -16,6 +17,7 @@
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
         <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
+        <PackageReference Include="Serilog.Enrichers.ApplicationName" Version="0.1.0-rc0000" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0-dev-00773" />
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2-dev-00741" />
         <PackageReference Include="Serilog.Enrichers.Thread" Version="3.2.0-dev-00747" />
