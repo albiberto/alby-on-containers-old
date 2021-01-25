@@ -192,7 +192,7 @@ namespace IdentityServer.Controllers
         {
             ViewData["ReturnUrl"] = command.ReturnUrl;
 
-            command.Host = $@"https://{Request.Host}/account/confirmemail";
+            command.Host = $@"http://{Request.Host}/account/confirmemail";
 
             var model = new RegisterViewModel
             {

@@ -1,7 +1,14 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Sockets;
+using System.Reflection;
 using Autofac;
+using GreenPipes;
+using GreenPipes.Configurators;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using Module = Autofac.Module;
 
 namespace AlbyOnContainers.Hermes.IoC
@@ -24,12 +31,14 @@ namespace AlbyOnContainers.Hermes.IoC
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("localhost", config =>
+                    Log.Logger.Information($"RabbitMQ {{Host: {_configuration["RabbitMQ:Host"]} User: {_configuration["RabbitMQ:Username"]} Pass: {_configuration["RabbitMQ:Password"]}}}");
+                    
+                    cfg.Host(_configuration["RabbitMQ:Host"], config =>
                     {
-                        config.Username("guest");
-                        config.Password("guest");
+                        config.Username(_configuration["RabbitMQ:Username"]);
+                        config.Password(_configuration["RabbitMQ:Password"]);
                     });
-
+                    
                     cfg.ConfigureEndpoints(context);
                     cfg.Durable = true;
                     cfg.PrefetchCount = 5;
