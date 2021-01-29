@@ -69,7 +69,7 @@ namespace AlbyOnContainers.Hermes
             .UseServiceProviderFactory(new AutofacServiceProviderFactory())
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddMassTransitHostedService();
+                services.AddMassTransitHostedService(true);
 
                 services.AddHealthChecks()
                     .AddCheck("self", () => HealthCheckResult.Healthy(), new[] {"Hermes"});

@@ -13,9 +13,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace IdentityServer.Extensions
+namespace IdentityServer.IoC
 {
-    public static class ServiceCollectionExtensions
+    // ReSharper disable once InconsistentNaming
+    public static class IServiceCollectionExtensions
     {
         public static void AddIdentity(this IServiceCollection services, string connection, string assembly)
         {
@@ -96,7 +97,7 @@ namespace IdentityServer.Extensions
                 });
             });
 
-            services.AddMassTransitHostedService();
+            services.AddMassTransitHostedService(true);
         }
     }
 }

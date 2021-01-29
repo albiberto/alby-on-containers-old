@@ -26,7 +26,7 @@ namespace IdentityServer
 
         static async Task Main(string[] args)
         {
-            var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Stagging", StringComparison.InvariantCultureIgnoreCase)
+            var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Staging", StringComparison.InvariantCultureIgnoreCase)
                 ? LogEventLevel.Information
                 : LogEventLevel.Warning;
 

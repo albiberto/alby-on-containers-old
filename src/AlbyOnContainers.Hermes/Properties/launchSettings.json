@@ -6,21 +6,24 @@
       "applicationUrl": "https://localhost:5002",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
-      },
-      "AlbyOnContainers.Hermes.STAG": {
-        "commandName": "Project",
-        "dotnetRunMessages": "true",
-        "applicationUrl": "https://localhost:5002",
-        "environmentVariables": {
-          "DOTNET_ENVIRONMENT": "Staging",
-          "EMAILOPTIONS__SMTPSERVER": "smtp.gmail.com",
-          "EMAILOPTIONS__SMTPPORT": 587,
-          "EMAILOPTIONS__SMTPUSERNAME": "cowboysteam@gmail.com",
-          "EMAILOPTIONS__SMTPPASSWORD": "",
-          "EMAILOPTIONS__DEFAULTSENDERNAME": "Identity",
-          "EMAILOPTIONS__DEFAULTSENDEREMAIL": "cowboysteam@gmail.com",
-          "EMAILOPTIONS__USESSL": false
-        }
+      }
+    },
+    "AlbyOnContainers.Hermes.STAGE": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "applicationUrl": "http://localhost:5002",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Staging",
+        "EMAILOPTIONS__SMTPSERVER": "smtp.gmail.com",
+        "EMAILOPTIONS__SMTPPORT": 587,
+        "EMAILOPTIONS__SMTPUSERNAME": "cowboysteam@gmail.com",
+        "EMAILOPTIONS__SMTPPASSWORD": "",
+        "EMAILOPTIONS__DEFAULTSENDERNAME": "Identity",
+        "EMAILOPTIONS__DEFAULTSENDEREMAIL": "cowboysteam@gmail.com",
+        "EMAILOPTIONS__USESSL": false,
+        "RABBITMQ__HOST": "localhost",
+        "RABBITMQ__USERNAME": "guest",
+        "RABBITMQ__PASSWORD": "guest"
       },
       "Docker": {
         "commandName": "Docker"
