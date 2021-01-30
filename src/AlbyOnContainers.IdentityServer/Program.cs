@@ -1,14 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using IdentityServer.Extensions;
 using IdentityServer.Infrastructure;
 using IdentityServer4.EntityFramework.DbContexts;
+using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
@@ -45,21 +43,10 @@ namespace IdentityServer
 
                 var host = CreateHostBuilder(args).Build();
 
-                Log.Information("Starting Migrations");
-
-                await host.MigrateAsync<ApplicationDbContext>(async (context, services) =>
-                {
-                    var logger = services.GetService<ILogger<ApplicationDbContextSeed>>();
-
-                    await new ApplicationDbContextSeed().SeedAsync(context, logger);
-                });
-
+                await host.MigrateAsync<ApplicationDbContext>(async (context, services) => await new ApplicationDbContextSeed().SeedAsync(context));
                 await host.MigrateAsync<ConfigurationDbContext>(async (context, _) => { await new ConfigurationDbContextSeed().SeedAsync(context); });
-
                 await host.MigrateAsync<PersistedGrantDbContext>((_, __) => Task.CompletedTask);
-
-                Log.Information("Migrations Applied");
-
+                
                 await host.RunAsync();
 
                 Log.Information("IdentityServer Started");

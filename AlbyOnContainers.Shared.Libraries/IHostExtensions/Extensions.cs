@@ -8,12 +8,12 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using Polly;
 
-namespace Catalog.Extensions
+namespace Libraries.IHostExtensions
 {
     // ReSharper disable once InconsistentNaming
-    public static class IHostExtensions
+    public static class Extensions
     {
-        public static async Task<IHost> MigrateAsync<TContext>(this IHost host, Func<TContext, IServiceProvider, Task> seeder) where TContext : DbContext
+        public static async Task MigrateAsync<TContext>(this IHost host, Func<TContext, IServiceProvider, Task> seeder, int retries = 10) where TContext : DbContext
         {
             var inK8S = host.IsInKubernetes();
 
@@ -33,7 +33,6 @@ namespace Catalog.Extensions
                 }
                 else
                 {
-                    const int retries = 10;
                     var retry = Policy.Handle<NpgsqlException>()
                         .WaitAndRetryAsync(retries,
                             retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
@@ -55,8 +54,6 @@ namespace Catalog.Extensions
                 logger.LogError(ex, "An error occurred while migrating the database used on context {DbContextName}", typeof(TContext).Name);
                 if (inK8S) throw; // Rethrow under k8s because we rely on k8s to re-run the pod
             }
-
-            return host;
         }
 
         static bool IsInKubernetes(this IHost webHost)

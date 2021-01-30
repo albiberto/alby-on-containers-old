@@ -36,6 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
       <ProjectReference Include="..\AlbyOnContainers.Shared.Messages\AlbyOnContainers.Shared.Messages.csproj" />
     </ItemGroup>
 

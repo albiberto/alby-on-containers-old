@@ -27,4 +27,12 @@
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Extensions" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
+    </ItemGroup>
+
 </Project>

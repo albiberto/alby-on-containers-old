@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
-using Catalog.Extensions;
 using Catalog.Infrastructure;
+using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,33 +41,25 @@ namespace Catalog
 
             try
             {
-                Log.Information("IdentityServer Starting");
+                Log.Information("Catalog.Api Starting");
 
                 var host = CreateHostBuilder(args).Build();
 
-                Log.Information("Starting Migrations");
-
-                await host.MigrateAsync<LuciferContext>((_, __) => Task.CompletedTask);
-                await host.MigrateAsync<LuciferContext>(async (context, services) =>
-                {
-                    var logger = services.GetService<ILogger<LuciferDbContextSeed>>();
-
-                    await new LuciferDbContextSeed().SeedAsync(context, logger);
-                });
+                await host.MigrateAsync<LuciferContext>(async (context, _) => await new LuciferDbContextSeed().SeedAsync(context));
 
                 Log.Information("Migrations Applied");
 
                 await host.RunAsync();
 
-                Log.Information("IdentityServer Started");
+                Log.Information("Catalog.Api Started");
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "IdentityServer Fatal Failed!");
+                Log.Fatal(e, "Catalog.Api Fatal Failed!");
             }
             finally
             {
-                Log.Information("IdentityServer Stopping!");
+                Log.Information("Catalog.Api Stopping!");
                 Log.CloseAndFlush();
             }
         }
