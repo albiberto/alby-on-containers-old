@@ -289,7 +289,7 @@ namespace IdentityServer.Controllers
         public IActionResult ResetPassword([FromQuery] AccountRequests.ResetPassword command)
         {
             if (string.IsNullOrEmpty(command.Code))
-                return Redirect("/Login");
+                return Redirect("./Login");
 
             return View(command);
             
