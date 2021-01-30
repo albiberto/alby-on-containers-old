@@ -1,6 +1,8 @@
 using System.Reflection;
+using IdentityServer.Abstract;
 using IdentityServer.Extensions;
 using IdentityServer.IoC;
+using IdentityServer.Publishers;
 using IdentityServer.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +38,7 @@ namespace IdentityServer
             services.AddMassTransit(Configuration);
 
             services.AddTransient<IRedirectService, RedirectService>();
+            services.AddTransient<IMessagePublisher, MessagePublisher>();
 
             services.AddControllersWithViews();
         }

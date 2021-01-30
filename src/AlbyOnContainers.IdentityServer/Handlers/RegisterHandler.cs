@@ -1,36 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using AlbyOnContainers.Messages;
+using IdentityServer.Abstract;
 using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Requests;
-using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Polly;
 
 namespace IdentityServer.Handlers
 {
     public class RegisterHandler : IRequestHandler<AccountRequests.Register, IResult<Unit, IdentityError>>
     {
-        readonly ILogger<RegisterHandler> _logger;
-        readonly EmailOptions _options;
-        readonly IPublishEndpoint _publishEndpoint;
+        private readonly EmailOptions _options;
 
-        readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IMessagePublisher _publishMessage;
 
-        public RegisterHandler(UserManager<ApplicationUser> userManager, IPublishEndpoint publishEndpoint, ILogger<RegisterHandler> logger, IOptions<EmailOptions> options)
+        public RegisterHandler(UserManager<ApplicationUser> userManager, IMessagePublisher publishMessage, IOptions<EmailOptions> options)
         {
             _userManager = userManager;
-            _publishEndpoint = publishEndpoint;
-            _logger = logger;
+            _publishMessage = publishMessage;
             _options = options.Value;
         }
 
@@ -61,15 +56,7 @@ namespace IdentityServer.Handlers
                 To = new[] {new MailAddress {Name = user.UserName, Email = user.Email}}
             };
 
-            const int retries = 3;
-            var retry = Policy.Handle<Exception>()
-                .WaitAndRetryAsync(retries,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, _, r, _) => _logger.LogWarning(exception, "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}", nameof(Program), exception.GetType().Name,
-                        exception.Message, r, retries)
-                );
-
-            await retry.ExecuteAsync(async () => await _publishEndpoint.Publish(message, cancellationToken));
+            await _publishMessage.Send(cancellationToken, message); 
 
             return result.Succeeded
                 ? Result<Unit>.Errors(result.Errors)
