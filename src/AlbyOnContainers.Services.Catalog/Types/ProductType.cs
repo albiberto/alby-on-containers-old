@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Catalog.Infrastructure;
+using Catalog.Models;
+using GraphQL.DataLoader;
+using GraphQL.Types;
+using GraphQL.Utilities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Catalog.Types
+{
+    public sealed class ProductType : ObjectGraphType<Product>
+    {
+        public ProductType(IServiceProvider provider, IDataLoaderContextAccessor dataLoader)
+        {
+            Name = "Product";
+            Description = "A products sold by the company.";
+
+            Field(d => d.Id).Description("The id of the product.");
+            Field(d => d.Name).Description("The name of the product.");
+            Field(d => d.CategoryId).Description("The id og the product category.");
+
+            Field<CategoryType, Category>()
+                .Name("category")
+                .Description("The product category.")
+                .ResolveAsync(context =>
+                {
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<Guid, Category>("GetCategoryByIds", async ids =>
+                        await provider.GetRequiredService<LuciferContext>()
+                            .Categories
+                            .Where(micro => ids.Contains(micro.Id))
+                            .ToDictionaryAsync(e => e.Id));
+
+                    return loader.LoadAsync(context.Source.CategoryId);
+                });
+
+            Field<ListGraphType<AttributeDescriptionType>, IEnumerable<AttrDesc>>()
+                .Name("descriptions")
+                .Description("The product attributes.")
+                .ResolveAsync(context =>
+                {
+                    var loader = dataLoader.Context.GetOrAddCollectionBatchLoader<Guid, AttrDesc>("GetAttributesByProductId", async ids =>
+                        (await provider.GetRequiredService<LuciferContext>()
+                            .AttrDescs
+                            .Where(description => ids.Contains(description.ProductId))
+                            .ToListAsync())
+                        .ToLookup(e => e.ProductId));
+
+                    return loader.LoadAsync(context.Source.Id);
+                });
+        }
+    }
+}

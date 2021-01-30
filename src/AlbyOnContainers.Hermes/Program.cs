@@ -49,7 +49,7 @@ namespace AlbyOnContainers.Hermes
             {
                 Log.Information("Hermes Starting");
 
-                var host = CreateHostBuilder(args);
+                var host = CreateHostBuilder(args).Build();
                 await host.RunAsync();
 
                 Log.Information("Hermes Started");
@@ -65,7 +65,7 @@ namespace AlbyOnContainers.Hermes
             }
         }
 
-        static IHost CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
+        static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
             .UseServiceProviderFactory(new AutofacServiceProviderFactory())
             .ConfigureServices((hostContext, services) =>
             {
@@ -95,7 +95,6 @@ namespace AlbyOnContainers.Hermes
             })
             .ConfigureContainer<ContainerBuilder>(builder => { builder.RegisterModule(new HermesModule(Configuration)); })
             .ConfigureLogging(builder => { builder.AddSerilog(Log.Logger, true); })
-            .UseSerilog()
-            .Build();
+            .UseSerilog();
     }
 }

@@ -43,7 +43,7 @@ namespace IdentityServer
             {
                 Log.Information("IdentityServer Starting");
 
-                var host = CreateHostBuilder(args);
+                var host = CreateHostBuilder(args).Build();
 
                 Log.Information("Starting Migrations");
 
@@ -75,11 +75,10 @@ namespace IdentityServer
             }
         }
 
-        static IHost CreateHostBuilder(string[] args) =>
+        static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .ConfigureLogging(builder => builder.AddSerilog(Log.Logger, true))
-                .UseSerilog()
-                .Build();
+                .UseSerilog();
     }
 }

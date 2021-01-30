@@ -1,15 +1,20 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Autofac.Extensions.DependencyInjection;
+using Catalog.Extensions;
+using Catalog.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
-namespace AlbyOnContainers.Pollon
+namespace Catalog
 {
-    public class Program
+    internal static class Program
     {
         static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -19,7 +24,7 @@ namespace AlbyOnContainers.Pollon
             .AddEnvironmentVariables()
             .Build();
 
-        public static async Task Main(string[] args)
+        static async Task Main(string[] args)
         {
             var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Staging", StringComparison.InvariantCultureIgnoreCase)
                 ? LogEventLevel.Information
@@ -36,28 +41,42 @@ namespace AlbyOnContainers.Pollon
 
             try
             {
-                Log.Information("Pollon Starting");
+                Log.Information("IdentityServer Starting");
 
                 var host = CreateHostBuilder(args).Build();
+
+                Log.Information("Starting Migrations");
+
+                await host.MigrateAsync<LuciferContext>((_, __) => Task.CompletedTask);
+                await host.MigrateAsync<LuciferContext>(async (context, services) =>
+                {
+                    var logger = services.GetService<ILogger<LuciferDbContextSeed>>();
+
+                    await new LuciferDbContextSeed().SeedAsync(context, logger);
+                });
+
+                Log.Information("Migrations Applied");
+
                 await host.RunAsync();
 
-                Log.Information("Pollon Started");
+                Log.Information("IdentityServer Started");
             }
             catch (Exception e)
             {
-                Log.Fatal(e, "Pollon Fatal Failed!");
+                Log.Fatal(e, "IdentityServer Fatal Failed!");
             }
             finally
             {
-                Log.Information("Pollon Stopping!");
+                Log.Information("IdentityServer Stopping!");
                 Log.CloseAndFlush();
             }
         }
 
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .ConfigureLogging(builder => { builder.AddSerilog(Log.Logger, true); })
+                .ConfigureLogging(builder => builder.AddSerilog(Log.Logger, true))
                 .UseSerilog();
     }
 }
