@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace IdentityServer.Handlers
 {
-    public class ResetPasswordHandler : IRequestHandler<AccountRequests.PostResetPassword, IResult<Unit, IdentityError>>
+    public class ResetPasswordHandler : IRequestHandler<AccountRequests.ResetPassword, IResult<Unit, IdentityError>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         
@@ -18,9 +18,9 @@ namespace IdentityServer.Handlers
             _userManager = userManager;
         }
         
-        public async Task<IResult<Unit, IdentityError>> Handle(AccountRequests.PostResetPassword request, CancellationToken cancellationToken)
+        public async Task<IResult<Unit, IdentityError>> Handle(AccountRequests.ResetPassword request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await _userManager.FindByIdAsync($"{request.UserId}");
             
             if (user == null)
             {

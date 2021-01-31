@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Handlers
 {
-    public class ForgotPasswordHandler : IRequestHandler<AccountRequests.ForgotPassword, IResult<Unit, IdentityError>>
+    public class ForgotPasswordHandler : IRequestHandler<AccountRequests.RecoverPassword, IResult<Unit, IdentityError>>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMessagePublisher _publishMessage;
@@ -28,11 +28,11 @@ namespace IdentityServer.Handlers
             _options = options.Value;
         }
         
-        public async Task<IResult<Unit, IdentityError>> Handle(AccountRequests.ForgotPassword request, CancellationToken cancellationToken)
+        public async Task<IResult<Unit, IdentityError>> Handle(AccountRequests.RecoverPassword request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
             
-            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            if (user == default || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
                 // Don't reveal that the user does not exist or is not confirmed
                 return Result<Unit>.Error(new IdentityError());
