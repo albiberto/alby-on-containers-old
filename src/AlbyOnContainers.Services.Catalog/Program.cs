@@ -6,27 +6,25 @@ using Catalog.Infrastructure;
 using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
 namespace Catalog
 {
-    internal static class Program
+    static class Program
     {
-        static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        static readonly string _env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
         static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables()
             .Build();
 
         static async Task Main(string[] args)
         {
-            var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Staging", StringComparison.InvariantCultureIgnoreCase)
+            var minLevel = string.Equals(_env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(_env, "Staging", StringComparison.InvariantCultureIgnoreCase)
                 ? LogEventLevel.Information
                 : LogEventLevel.Warning;
 
@@ -67,8 +65,11 @@ namespace Catalog
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .ConfigureLogging(builder => builder.AddSerilog(Log.Logger, true))
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureLogging(builder => builder.AddSerilog(Log.Logger, dispose: true))
                 .UseSerilog();
     }
 }

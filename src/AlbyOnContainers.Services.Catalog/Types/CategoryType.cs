@@ -12,7 +12,7 @@ namespace Catalog.Types
             Name = "Category";
             Description = "The Product Category.";
 
-            Field(d => d.Id).Description("The Category Id.");
+            Field(d => d.Id, nullable:true).Description("The Category Id.");
             Field(d => d.Name).Description("The Category Name.");
             Field(d => d.Description).Description("The Category Description.");
         }

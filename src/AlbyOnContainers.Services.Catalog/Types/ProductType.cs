@@ -16,7 +16,7 @@ namespace Catalog.Types
             Name = "Product";
             Description = "A products sold by the company.";
 
-            Field(d => d.Id).Description("The id of the product.");
+            Field(d => d.Id, nullable: true).Description("The id of the product.");
             Field(d => d.Name).Description("The name of the product.");
             Field(d => d.CategoryId).Description("The id og the product category.");
 

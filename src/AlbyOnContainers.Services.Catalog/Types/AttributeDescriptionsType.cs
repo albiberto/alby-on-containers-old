@@ -22,7 +22,7 @@ namespace Catalog.Types
             Name = "AttributeDescription";
             Description = "The description of an attribute.";
 
-            Field(d => d.Id).Description("The id of attribute description.");
+            Field(d => d.Id, nullable:true).Description("The id of attribute description.");
             Field(d => d.Description).Description("The description of the associated attribute.");
             Field(d => d.AttributeId).Description("The id of associate attribute");
             Field(d => d.ProductId).Description("The id of associate product");

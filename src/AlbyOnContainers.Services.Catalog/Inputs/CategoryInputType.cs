@@ -9,9 +9,9 @@ namespace Catalog.Inputs
         {
             Name = "CategoryInput";
 
-            Field(x => x.Id, true);
-            Field(x => x.Name, true);
-            Field(x => x.Description, true);
+            Field(x => x.Id, nullable: true);
+            Field(x => x.Name, nullable: true);
+            Field(x => x.Description, nullable: true);
         }
     }
 }

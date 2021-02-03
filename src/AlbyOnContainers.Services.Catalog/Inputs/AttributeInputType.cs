@@ -9,7 +9,7 @@ namespace Catalog.Inputs
         {
             Name = "AttributeInput";
 
-            Field(x => x.Id);
+            Field(x => x.Id, nullable:true);
             Field(x => x.Name);
         }
     }

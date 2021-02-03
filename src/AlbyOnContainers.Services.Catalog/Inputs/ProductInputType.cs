@@ -9,7 +9,7 @@ namespace Catalog.Inputs
         {
             Name = "ProductInput";
 
-            Field(product => product.Id, true);
+            Field(product => product.Id, nullable: true);
             Field(product => product.Name);
             Field(product => product.CategoryId);
             Field<ListGraphType<AttributeDescriptionInputType>>("descriptions");
