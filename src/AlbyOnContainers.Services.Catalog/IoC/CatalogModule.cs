@@ -1,6 +1,11 @@
-﻿using Autofac;
+﻿using System.Reflection;
+using Autofac;
 using Catalog.Inputs;
+using Catalog.Models;
+using Catalog.Repository;
 using Catalog.Types;
+using GraphQL.Types;
+using Module = Autofac.Module;
 
 namespace Catalog.IoC
 {
@@ -9,20 +14,26 @@ namespace Catalog.IoC
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<Schema>().SingleInstance();
-            builder.RegisterType<Query>().SingleInstance();
-            builder.RegisterType<Mutation>().SingleInstance();
 
-            builder.RegisterType<ProductType>().SingleInstance();
-            builder.RegisterType<ProductInputType>().SingleInstance();
+            builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(IAggregateRoot))!)
+                .AssignableTo<IAggregateRoot>()
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
 
-            builder.RegisterType<CategoryType>().SingleInstance();
-            builder.RegisterType<CategoryInputType>().SingleInstance();
+            builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(IRepository<>))!)
+                .AsClosedTypesOf(typeof(IRepository<>))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope();
 
-            builder.RegisterType<AttributeType>().SingleInstance();
-            builder.RegisterType<AttributeInputType>().SingleInstance();
-
-            builder.RegisterType<AttributeDescriptionType>().SingleInstance();
-            builder.RegisterType<AttributeDescriptionInputType>().SingleInstance();
+            builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(ObjectGraphType<>))!)
+                .AsClosedTypesOf(typeof(ObjectGraphType<>))
+                .AsSelf()
+                .SingleInstance();
+            
+            builder.RegisterAssemblyTypes(Assembly.GetAssembly(typeof(InputObjectGraphType<>))!)
+                .AsClosedTypesOf(typeof(InputObjectGraphType<>))
+                .AsSelf()
+                .SingleInstance();
         }
     }
 }

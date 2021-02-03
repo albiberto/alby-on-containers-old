@@ -3,7 +3,7 @@ using GraphQL.Types;
 
 namespace Catalog.Inputs
 {
-    public sealed class ProductInputType : InputObjectGraphType<Product>
+    public sealed class ProductInputType : InputObjectGraphType<ProductAggregate>
     {
         public ProductInputType()
         {

@@ -3,7 +3,7 @@ using GraphQL.Types;
 
 namespace Catalog.Inputs
 {
-    public sealed class AttributeInputType : InputObjectGraphType<Attr>
+    public sealed class AttributeInputType : InputObjectGraphType<AttrAggregate>
     {
         public AttributeInputType()
         {

@@ -1,9 +1,8 @@
 ﻿using System;
-using Catalog.Infrastructure;
+using Catalog.Repository;
 using GraphQL;
 using GraphQL.Types;
 using GraphQL.Utilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Types
 {
@@ -20,7 +19,6 @@ namespace Catalog.Types
             ProductQueries();
             CategoryQueries();
             AttributeQueries();
-            AttributeDescriptionQueries();
         }
 
         void ProductQueries()
@@ -28,23 +26,23 @@ namespace Catalog.Types
             FieldAsync<ProductType>(
                 "product",
                 "A single product of the company.",
-                new QueryArguments(new QueryArgument<StringGraphType> { Name = "Id", Description = "Product Id" }),
+                new QueryArguments(new QueryArgument<StringGraphType> {Name = "Id", Description = "Product Id"}),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");
 
-                    return await _provider.GetRequiredService<LuciferContext>()
-                        .Products
-                        .FirstOrDefaultAsync(product => product.Id == id);
+                    return await _provider
+                        .GetRequiredService<ProductRepository>()
+                        .FindAsync(id);
                 });
 
             FieldAsync<ListGraphType<ProductType>>(
                 "products",
                 "The list of the company products",
                 resolve: async context =>
-                    await _provider.GetRequiredService<LuciferContext>()
-                        .Products
-                        .ToListAsync());
+                    await _provider
+                        .GetRequiredService<ProductRepository>()
+                        .GetAllAsync());
         }
 
         void CategoryQueries()
@@ -52,23 +50,23 @@ namespace Catalog.Types
             FieldAsync<CategoryType>(
                 "category",
                 "A single category of the company.",
-                new QueryArguments(new QueryArgument<StringGraphType> { Name = "Id", Description = "Category Id" }),
+                new QueryArguments(new QueryArgument<StringGraphType> {Name = "Id", Description = "Category Id"}),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");
 
-                    return await _provider.GetRequiredService<LuciferContext>()
-                        .Categories
-                        .FirstOrDefaultAsync(category => category.Id == id);
+                    return await _provider
+                        .GetRequiredService<CategoryRepository>()
+                        .FindAsync(id);
                 });
 
             FieldAsync<ListGraphType<CategoryType>>(
                 "categories",
                 "The list of the categories",
                 resolve: async context =>
-                    await _provider.GetRequiredService<LuciferContext>()
-                        .Categories
-                        .ToListAsync());
+                    await _provider
+                        .GetRequiredService<CategoryRepository>()
+                        .GetAllAsync());
         }
 
         void AttributeQueries()
@@ -76,48 +74,45 @@ namespace Catalog.Types
             FieldAsync<AttributeType>(
                 "attribute",
                 "A single attribute.",
-                new QueryArguments(new QueryArgument<StringGraphType> { Name = "Id", Description = "Attribute Id" }),
+                new QueryArguments(new QueryArgument<StringGraphType> {Name = "Id", Description = "Attribute Id"}),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");
 
-                    return await _provider.GetRequiredService<LuciferContext>()
-                        .Attrs
-                        .FirstOrDefaultAsync(attribute => attribute.Id == id);
+                    return await _provider
+                        .GetRequiredService<AttrRepository>()
+                        .FindAsync(id);
                 });
 
             FieldAsync<ListGraphType<AttributeType>>(
                 "attributes",
                 "The list of attributes", resolve: async context =>
-                    await _provider.GetRequiredService<LuciferContext>()
-                        .Attrs
-                        .ToListAsync());
-        }
+                    await _provider
+                        .GetRequiredService<AttrRepository>()
+                        .GetAllAsync());
 
-        void AttributeDescriptionQueries()
-        {
             FieldAsync<AttributeDescriptionType>(
                 "description",
                 "A single attribute description of a product.",
                 new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "Id", Description = "Attribute Description Id" },
-                    new QueryArgument<StringGraphType> { Name = "productId", Description = "product Id" }),
+                    new QueryArgument<StringGraphType> {Name = "Id", Description = "Attribute Description Id"},
+                    new QueryArgument<StringGraphType> {Name = "productId", Description = "product Id"}),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");
 
-                    return await _provider.GetRequiredService<LuciferContext>()
-                        .AttrDescs
-                        .FirstOrDefaultAsync(description => description.Id == id);
+                    return await _provider
+                        .GetRequiredService<AttrRepository>()
+                        .FindDescriptionAsync(id);
                 });
 
             FieldAsync<ListGraphType<AttributeDescriptionType>>(
                 "descriptions",
                 "The list of attribute descriptions",
                 resolve: async context =>
-                    await _provider.GetRequiredService<LuciferContext>()
-                        .AttrDescs
-                        .ToListAsync());
+                    await _provider
+                        .GetRequiredService<AttrRepository>()
+                        .GetAllDescriptionsAsync());
         }
     }
 }

@@ -3,7 +3,7 @@ using GraphQL.Types;
 
 namespace Catalog.Types
 {
-    public sealed class AttributeType : ObjectGraphType<Attr>
+    public sealed class AttributeType : ObjectGraphType<AttrAggregate>
     {
         public AttributeType()
         {

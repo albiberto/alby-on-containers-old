@@ -19,9 +19,9 @@ namespace Catalog.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.2");
 
-            modelBuilder.Entity("Catalog.Models.Attr", b =>
+            modelBuilder.Entity("Catalog.Models.AttrAggregate", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -36,7 +36,7 @@ namespace Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Catalog.Models.AttrDesc", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -44,6 +44,7 @@ namespace Catalog.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid>("ProductId")
@@ -60,14 +61,16 @@ namespace Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Catalog.Models.Category", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("ParentCategoryId")
@@ -80,9 +83,9 @@ namespace Catalog.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Catalog.Models.Product", b =>
+            modelBuilder.Entity("Catalog.Models.ProductAggregate", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -90,6 +93,7 @@ namespace Catalog.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -101,13 +105,13 @@ namespace Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Catalog.Models.AttrDesc", b =>
                 {
-                    b.HasOne("Catalog.Models.Attr", "Attribute")
+                    b.HasOne("Catalog.Models.AttrAggregate", "Attribute")
                         .WithMany("Descriptions")
                         .HasForeignKey("AttributeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Catalog.Models.Product", "Product")
+                    b.HasOne("Catalog.Models.ProductAggregate", "Product")
                         .WithMany("Descriptions")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -128,7 +132,7 @@ namespace Catalog.Infrastructure.Migrations
                     b.Navigation("ParentCategory");
                 });
 
-            modelBuilder.Entity("Catalog.Models.Product", b =>
+            modelBuilder.Entity("Catalog.Models.ProductAggregate", b =>
                 {
                     b.HasOne("Catalog.Models.Category", "Category")
                         .WithMany("Products")
@@ -139,7 +143,7 @@ namespace Catalog.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Catalog.Models.Attr", b =>
+            modelBuilder.Entity("Catalog.Models.AttrAggregate", b =>
                 {
                     b.Navigation("Descriptions");
                 });
@@ -149,7 +153,7 @@ namespace Catalog.Infrastructure.Migrations
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("Catalog.Models.Product", b =>
+            modelBuilder.Entity("Catalog.Models.ProductAggregate", b =>
                 {
                     b.Navigation("Descriptions");
                 });

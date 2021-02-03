@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Catalog.Infrastructure;
-using Catalog.Infrastructure.Extensions;
 using Catalog.Inputs;
 using Catalog.Models;
+using Catalog.Repository;
 using GraphQL;
 using GraphQL.Types;
 using GraphQL.Utilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Types
 {
@@ -38,10 +34,11 @@ namespace Catalog.Types
                 ),
                 resolve: async context =>
                 {
-                    var product = context.GetArgument<Product>(name);
-                    var lucifer = _provider.GetRequiredService<LuciferContext>();
+                    var product = context.GetArgument<ProductAggregate>(name);
+                    var repository = _provider.GetRequiredService<ProductRepository>();
 
-                    return await lucifer.CreateAsync(product);
+                    await repository.AddAsync(product);
+                    return await repository.UnitOfWork.SaveChangesAsync();
                 });
 
             FieldAsync<ProductType>(
@@ -49,11 +46,11 @@ namespace Catalog.Types
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<ProductInputType>> {Name = name}),
                 resolve: async context =>
                 {
-                    var product = context.GetArgument<Product>(name);
-                    var lucifer = _provider.GetRequiredService<LuciferContext>();
+                    var product = context.GetArgument<ProductAggregate>(name);
+                    var productRepository = _provider.GetRequiredService<ProductRepository>();
 
-                    await TrackProductsToBeDelete(lucifer, product);
-                    return await lucifer.UpdateAsync(product);
+                    await productRepository.UpdateAsync(product);
+                    return await productRepository.UnitOfWork.SaveChangesAsync();
                 });
         }
 
@@ -69,9 +66,10 @@ namespace Catalog.Types
                 resolve: async context =>
                 {
                     var category = context.GetArgument<Category>(name);
-                    var lucifer = _provider.GetRequiredService<LuciferContext>();
+                    var lucifer = _provider.GetRequiredService<CategoryRepository>();
 
-                    return await lucifer.CreateAsync(category);
+                    await lucifer.AddAsync(category);
+                    return await lucifer.UnitOfWork.SaveChangesAsync();
                 });
 
             FieldAsync<CategoryType>(
@@ -81,9 +79,10 @@ namespace Catalog.Types
                 resolve: async context =>
                 {
                     var category = context.GetArgument<Category>(name);
-                    var lucifer = _provider.GetRequiredService<LuciferContext>();
+                    var repository = _provider.GetRequiredService<CategoryRepository>();
 
-                    return await lucifer.UpdateAsync(category);
+                    await repository.UpdateAsync(category);
+                    return await repository.UnitOfWork.SaveChangesAsync();
                 });
         }
 
@@ -98,10 +97,11 @@ namespace Catalog.Types
                 ),
                 resolve: async context =>
                 {
-                    var attribute = context.GetArgument<Attr>(name);
-                    var lucifer = _provider.GetRequiredService<LuciferContext>();
+                    var attribute = context.GetArgument<AttrAggregate>(name);
+                    var repository = _provider.GetRequiredService<AttrRepository>();
 
-                    return await lucifer.CreateAsync(attribute);
+                    await repository.AddAsync(attribute);
+                    return await repository.UnitOfWork.SaveChangesAsync();
                 });
 
             FieldAsync<AttributeType>(
@@ -110,23 +110,12 @@ namespace Catalog.Types
                 ),
                 resolve: async context =>
                 {
-                    var attribute = context.GetArgument<Attr>(name);
-                    var lucifer = _provider.GetRequiredService<LuciferContext>();
+                    var attribute = context.GetArgument<AttrAggregate>(name);
+                    var repository = _provider.GetRequiredService<AttrRepository>();
 
-                    return await lucifer.UpdateAsync(attribute);
+                    await repository.UpdateAsync(attribute);
+                    return await repository.UnitOfWork.SaveChangesAsync();
                 });
-        }
-
-        protected virtual async Task TrackProductsToBeDelete(LuciferContext lucifer, Product product)
-        {
-            var descriptions = await lucifer
-                .AttrDescs
-                .AsNoTracking()
-                .Where(description => description.ProductId == product.Id)
-                .ToListAsync();
-
-            var toBeDeleted = descriptions.Except(product.Descriptions);
-            lucifer.AttrDescs.RemoveRange(toBeDeleted);
         }
     }
 }

@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Infrastructure
 {
-    public class LuciferContext : DbContext
+    public class LuciferContext : DbContext, IUnitOfWork
     {
         public LuciferContext(DbContextOptions<LuciferContext> options) : base(options)
         {
         }
 
-        public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Attr> Attrs { get; set; }
-        public virtual DbSet<AttrDesc> AttrDescs { get; set; }
+        public virtual DbSet<ProductAggregate>? Products { get; set; }
+        public virtual DbSet<Category>? Categories { get; set; }
+        public virtual DbSet<AttrAggregate>? Attrs { get; set; }
+        public virtual DbSet<AttrDesc>? AttrDescs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,61 +22,67 @@ namespace Catalog.Infrastructure
             OnDescriptionCreating(modelBuilder);
         }
 
-        public void Upsert(object entity) => ChangeTracker.TrackGraph(entity, e => e.Entry.State = e.Entry.IsKeySet ? EntityState.Modified : EntityState.Added);
-
         static void OnProductCreating(ModelBuilder modelBuilder)
         {
-            var productBuilder = modelBuilder.Entity<Product>();
+            var builder = modelBuilder.Entity<ProductAggregate>();
 
-            productBuilder
-                .HasKey(product => product.Id);
+            builder.HasKey(e => e.Id);
 
-            productBuilder
+            builder.Property(p => p.Name).IsRequired();
+
+            builder
                 .HasOne(product => product.Category)
-                .WithMany(category => category.Products)
-                .IsRequired(required: true)
+                .WithMany(category => category!.Products)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasForeignKey(category => category.CategoryId);
         }
 
         static void OnCategoryCreating(ModelBuilder modelBuilder)
         {
-            var categoryBuilder = modelBuilder.Entity<Category>();
+            var builder = modelBuilder.Entity<Category>();
 
-            categoryBuilder
-                .HasKey(category => category.Id);
-
-            categoryBuilder
+            builder.HasKey(category => category.Id);
+            
+            builder.Property(p => p.Name).IsRequired();
+            builder.Property(p => p.Description).IsRequired();
+            
+            builder
                 .HasOne(category => category.ParentCategory)
                 .WithMany()
-                .IsRequired(required: false)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasForeignKey(category => category.ParentCategoryId);
         }
 
         static void OnAttributeCreating(ModelBuilder modelBuilder)
         {
-            var attributeBuilder = modelBuilder.Entity<Attr>();
-
-            attributeBuilder
-                .HasKey(attribute => attribute.Id);
+            var builder = modelBuilder.Entity<AttrAggregate>();
+            
+            builder.HasKey(attribute => attribute.Id);
+            
+            builder.Property(p => p.Name);
         }
 
         static void OnDescriptionCreating(ModelBuilder modelBuilder)
         {
-            var attributeDescriptionBuilder = modelBuilder.Entity<AttrDesc>();
+            var builder = modelBuilder.Entity<AttrDesc>();
 
-            attributeDescriptionBuilder
+            builder.HasKey(attribute => attribute.Id);
+            
+            builder.Property(p => p.Description);
+            
+            builder
                 .HasOne(description => description.Attribute)
-                .WithMany(attribute => attribute.Descriptions)
-                .IsRequired(required: true)
+                .WithMany(attribute => attribute!.Descriptions)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasForeignKey(description => description.AttributeId);
 
-            attributeDescriptionBuilder
+            builder
                 .HasOne(description => description.Product)
-                .WithMany(product => product.Descriptions)
-                .IsRequired(required: true)
+                .WithMany(product => product!.Descriptions)
+                .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasForeignKey(description => description.ProductId);
         }

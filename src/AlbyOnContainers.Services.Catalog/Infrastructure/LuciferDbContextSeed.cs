@@ -15,10 +15,30 @@ namespace Catalog.Infrastructure
 
         public async Task SeedAsync(LuciferContext context)
         {
-            if (!context.Categories.Any()) await context.Categories.AddRangeAsync(GetDefaultCategories());
-            if (!context.Attrs.Any()) await context.Attrs.AddRangeAsync(GetDefaultAttrs());
-            if (!context.Products.Any()) await context.Products.AddRangeAsync(GetDefaultProducts());
-            if (!context.AttrDescs.Any()) await context.AttrDescs.AddRangeAsync(GetDefaultAttrDescs());
+            if (!context.Categories!.Any())
+            {
+                await context.Categories.AddRangeAsync(GetDefaultCategories());
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Attrs!.Any())
+            {
+                await context.Attrs.AddRangeAsync(GetDefaultAttrs());
+                await context.SaveChangesAsync();
+            }
+
+            if (!context.Products!.Any())
+            {
+                await context.Products.AddRangeAsync(GetDefaultProducts());
+                await context.SaveChangesAsync();
+            }
+
+
+            if (!context.AttrDescs!.Any())
+            {
+                await context.AttrDescs.AddRangeAsync(GetDefaultAttrDescs());
+                await context.SaveChangesAsync();
+            }
 
             await context.SaveChangesAsync();
         }
@@ -26,99 +46,33 @@ namespace Catalog.Infrastructure
         static IEnumerable<Category> GetDefaultCategories() =>
             new List<Category>
             {
-                new()
-                {
-                    Id = CategoryIds.ElementAt(0),
-                    Name = "Frutta",
-                    Description = "La nostra bella frutta di stagione",
-                    ParentCategoryId = default
-                },
-                new()
-                {
-                    Id = CategoryIds.ElementAt(1),
-                    Name = "Mele",
-                    Description = "Le nostre mele saporite",
-                    ParentCategoryId = CategoryIds.ElementAt(0)
-                },
-                new()
-                {
-                    Id = CategoryIds.ElementAt(2),
-                    Name = "Mele Verdi",
-                    Description = "La nostra varita' di mele verdi",
-                    ParentCategoryId = CategoryIds.ElementAt(1)
-                },
-                new()
-                {
-                    Id = CategoryIds.ElementAt(3),
-                    Name = "Verdura",
-                    Description = "La nostra verdura freschissima",
-                    ParentCategoryId = default
-                }
+                new(CategoryIds.ElementAt(0), "Frutta", "La nostra bella frutta di stagione"),
+                new(CategoryIds.ElementAt(1), "Mele", "Le nostre mele saporite", CategoryIds.ElementAt(0)),
+                new(CategoryIds.ElementAt(2), "Mele Verdi", "La nostra varita' di mele verdi", CategoryIds.ElementAt(1)),
+                new(CategoryIds.ElementAt(3), "Verdura", "La nostra verdura freschissima")
             };
 
-        static IEnumerable<Attr> GetDefaultAttrs() =>
+        static IEnumerable<AttrAggregate> GetDefaultAttrs() =>
             new[]
             {
-                new Attr
-                {
-                    Id = AttrIds.ElementAt(0),
-                    Name = "Descrizione"
-                },
-                new Attr
-                {
-                    Id = AttrIds.ElementAt(1),
-                    Name = "Le nostre ricette"
-                }
+                new AttrAggregate(AttrIds.ElementAt(0), "Descrzione"),
+                new AttrAggregate(AttrIds.ElementAt(1), "Le nostre ricette")
             };
 
-        static IEnumerable<Product> GetDefaultProducts() =>
+        static IEnumerable<ProductAggregate> GetDefaultProducts() =>
             new[]
             {
-                new Product
-                {
-                    Id = ProductIds.ElementAt(0),
-                    Name = "Elstat",
-                    CategoryId = CategoryIds.ElementAt(2)
-                },
-                new Product
-                {
-                    Id = ProductIds.ElementAt(1),
-                    Name = "Campanina",
-                    CategoryId = CategoryIds.ElementAt(2)
-                }
+                new ProductAggregate(ProductIds.ElementAt(0), "Elstat", CategoryIds.ElementAt(2)),
+                new ProductAggregate(ProductIds.ElementAt(1), "Campania", CategoryIds.ElementAt(2))
             };
 
         static IEnumerable<AttrDesc> GetDefaultAttrDescs() =>
             new[]
             {
-                new AttrDesc
-                {
-                    Id = AttrDescIds.ElementAt(0),
-                    AttributeId = AttrIds.ElementAt(0),
-                    ProductId = ProductIds.ElementAt(0),
-                    Description = "Mele verdi dal sapore aspro ma dolce"
-                },
-                new AttrDesc
-                {
-                    Id = AttrDescIds.ElementAt(1),
-                    AttributeId = AttrIds.ElementAt(0),
-                    ProductId = ProductIds.ElementAt(1),
-                    Description = "Mele gialle dal sapore dolce ma aspro"
-                },
-                new AttrDesc
-                {
-                    Id = AttrDescIds.ElementAt(2),
-                    AttributeId = AttrIds.ElementAt(1),
-                    ProductId = ProductIds.ElementAt(0),
-                    Description = "Cotto e mangiato"
-                },
-                new AttrDesc
-                {
-                    Id = AttrDescIds.ElementAt(3),
-                    AttributeId = AttrIds.ElementAt(1),
-                    ProductId = ProductIds.ElementAt(1),
-                    Description = "Crudo e mangiato"
-                }
+                new AttrDesc(AttrDescIds.ElementAt(0), "Mele verdi dal sapore aspro ma dolce", ProductIds.ElementAt(0), AttrIds.ElementAt(0)),
+                new AttrDesc(AttrDescIds.ElementAt(1), "Mele verdi dal sapore aspro ma dolce", ProductIds.ElementAt(1), AttrIds.ElementAt(0)),
+                new AttrDesc(AttrDescIds.ElementAt(2), "Mele verdi dal sapore aspro ma dolce", ProductIds.ElementAt(0), AttrIds.ElementAt(1)),
+                new AttrDesc(AttrDescIds.ElementAt(3), "Mele verdi dal sapore aspro ma dolce", ProductIds.ElementAt(1), AttrIds.ElementAt(1))
             };
     }
 }

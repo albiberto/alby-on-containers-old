@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Catalog.Infrastructure;
 using Catalog.Models;
+using Catalog.Repository;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using GraphQL.Utilities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Types
 {
-    public sealed class ProductType : ObjectGraphType<Product>
+    public sealed class ProductType : ObjectGraphType<ProductAggregate>
     {
         public ProductType(IServiceProvider provider, IDataLoaderContextAccessor dataLoader)
         {
@@ -26,11 +25,8 @@ namespace Catalog.Types
                 .Description("The product category.")
                 .ResolveAsync(context =>
                 {
-                    var loader = dataLoader.Context.GetOrAddBatchLoader<Guid, Category>("GetCategoryByIds", async ids =>
-                        await provider.GetRequiredService<LuciferContext>()
-                            .Categories
-                            .Where(micro => ids.Contains(micro.Id))
-                            .ToDictionaryAsync(e => e.Id));
+                    var loader = dataLoader.Context.GetOrAddBatchLoader<Guid, Category>("GetCategoryByIds",
+                        async ids => await provider.GetRequiredService<CategoryRepository>().Filter(ids));
 
                     return loader.LoadAsync(context.Source.CategoryId);
                 });
@@ -41,13 +37,10 @@ namespace Catalog.Types
                 .ResolveAsync(context =>
                 {
                     var loader = dataLoader.Context.GetOrAddCollectionBatchLoader<Guid, AttrDesc>("GetAttributesByProductId", async ids =>
-                        (await provider.GetRequiredService<LuciferContext>()
-                            .AttrDescs
-                            .Where(description => ids.Contains(description.ProductId))
-                            .ToListAsync())
+                        (await provider.GetRequiredService<AttrRepository>().GetDescriptionsAsync(ids))
                         .ToLookup(e => e.ProductId));
 
-                    return loader.LoadAsync(context.Source.Id);
+                    return loader.LoadAsync(context.Source.Id!.Value);
                 });
         }
     }
