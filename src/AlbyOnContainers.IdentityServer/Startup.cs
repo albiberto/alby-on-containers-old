@@ -1,6 +1,7 @@
 using System.Reflection;
 using IdentityServer.Extensions;
 using IdentityServer.IoC;
+using IdentityServer.Publishers;
 using IdentityServer.Services;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
