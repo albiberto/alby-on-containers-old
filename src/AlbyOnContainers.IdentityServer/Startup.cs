@@ -1,4 +1,5 @@
 using System.Reflection;
+using IdentityServer.Abstract;
 using IdentityServer.Extensions;
 using IdentityServer.IoC;
 using IdentityServer.Publishers;
