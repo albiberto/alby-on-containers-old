@@ -252,5 +252,77 @@ namespace IdentityServer.Controllers
         }
 
         #endregion
+        
+        #region RecoverPassword
+        [HttpGet, AllowAnonymous]
+        public IActionResult RecoverPassword(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+        
+        [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
+        public async Task<IActionResult> RecoverPassword(AccountRequests.ForgotPassword command)
+        {
+            ViewData["ReturnUrl"] = command.ReturnUrl;
+            
+            command.Host = $@"{Request.Scheme}://{Request.Host}/account/resetpassword";
+
+            if (!ModelState.IsValid)
+                return View(command);
+
+            var result = await _mediator.Send(command);
+
+            return Redirect("./RecoverPasswordConfirmation");
+        }
+        
+        [HttpGet]
+        public  IActionResult RecoverPasswordConfirmation(string email, string returnUrl = null)
+        {
+            return View();
+        }
+        #endregion
+
+        #region ResetPassword
+        
+        [HttpGet, AllowAnonymous]
+        public IActionResult ResetPassword([FromQuery] AccountRequests.ResetPassword command)
+        {
+            if (string.IsNullOrEmpty(command.Code))
+                return Redirect("./Login");
+
+            return View(command);
+            
+        }
+        
+        [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(AccountRequests.PostResetPassword command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("ResetPassword","Account");
+            }
+
+            var result = await _mediator.Send(command);
+            
+            if (!result.HasErrors())
+            {
+                return Redirect("./ResetPasswordConfirmation");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            
+            return RedirectToAction("ResetPassword","Account");
+        }
+        
+        [HttpGet]
+        public  IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+        #endregion
     }
 }
