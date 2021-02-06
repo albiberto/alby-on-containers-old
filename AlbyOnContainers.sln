@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Pollon", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Services.Catalog", "src\AlbyOnContainers.Services.Catalog\AlbyOnContainers.Services.Catalog.csproj", "{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Shared.Libraries", "AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj", "{75A0CA8B-6E67-4474-AACD-0599CD660092}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Tools.Catalog", "src\AlbyOnContainers.Tools.Catalog\AlbyOnContainers.Tools.Catalog.csproj", "{C936052E-702A-4E97-9421-68C6E1748136}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Shared.Libraries", "src\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj", "{455F6695-3769-44F8-B1C0-097CC2EB3441}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,14 +43,14 @@ Global
 		{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{75A0CA8B-6E67-4474-AACD-0599CD660092}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75A0CA8B-6E67-4474-AACD-0599CD660092}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75A0CA8B-6E67-4474-AACD-0599CD660092}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75A0CA8B-6E67-4474-AACD-0599CD660092}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C936052E-702A-4E97-9421-68C6E1748136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C936052E-702A-4E97-9421-68C6E1748136}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C936052E-702A-4E97-9421-68C6E1748136}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C936052E-702A-4E97-9421-68C6E1748136}.Release|Any CPU.Build.0 = Release|Any CPU
+		{455F6695-3769-44F8-B1C0-097CC2EB3441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{455F6695-3769-44F8-B1C0-097CC2EB3441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{455F6695-3769-44F8-B1C0-097CC2EB3441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{455F6695-3769-44F8-B1C0-097CC2EB3441}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
