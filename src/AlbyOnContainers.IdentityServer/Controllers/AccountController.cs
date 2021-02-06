@@ -188,39 +188,37 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(AccountRequests.Register command)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            ViewData["ReturnUrl"] = command.ReturnUrl;
-
-            command.Host = $@"{Request.Scheme}://{Request.Host}/account/confirmemail";
-
-            var model = new RegisterViewModel
+            var request = new AccountRequests.Register 
             {
-                Email = command.Email,
-                Password = command.Password
+                Email = model.Email,
+                Password = model.Password,
+                Host = $@"{Request.Scheme}://{Request.Host}/account/confirmemail"
             };
+            
+            ViewData["ReturnUrl"] = request.ReturnUrl;
 
             if (ModelState.IsValid)
             {
-                var result = await _mediator.Send(command);
+                var result = await _mediator.Send(request);
 
                 if (result.HasErrors())
                 {
                     foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
-
                     // If we got this far, something failed, redisplay form
                     return View(model);
                 }
             }
 
-            if (command.ReturnUrl == null)
+            if (request.ReturnUrl == null)
                 return RedirectToAction("registerconfirmation", "account");
 
             if (HttpContext?.User?.Identity?.IsAuthenticated ?? false)
-                return Redirect(command.ReturnUrl);
+                return Redirect(request.ReturnUrl);
 
             if (ModelState.IsValid)
-                return RedirectToAction("login", "account", new {command.ReturnUrl});
+                return RedirectToAction("login", "account", new {request.ReturnUrl});
 
             return View(model);
         }
@@ -234,9 +232,9 @@ namespace IdentityServer.Controllers
         [AllowAnonymous, HttpGet]
         public async Task<IActionResult> ConfirmEmail([FromQuery] AccountRequests.ConfirmEmail command)
         {
-            if (command.UserId == default || command.Code == null)
+            if (command.UserId == default || string.IsNullOrEmpty(command.Code))
             {
-                return RedirectToPage("/Index");
+                return Redirect("/Index");
             }
 
             var result = await _mediator.Send(command);
@@ -262,41 +260,42 @@ namespace IdentityServer.Controllers
         }
         
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> RecoverPassword(AccountRequests.ForgotPassword command)
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel command)
         {
-            ViewData["ReturnUrl"] = command.ReturnUrl;
             
-            command.Host = $@"{Request.Scheme}://{Request.Host}/account/resetpassword";
-
+            var request = new AccountRequests.RecoverPassword()
+            {
+                Email = command.Email,
+                Host = $@"{Request.Scheme}://{Request.Host}/account/resetpassword",
+            };
+            
+            ViewData["ReturnUrl"] = request.ReturnUrl;
+            
             if (!ModelState.IsValid)
                 return View(command);
 
-            var result = await _mediator.Send(command);
+            var result = await _mediator.Send(request);
 
             return Redirect("./RecoverPasswordConfirmation");
         }
         
         [HttpGet]
-        public  IActionResult RecoverPasswordConfirmation(string email, string returnUrl = null)
+        public  IActionResult RecoverPasswordConfirmation()
         {
             return View();
         }
-        #endregion
-
-        #region ResetPassword
         
         [HttpGet, AllowAnonymous]
-        public IActionResult ResetPassword([FromQuery] AccountRequests.ResetPassword command)
+        public IActionResult ResetPassword([FromQuery] ResetPasswordViewModel command)
         {
-            if (string.IsNullOrEmpty(command.Code))
+            if (command.UserId == default || string.IsNullOrEmpty(command.Code))
                 return Redirect("./Login");
 
             return View(command);
-            
         }
         
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(AccountRequests.PostResetPassword command)
+        public async Task<IActionResult> ResetPassword(AccountRequests.ResetPassword command)
         {
             if (!ModelState.IsValid)
             {

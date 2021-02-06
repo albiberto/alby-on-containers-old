@@ -37,6 +37,7 @@ namespace IdentityServer
             services.AddMassTransit(Configuration);
 
             services.AddTransient<IRedirectService, RedirectService>();
+            services.AddScoped<IMessagePublisher, MessagePublisher>();
 
             services.AddControllersWithViews();
         }
