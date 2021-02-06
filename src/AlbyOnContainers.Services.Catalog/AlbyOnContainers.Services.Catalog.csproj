@@ -4,9 +4,13 @@
         <TargetFramework>net5.0</TargetFramework>
         <RootNamespace>Catalog</RootNamespace>
         <Nullable>enable</Nullable>
+        <UserSecretsId>1c3f1d41-819d-44b5-ae0c-e9fc865757d1</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <DockerfileContext>..\..</DockerfileContext>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
         <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
         <PackageReference Include="Serilog.Enrichers.ApplicationName" Version="0.1.0-rc0000" />
