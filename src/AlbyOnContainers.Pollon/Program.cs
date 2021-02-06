@@ -21,7 +21,7 @@ namespace AlbyOnContainers.Pollon
 
         public static async Task Main(string[] args)
         {
-            var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Staging", StringComparison.InvariantCultureIgnoreCase)
+            var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Stagging", StringComparison.InvariantCultureIgnoreCase)
                 ? LogEventLevel.Information
                 : LogEventLevel.Warning;
 
@@ -38,7 +38,7 @@ namespace AlbyOnContainers.Pollon
             {
                 Log.Information("Pollon Starting");
 
-                var host = CreateHostBuilder(args).Build();
+                var host = CreateHostBuilder(args);
                 await host.RunAsync();
 
                 Log.Information("Pollon Started");
@@ -54,10 +54,11 @@ namespace AlbyOnContainers.Pollon
             }
         }
 
-        static IHostBuilder CreateHostBuilder(string[] args) =>
+        static IHost CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
                 .ConfigureLogging(builder => { builder.AddSerilog(Log.Logger, true); })
-                .UseSerilog();
+                .UseSerilog()
+                .Build();
     }
 }
