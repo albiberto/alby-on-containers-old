@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AlbyOnContainers.Pollon.DEV": {
+    "Pollon.DEV": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:5004/",
@@ -10,7 +10,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "AlbyOnContainers.Pollon.STAG": {
+    "Pollon.STAG": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Staging",

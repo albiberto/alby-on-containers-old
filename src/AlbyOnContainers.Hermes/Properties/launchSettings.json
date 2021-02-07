@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AlbyOnContainers.Hermes.DEV": {
+    "Hermes.DEV": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:5002",
@@ -10,7 +10,7 @@
         "DOTNET_ENVIRONMENT": "Development"
       }
     },
-    "AlbyOnContainers.Hermes.STAGE": {
+    "Hermes.STAGE": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "applicationUrl": "http://localhost:5002",
