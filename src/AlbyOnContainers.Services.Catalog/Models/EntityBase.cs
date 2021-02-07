@@ -2,7 +2,7 @@
 
 namespace Catalog.Models
 {
-    public abstract class EntityBase: IEquatable<EntityBase>
+    public abstract class EntityBase : IEquatable<EntityBase>
     {
         public Guid? Id { get; set; }
 
@@ -22,6 +22,7 @@ namespace Catalog.Models
         public override int GetHashCode() => Id.GetHashCode();
 
         public static bool operator ==(EntityBase? left, EntityBase? right) => Equals(left, right);
+
         public static bool operator !=(EntityBase? left, EntityBase? right) => !Equals(left, right);
     }
 }

@@ -26,7 +26,7 @@ namespace Catalog.Types
             FieldAsync<ProductType>(
                 "product",
                 "A single product of the company.",
-                new QueryArguments(new QueryArgument<StringGraphType> {Name = "Id", Description = "Product Id"}),
+                new QueryArguments(new QueryArgument<StringGraphType> { Name = "Id", Description = "Product Id" }),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");
@@ -50,7 +50,7 @@ namespace Catalog.Types
             FieldAsync<CategoryType>(
                 "category",
                 "A single category of the company.",
-                new QueryArguments(new QueryArgument<StringGraphType> {Name = "Id", Description = "Category Id"}),
+                new QueryArguments(new QueryArgument<StringGraphType> { Name = "Id", Description = "Category Id" }),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");
@@ -74,7 +74,7 @@ namespace Catalog.Types
             FieldAsync<AttributeType>(
                 "attribute",
                 "A single attribute.",
-                new QueryArguments(new QueryArgument<StringGraphType> {Name = "Id", Description = "Attribute Id"}),
+                new QueryArguments(new QueryArgument<StringGraphType> { Name = "Id", Description = "Attribute Id" }),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");
@@ -95,8 +95,8 @@ namespace Catalog.Types
                 "description",
                 "A single attribute description of a product.",
                 new QueryArguments(
-                    new QueryArgument<StringGraphType> {Name = "Id", Description = "Attribute Description Id"},
-                    new QueryArgument<StringGraphType> {Name = "productId", Description = "product Id"}),
+                    new QueryArgument<StringGraphType> { Name = "Id", Description = "Attribute Description Id" },
+                    new QueryArgument<StringGraphType> { Name = "productId", Description = "product Id" }),
                 async context =>
                 {
                     var id = context.GetArgument<Guid>("id");

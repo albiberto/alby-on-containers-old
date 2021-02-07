@@ -3,6 +3,7 @@ using GraphQL.Types;
 
 namespace Catalog.Inputs
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class ProductInputType : InputObjectGraphType<ProductAggregate>
     {
         public ProductInputType()

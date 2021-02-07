@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Repository
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class AttrRepository : RepositoryBase<AttrAggregate>
     {
         readonly RepositoryBase<AttrDesc> _repository;
@@ -22,7 +23,7 @@ namespace Catalog.Repository
                 .AsNoTracking()
                 .Where(description => ids.Contains(description.ProductId))
                 .ToListAsync();
-        
+
         public Task<Dictionary<Guid, AttrAggregate>> GetAttributesAsync(IEnumerable<Guid> ids) =>
             _context.Attrs!
                 .AsNoTracking()
@@ -30,6 +31,7 @@ namespace Catalog.Repository
                 .ToDictionaryAsync(e => e.Id!.Value);
 
         public async Task<AttrDesc> FindDescriptionAsync(Guid id) => await _repository.FindAsync(id);
+
         public async Task<IEnumerable<AttrDesc>> GetAllDescriptionsAsync(Predicate<AttrDesc>? selector = default) => await _repository.GetAllAsync(selector);
     }
 }

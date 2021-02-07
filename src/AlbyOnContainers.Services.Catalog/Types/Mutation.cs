@@ -30,7 +30,7 @@ namespace Catalog.Types
             FieldAsync<ProductType>(
                 "createProduct",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<ProductInputType>> {Name = name}
+                    new QueryArgument<NonNullGraphType<ProductInputType>> { Name = name }
                 ),
                 resolve: async context =>
                 {
@@ -43,7 +43,7 @@ namespace Catalog.Types
 
             FieldAsync<ProductType>(
                 "updateProduct",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<ProductInputType>> {Name = name}),
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<ProductInputType>> { Name = name }),
                 resolve: async context =>
                 {
                     var product = context.GetArgument<ProductAggregate>(name);
@@ -61,7 +61,7 @@ namespace Catalog.Types
             FieldAsync<CategoryType>(
                 "createCategory",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<CategoryInputType>> {Name = name}
+                    new QueryArgument<NonNullGraphType<CategoryInputType>> { Name = name }
                 ),
                 resolve: async context =>
                 {
@@ -74,7 +74,7 @@ namespace Catalog.Types
 
             FieldAsync<CategoryType>(
                 "updateCategory",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<CategoryInputType>> {Name = name}
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<CategoryInputType>> { Name = name }
                 ),
                 resolve: async context =>
                 {
@@ -93,7 +93,7 @@ namespace Catalog.Types
             FieldAsync<AttributeType>(
                 "createAttribute",
                 arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<AttributeInputType>> {Name = name}
+                    new QueryArgument<NonNullGraphType<AttributeInputType>> { Name = name }
                 ),
                 resolve: async context =>
                 {
@@ -106,7 +106,7 @@ namespace Catalog.Types
 
             FieldAsync<AttributeType>(
                 "updateAttribute",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<AttributeInputType>> {Name = name}
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<AttributeInputType>> { Name = name }
                 ),
                 resolve: async context =>
                 {

@@ -43,14 +43,14 @@ namespace Catalog.Infrastructure
             var builder = modelBuilder.Entity<Category>();
 
             builder.HasKey(category => category.Id);
-            
+
             builder.Property(p => p.Name).IsRequired();
             builder.Property(p => p.Description).IsRequired();
-            
+
             builder
                 .HasOne(category => category.ParentCategory)
                 .WithMany()
-                .IsRequired(false)
+                .IsRequired(required: false)
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasForeignKey(category => category.ParentCategoryId);
         }
@@ -58,9 +58,9 @@ namespace Catalog.Infrastructure
         static void OnAttributeCreating(ModelBuilder modelBuilder)
         {
             var builder = modelBuilder.Entity<AttrAggregate>();
-            
+
             builder.HasKey(attribute => attribute.Id);
-            
+
             builder.Property(p => p.Name);
         }
 
@@ -69,9 +69,9 @@ namespace Catalog.Infrastructure
             var builder = modelBuilder.Entity<AttrDesc>();
 
             builder.HasKey(attribute => attribute.Id);
-            
+
             builder.Property(p => p.Description);
-            
+
             builder
                 .HasOne(description => description.Attribute)
                 .WithMany(attribute => attribute!.Descriptions)

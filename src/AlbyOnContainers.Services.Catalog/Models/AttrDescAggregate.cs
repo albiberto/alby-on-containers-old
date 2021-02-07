@@ -19,12 +19,12 @@ namespace Catalog.Models
             AttributeId = attributeId;
         }
 
-        public string Description { get; private set; }
+        public string Description { get; }
 
         public Guid ProductId { get; }
         public ProductAggregate? Product { get; }
-        
-        public Guid AttributeId { get; private set;}
+
+        public Guid AttributeId { get; }
         public AttrAggregate? Attribute { get; }
     }
 }

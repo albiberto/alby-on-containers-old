@@ -4,7 +4,7 @@ using GraphQL.Utilities;
 
 namespace Catalog
 {
-    public class Schema : global::GraphQL.Types.Schema
+    public class Schema : GraphQL.Types.Schema
     {
         public Schema(IServiceProvider services) : base(services)
         {

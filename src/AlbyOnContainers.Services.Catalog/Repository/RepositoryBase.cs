@@ -14,14 +14,19 @@ namespace Catalog.Repository
         IUnitOfWork UnitOfWork { get; }
 
         Task<T> FindAsync(Guid id);
+
         Task<IEnumerable<T>> GetAllAsync(Predicate<T>? selector = default);
 
         Task<EntityEntry<T>> AddAsync(T entity);
+
         Task<EntityEntry<T>> UpdateAsync(T entity);
+
         Task<EntityEntry<T>> DeleteAsync(T entity);
 
         Task AddRangeAsync(IEnumerable<T> entity);
+
         Task UpdateRangeAsync(IEnumerable<T> entity);
+
         Task DeleteRangeAsync(IEnumerable<T> entity);
     }
 
@@ -49,7 +54,9 @@ namespace Catalog.Repository
         public IUnitOfWork UnitOfWork { get; }
 
         public virtual async Task<EntityEntry<T>> AddAsync(T entity) => await _context.AddAsync(entity);
+
         public virtual Task<EntityEntry<T>> UpdateAsync(T entity) => Task.FromResult(_context.Update(entity));
+
         public virtual Task<EntityEntry<T>> DeleteAsync(T entity) => Task.FromResult(_context.Remove(entity));
 
         public virtual Task AddRangeAsync(IEnumerable<T> entity) => _context.AddRangeAsync(entity);

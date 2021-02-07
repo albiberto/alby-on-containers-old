@@ -2,15 +2,20 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <RootNamespace>Catalog</RootNamespace>
         <Nullable>enable</Nullable>
         <UserSecretsId>1c3f1d41-819d-44b5-ae0c-e9fc865757d1</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <DockerfileContext>..\..</DockerfileContext>
+        <RootNamespace>Catalog</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="5.0.1" />
+        <PackageReference Include="GraphQL.Server.Transports.AspNetCore.SystemTextJson" Version="4.4.1" />
+        <PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="4.4.1" />
+        <PackageReference Include="GraphQL.Server.Ui.Altair" Version="4.4.1" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
         <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
         <PackageReference Include="Serilog.Enrichers.ApplicationName" Version="0.1.0-rc0000" />
@@ -19,22 +24,10 @@
         <PackageReference Include="Serilog.Enrichers.Thread" Version="3.2.0-dev-00747" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.0-dev-00174" />
-        <PackageReference Include="MassTransit.Autofac" Version="7.1.4" />
-        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
-        <PackageReference Include="GraphQL.Server.Transports.AspNetCore.SystemTextJson" Version="4.4.1" />
-        <PackageReference Include="GraphQL.Server.Transports.WebSockets" Version="4.4.1" />
-        <PackageReference Include="GraphQL.Server.Ui.Altair" Version="4.4.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.2" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
-        <PackageReference Include="Polly" Version="7.2.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
-        <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
       <ProjectReference Include="..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
     </ItemGroup>
-
+    
 </Project>

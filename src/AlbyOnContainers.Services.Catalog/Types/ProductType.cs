@@ -9,6 +9,7 @@ using GraphQL.Utilities;
 
 namespace Catalog.Types
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public sealed class ProductType : ObjectGraphType<ProductAggregate>
     {
         public ProductType(IServiceProvider provider, IDataLoaderContextAccessor dataLoader)
