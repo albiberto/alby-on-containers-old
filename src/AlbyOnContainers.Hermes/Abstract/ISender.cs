@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace AlbyOnContainers.Hermes.Abstract
+namespace Hermes.Abstract
 {
     public interface ISender<in T>
     {

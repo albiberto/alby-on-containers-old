@@ -3,7 +3,9 @@
     "AlbyOnContainers.Hermes.DEV": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:5002",
+      "applicationUrl": "http://localhost:5002",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5002/healthz",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }

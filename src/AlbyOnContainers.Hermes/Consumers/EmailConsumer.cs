@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using AlbyOnContainers.Hermes.Abstract;
 using AlbyOnContainers.Messages;
+using Hermes.Abstract;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
-namespace AlbyOnContainers.Hermes.Consumers
+namespace Hermes.Consumers
 {
     public class EmailConsumer : IConsumer<EmailMessage>
     {

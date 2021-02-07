@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using AlbyOnContainers.Hermes.Abstract;
 using AlbyOnContainers.Messages;
+using Hermes.Abstract;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace AlbyOnContainers.Hermes.Senders
+namespace Hermes.Senders
 {
     public class EmailSender : ISender<EmailMessage>
     {

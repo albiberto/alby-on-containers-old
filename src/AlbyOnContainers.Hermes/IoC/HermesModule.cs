@@ -1,17 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Sockets;
-using System.Reflection;
+﻿using System.Reflection;
 using Autofac;
-using GreenPipes;
-using GreenPipes.Configurators;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Module = Autofac.Module;
 
-namespace AlbyOnContainers.Hermes.IoC
+namespace Hermes.IoC
 {
     public class HermesModule : Module
     {
