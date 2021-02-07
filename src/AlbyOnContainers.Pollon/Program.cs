@@ -7,21 +7,21 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 
-namespace AlbyOnContainers.Pollon
+namespace Pollon
 {
-    public class Program
+    public static class Program
     {
-        static readonly string Env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        static readonly string _env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
         static IConfiguration Configuration { get; } = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddEnvironmentVariables()
             .Build();
 
         public static async Task Main(string[] args)
         {
-            var minLevel = string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Stagging", StringComparison.InvariantCultureIgnoreCase)
+            var minLevel = string.Equals(_env, "Development", StringComparison.InvariantCultureIgnoreCase) || string.Equals(_env, "Stagging", StringComparison.InvariantCultureIgnoreCase)
                 ? LogEventLevel.Information
                 : LogEventLevel.Warning;
 
@@ -49,15 +49,21 @@ namespace AlbyOnContainers.Pollon
             }
             finally
             {
-                Log.Information("Pollon Stopping!");
                 Log.CloseAndFlush();
+                Log.Information("Pollon Stopped!");
             }
         }
 
         static IHost CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .ConfigureLogging(builder => { builder.AddSerilog(Log.Logger, true); })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureLogging(builder =>
+                {
+                    builder.AddSerilog(Log.Logger, dispose: true);
+                })
                 .UseSerilog()
                 .Build();
     }

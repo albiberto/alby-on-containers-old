@@ -2,27 +2,45 @@
   "profiles": {
     "AlbyOnContainers.Pollon.DEV": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "applicationUrl": "http://localhost:5004/",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:5004/healthchecks-ui",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:5010"
+      }
     },
     "AlbyOnContainers.Pollon.STAG": {
       "commandName": "Project",
       "environmentVariables": {
-        "HEALTHCHECKS__IDENTITYSERVERURL": "https://localhost:5001/identity-server/healthz",
-        "HEALTHCHECKS__HERMESURL": "http://localhost:5002/hermes/healthz",
-        "HEALTHCHECKS__POLLONURL": "http://localhost:5010/pollon/healthz",
+        "ASPNETCORE_ENVIRONMENT": "Staging",
+        "HEALTHCHECKS__ENDPOINTS__0__NAME": "IdentityServer",
+        "HEALTHCHECKS__ENDPOINTS__0__URL": "https://localhost:5001/identity-server/healthz",
+        "HEALTHCHECKS__ENDPOINTS__1__NAME": "Pollon",
+        "HEALTHCHECKS__ENDPOINTS__1__URL": "http://localhost:5010/pollon/healthz",
+        "HEALTHCHECKS__ENDPOINTS__2__NAME": "Hermes",
+        "HEALTHCHECKS__ENDPOINTS__2__URL": "http://localhost:5002/hermes/healthz",
+        "HEALTHCHECKS__ENDPOINTS__3__NAME": "CatalogAPI",
+        "HEALTHCHECKS__ENDPOINTS__3__URL": "http://localhost:5002/catalog/healthz",
         "HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS": "60",
         "HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS": "240",
-        "ASPNETCORE_ENVIRONMENT": "Staging",
+        "HEALTHCHECKS__CHECKS__SELF__NAME": "Self",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__0": "pollon",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__1": "health",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__2": "service",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__3": "ui",
+        "HEALTHCHECKS__CHECKS__NPGSQL__NAME": "Postgres",
+        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__0": "pollon",
+        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__1": "health",
+        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__2": "db",
+        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__3": "postgres",
         "CONNECTIONSRINGS__POLLON": "Host=localhost;Database=pollon;Username=robotboy;Password=robotboy;Port=5432",
         "CONNECTIONSRINGS__SEQ": "http://localhost:5341"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:5100"
+      "applicationUrl": "http://localhost:5004",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5004/healthchecks-ui"
     },
     "Docker": {
       "commandName": "Docker",

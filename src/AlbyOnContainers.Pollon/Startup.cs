@@ -6,10 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Serilog;
 
-namespace AlbyOnContainers.Pollon
+namespace Pollon
 {
     public class Startup
     {
@@ -25,21 +23,22 @@ namespace AlbyOnContainers.Pollon
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = Configuration.GetConnectionString("Pollon");
-            
-            Log.Logger.Information($"CONNECTION_STRING: {connection}");
+            var options = new Options();
+            Configuration.GetSection("HealthChecks").Bind(options);
 
             services.AddHealthChecks()
-                .AddCheck("self", () => HealthCheckResult.Healthy(), new[] {"Pollon"})
-                .AddNpgSql(connection, name: "postgres", tags: new[] {"HealthDb"});
+                .AddCheck(options.Checks.Self.Name, () => HealthCheckResult.Healthy(), options.Checks.Self.Tags)
+                .AddNpgSql(connection, name: options.Checks.NpgSql.Name, tags: options.Checks.NpgSql.Tags);
 
-            services
-                .AddHealthChecksUI(setup =>
+            services.AddHealthChecksUI(setup =>
                 {
-                    setup.AddHealthCheckEndpoint("IdentityServer", Configuration["HealthChecks:IdentityServerUrl"]);
-                    setup.AddHealthCheckEndpoint("Hermes", Configuration["HealthChecks:HermesUrl"]);
-                    setup.AddHealthCheckEndpoint("Pollon", Configuration["HealthChecks:PollonUrl"]);
-                    setup.SetEvaluationTimeInSeconds(int.Parse(Configuration["HealthChecks:SetEvaluationTimeInSeconds"]));
-                    setup.SetMinimumSecondsBetweenFailureNotifications(int.Parse(Configuration["HealthChecks:SetMinimumSecondsBetweenFailureNotifications"]));
+                    setup.SetEvaluationTimeInSeconds(options.EvaluationTimeInSeconds);
+                    setup.SetMinimumSecondsBetweenFailureNotifications(options.MinimumSecondsBetweenFailureNotifications);
+
+                    foreach (var endpoint in options.Endpoints)
+                    {
+                        setup.AddHealthCheckEndpoint(endpoint.Name, endpoint.Url);
+                    }
                 })
                 .AddPostgreSqlStorage(connection);
         }
@@ -53,7 +52,7 @@ namespace AlbyOnContainers.Pollon
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/pollon/healthz", new HealthCheckOptions
+                endpoints.MapHealthChecks("/healthz", new HealthCheckOptions
                 {
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
