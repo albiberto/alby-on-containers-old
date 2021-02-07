@@ -30,7 +30,7 @@ namespace IdentityServer
 
             services.AddIdentity(connection, migrationsAssembly);
             services.AddIdentityServer(connection, migrationsAssembly, Configuration.GetValue("EnableDevspaces", false));
-            services.AddHealthCheck(connection);
+            services.AddHealthChecks(Configuration);
 
             services.AddOptions(Configuration);
 

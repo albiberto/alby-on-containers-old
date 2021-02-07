@@ -64,11 +64,16 @@ namespace IdentityServer.IoC
                 .Services.AddTransient<IProfileService, ProfileService>();
         }
 
-        public static void AddHealthCheck(this IServiceCollection services, string connection)
+        public static void AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
         {
+            var connection = configuration.GetConnectionString("Hulk");
+
+            var options = new HealthChecksOptions();
+            configuration.GetSection("HealthChecks").Bind(options);
+
             services.AddHealthChecks()
-                .AddCheck("self", () => HealthCheckResult.Healthy(), new[] {"IdentityServer"})
-                .AddNpgSql(connection, name: "postgres", tags: new[] {"IdentityDB"});
+                .AddCheck(options.Self.Name, () => HealthCheckResult.Healthy(), options.Self.Tags)
+                .AddNpgSql(connection, name: options.NpgSql.Name, tags: options.NpgSql.Tags);
         }
 
         public static void AddOptions(this IServiceCollection services, IConfiguration configuration)

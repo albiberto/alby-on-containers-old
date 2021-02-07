@@ -10,7 +10,7 @@ namespace IdentityServer.Extensions
     {
         public static void MapHealthChecks(this IEndpointRouteBuilder builder)
         {
-            builder.MapHealthChecks("/identity-server/healthz", new HealthCheckOptions
+            builder.MapHealthChecks("/healthz", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
