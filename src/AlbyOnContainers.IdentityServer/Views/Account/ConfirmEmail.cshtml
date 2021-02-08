@@ -1,9 +1,13 @@
 ﻿@model IdentityServer.Models.AccountViewModels.ConfirmEmailViewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Email Confermata";
     Layout = "_Layout";
 }
 
-<h2>Confirm Email</h2>
-@Model.Message
+<div class="container">
+    <div class="text-left">
+        <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
+        <h5>@Model.Message</h5>
+    </div>
+</div>

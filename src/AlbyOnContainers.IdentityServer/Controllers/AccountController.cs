@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using IdentityModel;
+using IdentityServer.Exceptions;
+using IdentityServer.Models;
 using IdentityServer.Models.AccountViewModels;
 using IdentityServer.Requests;
 using IdentityServer4;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Controllers
@@ -60,9 +60,7 @@ namespace IdentityServer.Controllers
                 var result = await _mediator.Send(request);
 
                 if (result.HasErrors())
-                {
-                    ModelState.AddModelError("", "Invalid username or password.");
-                }
+                    ModelState.AddModelError("", "Credenziali invalide.");
                 else
                 {
                     // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
@@ -106,13 +104,13 @@ namespace IdentityServer.Controllers
         {
             if (User?.Identity?.IsAuthenticated ?? false)
                 // if the user is not authenticated, then just show logged out page
-                return await Logout(new AccountRequests.Logout {LogoutId = logoutId});
+                return await Logout(new AccountRequests.Logout { LogoutId = logoutId });
 
             //Test for Xamarin. 
             var context = await _interaction.GetLogoutContextAsync(logoutId);
             if (context?.ShowSignoutPrompt == false)
                 //it's safe to automatically sign-out
-                return await Logout(new AccountRequests.Logout {LogoutId = logoutId});
+                return await Logout(new AccountRequests.Logout { LogoutId = logoutId });
 
             // show the logout prompt. this prevents attacks where the user is automatically signed out by another malicious web page.
             var vm = new LogoutViewModel
@@ -122,7 +120,6 @@ namespace IdentityServer.Controllers
 
             return View(vm);
         }
-
 
         /// <summary>
         ///     Handle logout page postback
@@ -180,7 +177,7 @@ namespace IdentityServer.Controllers
 
         #region Register
 
-        [HttpGet, AllowAnonymous]
+        [HttpGet]
         public IActionResult Register(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -190,13 +187,13 @@ namespace IdentityServer.Controllers
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            var request = new AccountRequests.Register 
+            var request = new AccountRequests.Register
             {
                 Email = model.Email,
                 Password = model.Password,
                 Host = $@"{Request.Scheme}://{Request.Host}/account/confirmemail"
             };
-            
+
             ViewData["ReturnUrl"] = request.ReturnUrl;
 
             if (ModelState.IsValid)
@@ -205,123 +202,148 @@ namespace IdentityServer.Controllers
 
                 if (result.HasErrors())
                 {
-                    foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
                     // If we got this far, something failed, redisplay form
                     return View(model);
                 }
             }
 
             if (request.ReturnUrl == null)
-                return RedirectToAction("registerconfirmation", "account");
+                return RedirectToAction("emailconfirmation", "account", new { model.Email });
 
             if (HttpContext?.User?.Identity?.IsAuthenticated ?? false)
                 return Redirect(request.ReturnUrl);
 
             if (ModelState.IsValid)
-                return RedirectToAction("login", "account", new {request.ReturnUrl});
+                return RedirectToAction("login", "account", new { request.ReturnUrl });
 
             return View(model);
         }
 
         [HttpGet]
-        public  IActionResult RegisterConfirmation(string email, string returnUrl = null)
+        public IActionResult EmailConfirmation([FromQuery] EmailConfirmationViewModel model) => View(model);
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailViewModel model)
         {
+            if (model.UserId == default || string.IsNullOrEmpty(model.Code)) return Redirect("/Index");
+
+            try
+            {
+                var request = new AccountRequests.ConfirmEmail(model.UserId, model.Code);
+                await _mediator.Publish(request);
+            }
+            catch (Exception e)
+            {
+                model.Message = "Si e' verificato un errore. Riprova piu' tardi.";
+                return View(model.Message);
+            }
+
+            model.Message = "Grazie per aver confermato la tua email.";
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResendConfirmationEmail(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
-        [AllowAnonymous, HttpGet]
-        public async Task<IActionResult> ConfirmEmail([FromQuery] AccountRequests.ConfirmEmail command)
+        [HttpPost]
+        public async Task<IActionResult> ResendConfirmationEmail(ResendConfirmationEmailViewModel model)
         {
-            if (command.UserId == default || string.IsNullOrEmpty(command.Code))
+            if (!ModelState.IsValid) return View();
+
+            try
             {
-                return Redirect("/Index");
+                var request = new AccountRequests.ResendConfirmationEmail(model.Email, $@"{Request.Scheme}://{Request.Host}/account/confirmemail", model.ReturnUrl);
+                await _mediator.Publish(request);
+
+                return RedirectToAction("emailconfirmation", "account", new { model.Email });
             }
-
-            var result = await _mediator.Send(command);
-
-            var vm = new ConfirmEmailViewModel
+            catch (Exception e)
             {
-                Message = result.HasErrors()
-                    ? "Error confirming your email."
-                    : "Thank you for confirming your email."
-            };
+                if (e is not AuthenticationExceptions.EmailNotFound) return View("Error", new ErrorViewModel { Error = new ErrorMessage { Error = "Ops... si e' verificato un errore inaspettato!" } });
 
-            return View(vm);
+                ModelState.AddModelError(string.Empty, "L'email inserita non e' stata trovata!");
+                return View();
+            }
         }
 
         #endregion
-        
+
         #region RecoverPassword
+
         [HttpGet, AllowAnonymous]
         public IActionResult RecoverPassword(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
-        
+
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel command)
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
         {
-            
-            var request = new AccountRequests.RecoverPassword()
+            if (!ModelState.IsValid) return View(model);
+
+            try
             {
-                Email = command.Email,
-                Host = $@"{Request.Scheme}://{Request.Host}/account/resetpassword",
-            };
-            
-            ViewData["ReturnUrl"] = request.ReturnUrl;
-            
-            if (!ModelState.IsValid)
-                return View(command);
+                var request = new AccountRequests.RecoverPassword(model.Email, $@"{Request.Scheme}://{Request.Host}/Account/ResetPassword", model.ReturnUrl);
+                await _mediator.Publish(request);
+            }
+            catch (Exception e)
+            {
+                if (e is not AuthenticationExceptions) return View("Error", new ErrorViewModel { Error = new ErrorMessage { Error = "Ops... si e' verificato un errore inaspettato!" } });
 
-            var result = await _mediator.Send(request);
+                ModelState.AddModelError(string.Empty, "Email non ancora confermata!");
+                return View();
+            }
 
-            return Redirect("./RecoverPasswordConfirmation");
+            return RedirectToAction("RecoverPasswordConfirmation", "account", new { model.Email });
         }
-        
+
         [HttpGet]
-        public  IActionResult RecoverPasswordConfirmation()
-        {
-            return View();
-        }
-        
+        public IActionResult RecoverPasswordConfirmation([FromQuery] RecoverPasswordConfirmationViewModel model) => View(model);
+
         [HttpGet, AllowAnonymous]
-        public IActionResult ResetPassword([FromQuery] ResetPasswordViewModel command)
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
         {
-            if (command.UserId == default || string.IsNullOrEmpty(command.Code))
-                return Redirect("./Login");
+            ViewData["ReturnUrl"] = model.ReturnUrl;
 
-            return View(command);
+            if (string.IsNullOrEmpty(model.Code)) return RedirectToAction("Index", "Home");
+
+            return View(model);
         }
-        
+
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(AccountRequests.ResetPassword command)
+        public async Task<IActionResult> ResetPasswordPost(ResetPasswordViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return View("ResetPassword", model);
+
+            try
             {
-                return RedirectToAction("ResetPassword","Account");
+                var request = new AccountRequests.ResetPassword(model.Email, model.Password, model.Code);
+                await _mediator.Publish(request);
+            }
+            catch (Exception e)
+            {
+                if (e is not AuthenticationExceptions.UserNotFound) return View("Error", new ErrorViewModel { Error = new ErrorMessage { Error = "Ops... si e' verificato un errore inaspettato!" } });
+
+                ModelState.AddModelError(string.Empty, "Email non ancora confermata!");
+                return View("ResetPassword", model);
             }
 
-            var result = await _mediator.Send(command);
-            
-            if (!result.HasErrors())
-            {
-                return Redirect("./ResetPasswordConfirmation");
-            }
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-            
-            return RedirectToAction("ResetPassword","Account");
+            return RedirectToAction("ResetPasswordConfirmation", "Account");
         }
-        
+
         [HttpGet]
-        public  IActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
+        public IActionResult ResetPasswordConfirmation() => View();
+
         #endregion
     }
 }

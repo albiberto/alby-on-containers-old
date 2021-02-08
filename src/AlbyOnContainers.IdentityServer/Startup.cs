@@ -1,5 +1,4 @@
 using System.Reflection;
-using IdentityServer.Abstract;
 using IdentityServer.Extensions;
 using IdentityServer.IoC;
 using IdentityServer.Publishers;
@@ -38,7 +37,7 @@ namespace IdentityServer
             services.AddMassTransit(Configuration);
 
             services.AddTransient<IRedirectService, RedirectService>();
-            services.AddScoped<IMessagePublisher, MessagePublisher>();
+            services.AddScoped<IEmailPublisher, EmailPublisher>();
 
             services.AddControllersWithViews();
         }
