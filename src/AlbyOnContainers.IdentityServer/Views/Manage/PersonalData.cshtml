@@ -1,0 +1,29 @@
+﻿@using IdentityServer.Views.Manage
+
+@{
+    ViewBag.Title = "Account";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+    
+    Layout = "_ManageLayout";
+}
+
+<div class="container">
+
+    <div class="text-left">
+        <h5> @ViewData["Title"]</h5>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-9">
+            <p>Il tuo account contiene i tuoi dati personali che puoi trovare qui. Questa pagina ti permette di scaricarli o di cancellarli.</p>
+            <p><strong>Cancellando questi dati rimuoverai permanentemente il tuo account, e non potra essere ripristinato in futuro.</strong></p>
+            
+            <form id="download-data" class="form-group" method="post", asp-controller="Manage" asp-action="DownloadPersonalData">
+                <button class="btn btn-outline-primary w-25" type="submit">Download</button>
+            </form>
+            
+            <p><a id="delete" class="btn btn-outline-danger w-25" asp-controller="Manage" asp-action="DeletePersonalData">Cancella</a></p>
+        </div>
+    </div>
+
+</div>

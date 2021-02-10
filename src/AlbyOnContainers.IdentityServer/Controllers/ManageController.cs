@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using IdentityServer.Models;
 using IdentityServer.Models.ManageViewModel;
@@ -51,7 +53,7 @@ namespace IdentityServer.Controllers
                     return View(model);
                 }
             }
-            
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (!string.Equals(model.PhoneNumber, phoneNumber, StringComparison.InvariantCulture))
             {
@@ -64,7 +66,7 @@ namespace IdentityServer.Controllers
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            
+
             model.StatusMessage = "Your profile has been updated";
 
             return View(model);
@@ -88,7 +90,7 @@ namespace IdentityServer.Controllers
 
             return View(model);
         }
-        
+
         [HttpGet]
         public IActionResult ChangePassword() => View();
 
@@ -107,6 +109,7 @@ namespace IdentityServer.Controllers
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+
                 return View(model);
             }
 
@@ -115,6 +118,67 @@ namespace IdentityServer.Controllers
             model.StatusMessage = "Your password has been changed.";
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PersonalData()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DownloadPersonalData()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            // Only include personal data for download
+            var personalDataProps = typeof(IdentityUser).GetProperties().Where(
+                prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
+
+            var personalData = personalDataProps.ToDictionary(p => p.Name, p => p.GetValue(user)?.ToString() ?? "null");
+
+            var logins = await _userManager.GetLoginsAsync(user);
+            foreach (var l in logins)
+            {
+                personalData.Add($"{l.LoginProvider} external login provider key", l.ProviderKey);
+            }
+
+            Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
+
+            return new FileContentResult(JsonSerializer.SerializeToUtf8Bytes(personalData), "application/json");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeletePersonalData()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            return View();
+        }
+
+        public async Task<IActionResult> DeletePersonalData(DeletePersonalDataViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            if (!await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                ModelState.AddModelError(string.Empty, "Password non valida.");
+                return View();
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            var userId = await _userManager.GetUserIdAsync(user);
+            if (!result.Succeeded) throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
+
+            await _signInManager.SignOutAsync();
+            
+            return Redirect("~/");
         }
     }
 }
