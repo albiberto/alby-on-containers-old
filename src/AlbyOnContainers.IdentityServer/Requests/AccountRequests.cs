@@ -25,10 +25,20 @@ namespace IdentityServer.Requests
 
         public sealed class Register : AccountRequests, IRequest<IResult<Unit, IdentityError>>
         {
-            public string Email { get; set; }
-            public string Password { get; set; }
-            public string Host { get; set; }
-            public string ReturnUrl { get; set; }
+            public Register(string username, string email, string password, string host, string returnUrl)
+            {
+                Username = username;
+                Email = email;
+                Password = password;
+                Host = host;
+                ReturnUrl = returnUrl;
+            }
+
+            public string Username { get; }
+            public string Email { get; }
+            public string Password { get; }
+            public string Host { get; }
+            public string ReturnUrl { get; }
         }
 
         public sealed class ConfirmEmail : AccountRequests, INotification

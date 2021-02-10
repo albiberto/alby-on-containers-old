@@ -6,7 +6,7 @@
 }
 
 <div class="container">
-    
+
     <div class="text-left">
         <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
         <h5>Completa i seguenti campi e premi registrati</h5>
@@ -20,31 +20,45 @@
                 <div asp-validation-summary="All" class="text-danger"></div>
 
                 <div class="form-group">
-                    <label asp-for="Email" class="control-label form-label">@Html.LabelFor(l => l.Email)</label>
+                    <label asp-for="Username" class="control-label form-label"></label>
+                    <input asp-for="Username" class="form-control form-input"/>
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label form-label"></label>
                     <input asp-for="Email" class="form-control form-input"/>
                     <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
-                    <label asp-for="Password" class="control-label form-label">@Html.LabelFor(l => l.Password)</label>
+                    <label asp-for="Password" class="control-label form-label"></label>
                     <input asp-for="Password" class="form-control form-input"/>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
-                    <label asp-for="ConfirmPassword" class="control-label form-label">@Html.LabelFor(l => l.ConfirmPassword)</label>
+                    <label asp-for="ConfirmPassword" class="control-label form-label"></label>
                     <input asp-for="ConfirmPassword" class="form-control form-input"/>
                     <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
+
                 <div class="form-group">
-                    <div><button type="submit" class="btn btn-outline-success w-25">Registarti</button></div>
+                    <div>
+                        <button type="submit" class="btn btn-outline-success w-25">Registarti</button>
+                    </div>
                     <div class="float-right">
-                        <div><a asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">Ti sei gi&agrave; registarto?</a></div>
+                        <div>
+                            <a asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">Ti sei gi&agrave; registarto?</a>
+                        </div>
                     </div>
                 </div>
+
             </form>
 
         </div>
     </div>
-    
+
 </div>
 
 @section Scripts {

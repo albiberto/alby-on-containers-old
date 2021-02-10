@@ -187,15 +187,11 @@ namespace IdentityServer.Controllers
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            var request = new AccountRequests.Register
-            {
-                Email = model.Email,
-                Password = model.Password,
-                Host = $@"{Request.Scheme}://{Request.Host}/account/confirmemail"
-            };
-
-            ViewData["ReturnUrl"] = request.ReturnUrl;
-
+            ViewData["ReturnUrl"] = model.ReturnUrl;
+            
+            var host = $@"{Request.Scheme}://{Request.Host}/account/confirmemail";
+            var request = new AccountRequests.Register(model.Username, model.Email, model.Password, host, model.ReturnUrl);
+            
             if (ModelState.IsValid)
             {
                 var result = await _mediator.Send(request);

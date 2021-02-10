@@ -9,5 +9,6 @@
     <div class="text-left">
         <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
         <h5>@Model.Message</h5>
+        <p>Per accedere <a asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">premi qui!</a></p>
     </div>
 </div>

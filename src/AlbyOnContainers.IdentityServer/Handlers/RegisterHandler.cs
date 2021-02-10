@@ -23,7 +23,7 @@ namespace IdentityServer.Handlers
         {
             var user = new ApplicationUser
             {
-                UserName = request.Email,
+                UserName = request.Username ?? request.Email,
                 Email = request.Email
             };
 
