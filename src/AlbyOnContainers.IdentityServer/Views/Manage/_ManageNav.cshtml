@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using IdentityServer.Views.Manage
+
+@inject SignInManager<ApplicationUser> _signInManager
+
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-controller="Manage" asp-action="Index">Profilo</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-controller="Manage" asp-action="Index">Email</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-controller="Manage" asp-action="ChangePassword">Password</a></li>
+    @* <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Personal data</a></li> *@
+</ul>
