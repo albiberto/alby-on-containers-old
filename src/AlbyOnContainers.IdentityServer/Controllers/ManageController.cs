@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using IdentityServer.Models;
 using IdentityServer.Models.ManageViewModel;
+using IdentityServer.Publishers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace IdentityServer.Controllers
 {
     public class ManageController : Controller
     {
+        readonly IEmailPublisher _email;
         readonly UserManager<ApplicationUser> _userManager;
         readonly SignInManager<ApplicationUser> _signInManager;
 
-        public ManageController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public ManageController(IEmailPublisher email, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
+            _email = email;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -89,6 +94,62 @@ namespace IdentityServer.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeEmail(ChangeEmailViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            var email = await _userManager.GetEmailAsync(user);
+            var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
+
+            if (!ModelState.IsValid)
+                return View(new ChangeEmailViewModel
+                {
+                    Email = email,
+                    NewEmail = email,
+                    IsEmailConfirmed = isEmailConfirmed
+                });
+
+            if (!string.Equals(model.NewEmail, email, StringComparison.InvariantCultureIgnoreCase))
+            {
+                var userId = await _userManager.GetUserIdAsync(user);
+                var username = await _userManager.GetUserNameAsync(user);
+                var code = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
+
+                var host = $@"{Request.Scheme}://{Request.Host}/manage/confirmemailchange";
+
+                await _email.SendConfirmationChangeEmailAsync(userId, code, host, model.ReturnUrl, username, model.NewEmail);
+
+                model.StatusMessage = "Abbiamo inviato una mail di conferma. Controlla la tua casella di posta elettronica.";
+                return View(model);
+            }
+
+            model.StatusMessage = "L'indirizzo insrito &egrave; uguale al precedente!";
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmailChange(string userId, string email, string code)
+        {
+            if (userId == null || email == null || code == null) RedirectToAction("Index", "Home");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound($"Unable to load user with ID '{userId}'.");
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            
+            var result = await _userManager.ChangeEmailAsync(user, email, code);
+            if (!result.Succeeded)
+            {
+                ViewData["StatusMessage"] = "Errore durante il cambio mail.";
+                return View();
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            ViewData["StatusMessage"] = "Grazie per aver confermato il cambio email.";
+            return View();
         }
 
         [HttpGet]
@@ -177,7 +238,7 @@ namespace IdentityServer.Controllers
             if (!result.Succeeded) throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
 
             await _signInManager.SignOutAsync();
-            
+
             return Redirect("~/");
         }
     }

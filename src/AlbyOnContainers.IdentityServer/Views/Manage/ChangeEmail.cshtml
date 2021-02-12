@@ -11,6 +11,8 @@
         <h3>@ViewData["Title"]</h3>
     </div>
 
+    <partial name="_StatusMessage" for="StatusMessage"/>
+
     <div class="row">
         <div class="col-md-9">
 
@@ -20,21 +22,25 @@
 
                 <div class="form-group">
                     <label asp-for="Email"></label>
-                    @if (Model.IsEmailConfirmed)
-                    {
-                        <div class="input-group">
-                            <input asp-for="Email" class="form-control" disabled/>
-                            <div class="input-group-append">
-                                <span class="input-group-text text-success font-weight-bold">✓</span>
-                            </div>
-                        </div>
-                    }
-                    else
-                    {
+                    <div class="input-group">
                         <input asp-for="Email" class="form-control" disabled/>
-                        <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
-                    }
+                        <div class="input-group-append">
+                            @if (Model.IsEmailConfirmed)
+                            {
+                                <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Verificato">
+                                    <span class="input-group-text text-success font-weight-bold">✓</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Non Verificato">
+                                    <span class="input-group-text text-danger font-weight-bold">X</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label asp-for="NewEmail"></label>
                     <input asp-for="NewEmail" class="form-control"/>

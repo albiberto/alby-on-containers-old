@@ -12,5 +12,7 @@ namespace IdentityServer.Models.ManageViewModel
         public bool IsEmailConfirmed { get; set; }
 
         public string StatusMessage { get; set; }
+        
+        public string ReturnUrl { get; set; }
     }
 }
