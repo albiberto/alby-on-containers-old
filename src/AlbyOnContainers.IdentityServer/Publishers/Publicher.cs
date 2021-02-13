@@ -8,18 +8,23 @@ using Polly;
 
 namespace IdentityServer.Publishers
 {
-    public abstract class PublisherBase
+    public interface IEmailPublisher
+    {
+        Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default);
+    }
+    
+    public class EmailPublisher : IEmailPublisher
     {
         readonly IPublishEndpoint _publishEndpoint;
-        readonly ILogger<PublisherBase> _logger;
+        readonly ILogger<EmailPublisher> _logger;
 
-        protected PublisherBase(IPublishEndpoint publishEndpoint, ILogger<PublisherBase> logger)
+        public EmailPublisher(IPublishEndpoint publishEndpoint, ILogger<EmailPublisher> logger)
         {
             _publishEndpoint = publishEndpoint;
             _logger = logger;
         }
 
-        protected  virtual async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
+        public async Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default)
         {
             const int retries = 3;
 

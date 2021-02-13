@@ -1,7 +1,7 @@
 ﻿@model IdentityServer.Models.ManageViewModel.ChangeEmailViewModel
 
 @{
-    ViewBag.Title = "Cambia Email";
+    ViewData["Title"] = "Email";
     Layout = "_ManageLayout";
 }
 
@@ -11,34 +11,32 @@
         <h3>@ViewData["Title"]</h3>
     </div>
 
-    <partial name="_StatusMessage" for="StatusMessage"/>
+    <partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
 
     <div class="row">
         <div class="col-md-9">
 
-            <form id="email-form" method="post">
+            <form id="email-form" class="form-horizontal" method="post" asp-controller="Manage">
 
                 <div asp-validation-summary="All" class="text-danger"></div>
-
+                
                 <div class="form-group">
                     <label asp-for="Email"></label>
-                    <div class="input-group">
-                        <input asp-for="Email" class="form-control" disabled/>
-                        <div class="input-group-append">
-                            @if (Model.IsEmailConfirmed)
-                            {
-                                <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Verificato">
-                                    <span class="input-group-text text-success font-weight-bold">✓</span>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Non Verificato">
-                                    <span class="input-group-text text-danger font-weight-bold">X</span>
-                                </div>
-                            }
+                    @if (Model.IsEmailConfirmed)
+                    {
+                        <div class="input-group">
+                            <input asp-for="Email" class="form-control" disabled/>
+                            <input type="hidden" asp-for="Email" />
+                            <div class="input-group-append">
+                                <span class="input-group-text text-success font-weight-bold">✓</span>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <input asp-for="Email" class="form-control" disabled/>
+                        <button id="email-verification" class="btn btn-link" type="submit" asp-action="SendVerificationEmail">Non ti &egrave; arrivata la mail di conferma?</button>
+                    }
                 </div>
 
                 <div class="form-group">
@@ -46,7 +44,9 @@
                     <input asp-for="NewEmail" class="form-control"/>
                     <span asp-validation-for="NewEmail" class="text-danger"></span>
                 </div>
-                <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn btn-outline-primary w-25">Cambia</button>
+
+                <button id="change-email-button" class="btn btn-outline-primary w-25" type="submit" asp-action="ChangeEmail">Cambia</button>
+
             </form>
         </div>
     </div>

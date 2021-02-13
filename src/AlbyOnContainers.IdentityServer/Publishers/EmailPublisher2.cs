@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Publishers
 {
-    public interface IEmailPublisher
+    public interface IEmailPublisher2
     {
         Task SendConfirmationEmailAsync(string id, string code, string host, string returnUrl, string user, string email, CancellationToken cancellationToken = default);
         Task SendConfirmationChangeEmailAsync(string id, string code, string host, string returnUrl, string user, string email, CancellationToken cancellationToken = default);
@@ -20,11 +20,11 @@ namespace IdentityServer.Publishers
         Task SendRecoverPasswordEmailAsync(string id, string code, string host, string returnUrl, string user, string email, CancellationToken cancellationToken = default);
     }
 
-    public sealed class EmailPublisher : PublisherBase, IEmailPublisher
+    public sealed class EmailPublisher2 : EmailPublisher, IEmailPublisher2
     {
         readonly EmailOptions _options;
 
-        public EmailPublisher(IOptions<EmailOptions> options, IPublishEndpoint publishEndpoint, ILogger<PublisherBase> logger) : base(publishEndpoint, logger)
+        public EmailPublisher2(IOptions<EmailOptions> options, IPublishEndpoint publishEndpoint, ILogger<EmailPublisher> logger) : base(publishEndpoint, logger)
         {
             _options = options.Value;
         }

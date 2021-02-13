@@ -12,12 +12,12 @@ namespace IdentityServer.Handlers
     public class ResendConfirmationEmailHandler : INotificationHandler<AccountRequests.ResendConfirmationEmail>
     {
         readonly UserManager<ApplicationUser> _userManager;
-        readonly IEmailPublisher _publisher;
+        readonly IEmailPublisher2 _publisher2;
 
-        public ResendConfirmationEmailHandler(UserManager<ApplicationUser> userManager, IEmailPublisher publisher)
+        public ResendConfirmationEmailHandler(UserManager<ApplicationUser> userManager, IEmailPublisher2 publisher2)
         {
             _userManager = userManager;
-            _publisher = publisher;
+            _publisher2 = publisher2;
         }
 
         public async Task Handle(AccountRequests.ResendConfirmationEmail request, CancellationToken cancellationToken)
@@ -27,7 +27,7 @@ namespace IdentityServer.Handlers
             if (string.IsNullOrEmpty(user.Id)) throw new AuthenticationExceptions.EmailNotFound("Email not found");
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await _publisher.SendConfirmationEmailAsync(user.Id, code, request.Host, request.ReturnUrl, user.UserName, user.Email, cancellationToken);
+            await _publisher2.SendConfirmationEmailAsync(user.Id, code, request.Host, request.ReturnUrl, user.UserName, user.Email, cancellationToken);
         }
     }
 }

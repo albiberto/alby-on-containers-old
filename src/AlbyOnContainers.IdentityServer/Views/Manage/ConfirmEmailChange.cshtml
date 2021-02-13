@@ -1,14 +1,14 @@
 ﻿@{
-    ViewBag.Title = "Email Cambiata con Successo";
+    ViewData["Title"] = "Email Cambiata con Successo";
     Layout = "_ManageLayout";
 }
 
 <div class="container">
-    
+
     <div class="text-left">
         <h3>@ViewData["Title"]</h3>
     </div>
-    
-    <partial name="_StatusMessage" for="@ViewData["StatusMessage"]" />
+
+    <partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
 
 </div>
