@@ -1,6 +1,6 @@
 ﻿@using IdentityServer.Views.Manage
 @{
-    ViewBag.Title = "Account";
+    ViewData["Title"] = "Account";
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
 
     Layout = "_ManageLayout";
@@ -19,7 +19,7 @@
                 <strong>Cancellando questi dati rimuoverai permanentemente il tuo account, e non potra essere ripristinato in futuro.</strong>
             </p>
 
-            <form id="download-data" class="form-group" method="post", asp-controller="Manage" asp-action="DownloadPersonalData">
+            <form id="download-data" class="form-group" method="post" asp-action="DownloadPersonalData">
                 <button class="btn btn-outline-primary w-25" type="submit">Download</button>
             </form>
 

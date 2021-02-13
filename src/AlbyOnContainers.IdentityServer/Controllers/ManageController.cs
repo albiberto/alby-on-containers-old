@@ -51,10 +51,10 @@ namespace IdentityServer.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(ProfileViewModel model)
         {
-            if (!ModelState.IsValid) return View(model);
-
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            if (!ModelState.IsValid) return View(model);
 
             var username = await _userManager.GetUserNameAsync(user);
             if (!string.Equals(username, model.Username, StringComparison.InvariantCulture))
@@ -62,7 +62,7 @@ namespace IdentityServer.Controllers
                 var setUsername = await _userManager.SetUserNameAsync(user, model.Username);
                 if (!setUsername.Succeeded)
                 {
-                    model.StatusMessage = "Unexpected error when trying to set phone number.";
+                    ViewData["StatusMessage"] = "Ops... si &egrave; verificato un errore inaspettato durante il salvataggio dello username.";
                     return View(model);
                 }
             }
@@ -73,14 +73,14 @@ namespace IdentityServer.Controllers
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    model.StatusMessage = "Unexpected error when trying to set phone number.";
+                    ViewData["StatusMessage"] = "Ops... si &egrave; verificato un errore inaspettato durante il salvataggio del nuovo numero di telefono.";
                     return View(model);
                 }
             }
 
             await _signInManager.RefreshSignInAsync(user);
 
-            model.StatusMessage = "Your profile has been updated";
+            ViewData["StatusMessage"] = "Profilo aggiornato con successo";
 
             return View(model);
         }
@@ -220,22 +220,35 @@ namespace IdentityServer.Controllers
         #region CHANGE PASSWORD
 
         [HttpGet]
-        public IActionResult ChangePassword() => View();
+        public async Task<IActionResult> ChangePassword()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            if (!ModelState.IsValid) return View();
-
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+
+            if (!ModelState.IsValid) return View(model);
+
+            var checkPasswordResult = await _userManager.CheckPasswordAsync(user, model.OldPassword);
+            if (!checkPasswordResult)
+            {
+                ModelState.AddModelError(nameof(model.OldPassword), "Password non valida");
+                return View(model);
+            }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
                 foreach (var error in changePasswordResult.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(nameof(model.NewPassword), error.Description);
                 }
 
                 return View(model);
@@ -243,9 +256,9 @@ namespace IdentityServer.Controllers
 
             await _signInManager.RefreshSignInAsync(user);
 
-            model.StatusMessage = "Your password has been changed.";
+            ViewData["StatusMessage"] = "Password modificata correttamente.";
 
-            return View(model);
+            return View();
         }
 
         #endregion
@@ -268,15 +281,15 @@ namespace IdentityServer.Controllers
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
             // Only include personal data for download
-            var personalDataProps = typeof(IdentityUser).GetProperties().Where(
-                prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
+            var personalDataProps = typeof(IdentityUser).GetProperties()
+                .Where(prop => Attribute.IsDefined(prop, typeof(PersonalDataAttribute)));
 
             var personalData = personalDataProps.ToDictionary(p => p.Name, p => p.GetValue(user)?.ToString() ?? "null");
 
             var logins = await _userManager.GetLoginsAsync(user);
-            foreach (var l in logins)
+            foreach (var login in logins)
             {
-                personalData.Add($"{l.LoginProvider} external login provider key", l.ProviderKey);
+                personalData.Add($"{login.LoginProvider} external login provider key", login.ProviderKey);
             }
 
             Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
@@ -293,18 +306,22 @@ namespace IdentityServer.Controllers
             return View();
         }
 
+        [HttpPost]
         public async Task<IActionResult> DeletePersonalData(DeletePersonalDataViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
+            if (!ModelState.IsValid) return View();
+
             if (!await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                ModelState.AddModelError(string.Empty, "Password non valida.");
+                ModelState.AddModelError(nameof(model.Password), "Password non valida");
                 return View();
             }
 
             var result = await _userManager.DeleteAsync(user);
+
             var userId = await _userManager.GetUserIdAsync(user);
             if (!result.Succeeded) throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
 
