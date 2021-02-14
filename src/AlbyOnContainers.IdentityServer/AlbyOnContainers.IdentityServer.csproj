@@ -18,8 +18,6 @@
         <PackageReference Include="IdentityServer4.EntityFramework.Storage" Version="4.1.1" />
         <PackageReference Include="MassTransit.AspNetCore" Version="7.1.4-develop.3245" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.4-develop.3232" />
-        <PackageReference Include="MediatR" Version="9.0.0" />
-        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
@@ -36,7 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
       <ProjectReference Include="..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
       <ProjectReference Include="..\AlbyOnContainers.Shared.Messages\AlbyOnContainers.Shared.Messages.csproj" />
     </ItemGroup>
@@ -46,6 +43,10 @@
       <EmbeddedResource Include="Certificate\idsrv3test.pfx">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\js\site.js" />
     </ItemGroup>
 
 </Project>

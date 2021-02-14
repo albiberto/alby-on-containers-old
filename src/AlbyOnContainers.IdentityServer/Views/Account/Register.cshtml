@@ -18,7 +18,7 @@
 
             <form class="form-horizontal" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
 
-                <div asp-validation-summary="All" class="text-danger"></div>
+                <partial name="_ValidationSummary"/>
 
                 <div class="form-group">
                     <label asp-for="Username" class="control-label form-label"></label>

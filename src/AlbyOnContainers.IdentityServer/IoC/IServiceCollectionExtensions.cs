@@ -1,6 +1,5 @@
 ﻿using System;
 using IdentityServer.Certificate;
-using IdentityServer.Devspaces;
 using IdentityServer.Infrastructure;
 using IdentityServer.Models;
 using IdentityServer.Options;
@@ -40,7 +39,6 @@ namespace IdentityServer.IoC
                     x.IssuerUri = "null";
                     x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 })
-                .AddDevspacesIfNeeded(enableDevspaces)
                 .AddSigningCredential(CertificateManager.Get())
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(options =>

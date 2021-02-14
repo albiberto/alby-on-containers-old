@@ -3,14 +3,11 @@ using IdentityServer.Extensions;
 using IdentityServer.IoC;
 using IdentityServer.Publishers;
 using IdentityServer.Services;
-using MassTransit;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace IdentityServer
 {
@@ -37,11 +34,9 @@ namespace IdentityServer
 
             services.AddScoped<IEmailPublisher, EmailPublisher>();
             
-            services.AddMediatR(typeof(Startup));
             services.AddMassTransit(Configuration);
 
             services.AddTransient<IRedirectService, RedirectService>();
-            services.AddScoped<IEmailPublisher2, EmailPublisher2>();
 
             services.AddControllersWithViews();
         }

@@ -31,6 +31,15 @@ namespace IdentityServer.Controllers
             _options = options.Value;
         }
 
+        async Task<(string userId, string username, string email)> GetUserInfoAsync(ApplicationUser user)
+        {
+            var userId = await _userManager.GetUserIdAsync(user);
+            var username = await _userManager.GetUserNameAsync(user);
+            var email = await _userManager.GetEmailAsync(user);
+
+            return (userId, username, email);
+        }
+
         #region PROFILE
 
         [HttpGet]
@@ -126,14 +135,13 @@ namespace IdentityServer.Controllers
                 return View(await BuildViewModelAsync(user));
             }
 
-            var userId = await _userManager.GetUserIdAsync(user);
-            var username = await _userManager.GetUserNameAsync(user);
+            var (userId, username, email) = await GetUserInfoAsync(user);
 
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
             var callbackUrl = Url.Action(
-                "ConfirmEmailChange",
+                "ChangeEmailConfirmation",
                 "Manage",
                 new { userId, email = model.NewEmail, code },
                 Request.Scheme);
@@ -164,9 +172,7 @@ namespace IdentityServer.Controllers
                 return View("ChangeEmail", vm);
             }
 
-            var userId = await _userManager.GetUserIdAsync(user);
-            var username = await _userManager.GetUserNameAsync(user);
-            var email = await _userManager.GetEmailAsync(user);
+            var (userId, username, email) = await GetUserInfoAsync(user);
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -192,7 +198,7 @@ namespace IdentityServer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ConfirmEmailChange(string userId, string email, string code)
+        public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string code)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code)) RedirectToAction("Index", "Home");
 
@@ -200,7 +206,6 @@ namespace IdentityServer.Controllers
             if (user == null) return NotFound($"Unable to load user with ID '{userId}'.");
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code ?? string.Empty));
-
             var result = await _userManager.ChangeEmailAsync(user, email, code);
 
             if (!result.Succeeded)
@@ -246,10 +251,7 @@ namespace IdentityServer.Controllers
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                foreach (var error in changePasswordResult.Errors)
-                {
-                    ModelState.AddModelError(nameof(model.NewPassword), error.Description);
-                }
+                foreach (var error in changePasswordResult.Errors) ModelState.AddModelError(string.Empty, error.Description);
 
                 return View(model);
             }
@@ -287,10 +289,7 @@ namespace IdentityServer.Controllers
             var personalData = personalDataProps.ToDictionary(p => p.Name, p => p.GetValue(user)?.ToString() ?? "null");
 
             var logins = await _userManager.GetLoginsAsync(user);
-            foreach (var login in logins)
-            {
-                personalData.Add($"{login.LoginProvider} external login provider key", login.ProviderKey);
-            }
+            foreach (var login in logins) personalData.Add($"{login.LoginProvider} external login provider key", login.ProviderKey);
 
             Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
 
@@ -298,7 +297,7 @@ namespace IdentityServer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> DeletePersonalData()
+        public async Task<IActionResult> PersonalDataDelete()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -307,7 +306,7 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DeletePersonalData(DeletePersonalDataViewModel model)
+        public async Task<IActionResult> PersonalDataDelete(DeletePersonalDataViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");

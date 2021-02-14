@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Identity
-
 @inject SignInManager<ApplicationUser> _signInManager
 @inject UserManager<ApplicationUser> _userManager
 
@@ -7,12 +6,10 @@
     @if (_signInManager.IsSignedIn(User))
     {
         <li class="nav-item">
-            <a  class="nav-link text-dark" asp-controller="Manage" asp-action="Index">Ciao @User.Identity.Name!</a>
+            <a class="nav-link text-dark" asp-controller="Manage" asp-action="Index">Ciao @User?.Identity?.Name!</a>
         </li>
         <li class="nav-item">
-            <form class="form-inline" method="post" asp-controller="Account" asp-action="Logout">
-                <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-            </form>
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
         </li>
     }
     else

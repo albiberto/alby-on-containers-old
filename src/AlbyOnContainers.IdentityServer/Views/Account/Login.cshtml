@@ -5,7 +5,7 @@
     Layout = "_Layout";
 }
 
-<div class="container account-login-container">
+<div class="container">
 
     <div class="text-left">
         <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
@@ -15,10 +15,10 @@
     <div class="row">
         <div class="col-md-8">
             <section>
-                <form class="form-horizontal" method="post" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                <form class="form-horizontal" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
 
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    
+                    <partial name="_ValidationSummary"/>
+
                     <div class="form-group">
                         <label asp-for="Email" class="control-label form-label"></label>
                         <input asp-for="Email" class="form-control form-input form-input-center"/>

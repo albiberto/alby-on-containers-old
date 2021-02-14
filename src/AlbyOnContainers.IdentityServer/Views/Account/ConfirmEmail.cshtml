@@ -1,7 +1,7 @@
 ﻿@model IdentityServer.Models.AccountViewModels.ConfirmEmailViewModel
 
 @{
-    ViewData["Title"] = "Email Confermata";
+    ViewData["Title"] = "Conferma Email";
     Layout = "_Layout";
 }
 
@@ -12,3 +12,7 @@
         <p>Per accedere <a asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">premi qui!</a></p>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

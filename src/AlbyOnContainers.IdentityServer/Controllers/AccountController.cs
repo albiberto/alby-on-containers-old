@@ -9,11 +9,8 @@ using IdentityServer.Models;
 using IdentityServer.Models.AccountViewModels;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
-using IdentityServer.Requests;
 using IdentityServer4;
-using IdentityServer4.Models;
 using IdentityServer4.Services;
-using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,21 +24,25 @@ namespace IdentityServer.Controllers
     public class AccountController : Controller
     {
         readonly IIdentityServerInteractionService _interaction;
-        readonly EmailOptions _options;
+        readonly TokenLifetimeOptions _tokenOptions;
+        readonly EmailOptions _emailOptions;
         readonly ILogger<AccountController> _logger;
-        readonly IMediator _mediator;
         readonly UserManager<ApplicationUser> _userManager;
         readonly SignInManager<ApplicationUser> _signInManager;
         readonly IEmailPublisher _publisher;
 
-        public AccountController(IMediator mediator, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailPublisher publisher, IIdentityServerInteractionService interaction, IOptions<EmailOptions> options, ILogger<AccountController> logger)
+        public AccountController(
+            UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
+            IEmailPublisher publisher, IIdentityServerInteractionService interaction,
+            IOptions<EmailOptions> emailOptions, IOptions<TokenLifetimeOptions> tokenOptions, ILogger<AccountController> logger
+        )
         {
-            _mediator = mediator;
             _userManager = userManager;
             _signInManager = signInManager;
             _publisher = publisher;
             _interaction = interaction;
-            _options = options.Value;
+            _emailOptions = emailOptions.Value;
+            _tokenOptions = tokenOptions.Value;
             _logger = logger;
         }
 
@@ -56,104 +57,78 @@ namespace IdentityServer.Controllers
 
         #region Login
 
-        /// <summary>
-        ///     Show login page
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null) throw new NotImplementedException("External login is not implemented!");
 
-            var vm = BuildLoginViewModel(returnUrl, context);
-
-            ViewData["ReturnUrl"] = returnUrl;
-
-            return View(vm);
+            var model = new LoginViewModel { Email = context?.LoginHint };
+            return View(model);
         }
 
-        /// <summary>
-        ///     Handle postback from username/password login
-        /// </summary>
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(AccountRequests.Login request)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = default)
         {
-            if (ModelState.IsValid)
-            {
-                var result = await _mediator.Send(request);
+            if (!ModelState.IsValid) return View(model);
 
-                if (result.HasErrors())
-                    ModelState.AddModelError("", "Credenziali invalide.");
-                else
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (await _userManager.CheckPasswordAsync(user, model.Password))
+            {
+                var props = new AuthenticationProperties
                 {
-                    // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
-                    var url = _interaction.IsValidReturnUrl(request.ReturnUrl) ? request.ReturnUrl : "~/";
-                    return Redirect(url);
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(_tokenOptions.Minutes),
+                    AllowRefresh = true,
+                    RedirectUri = returnUrl
+                };
+
+                if (model.RememberMe)
+                {
+                    props.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(_tokenOptions.Days);
+                    props.IsPersistent = true;
                 }
+
+                await _signInManager.SignInAsync(user, props);
+
+                // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
+                return Redirect(_interaction.IsValidReturnUrl(returnUrl) ? returnUrl : "~/");
             }
 
             // something went wrong, show form with error
-            var vm = await BuildLoginViewModelAsync(request.ReturnUrl, request.Email, request.RememberMe);
-            ViewData["ReturnUrl"] = request.ReturnUrl;
 
-            return View(vm);
+            ModelState.AddModelError(string.Empty, "Invalid username or password.");
+            return View(model);
         }
-
-        async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, string email, bool rememberMe)
-        {
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var vm = BuildLoginViewModel(returnUrl, context);
-            vm.Email = email;
-            vm.RememberMe = rememberMe;
-            return vm;
-        }
-
-        static LoginViewModel BuildLoginViewModel(string returnUrl, AuthorizationRequest context) =>
-            new()
-            {
-                ReturnUrl = returnUrl,
-                Email = context?.LoginHint
-            };
 
         #endregion
 
         #region LogOut
 
-        /// <summary>
-        ///     Show logout page
-        /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Logout(string logoutId)
+        public async Task<IActionResult> Logout(string logoutId = default)
         {
-            if (User?.Identity?.IsAuthenticated ?? false)
-                // if the user is not authenticated, then just show logged out page
-                return await Logout(new AccountRequests.Logout { LogoutId = logoutId });
+            var model = new LogoutViewModel { LogoutId = logoutId };
 
-            //Test for Xamarin. 
-            var context = await _interaction.GetLogoutContextAsync(logoutId);
-            if (context?.ShowSignoutPrompt == false)
-                //it's safe to automatically sign-out
-                return await Logout(new AccountRequests.Logout { LogoutId = logoutId });
+            // if the user is not authenticated, then just show logged out page
+            if (!(User?.Identity?.IsAuthenticated ?? true)) return await Logout(model);
 
             // show the logout prompt. this prevents attacks where the user is automatically signed out by another malicious web page.
-            var vm = new LogoutViewModel
-            {
-                LogoutId = logoutId
-            };
-
-            return View(vm);
+            return View(model);
         }
 
-        /// <summary>
-        ///     Handle logout page postback
-        /// </summary>
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout(AccountRequests.Logout model)
+        public async Task<IActionResult> Logout(LogoutViewModel model)
         {
             var idp = User?.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
 
             if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
             {
+                // if there's no current logout context, we need to create one
+                // this captures necessary info from the current logged in user
+                // before we signout and redirect away to the external IdP for signout
                 model.LogoutId ??= await _interaction.CreateLogoutContextAsync();
 
                 var url = "/Account/Logout?logoutId=" + model.LogoutId;
@@ -182,18 +157,18 @@ namespace IdentityServer.Controllers
             // get context information (client name, post logout redirect URI and iframe for federated signout)
             var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
 
-            return Redirect(logout?.PostLogoutRedirectUri ?? "/");
+            return Redirect(logout?.PostLogoutRedirectUri ?? "~/");
         }
 
-        public async Task<IActionResult> DeviceLogOut(string redirectUrl)
+        public async Task<IActionResult> DeviceLogOut(string returnUrl)
         {
-            // delete authentication cookie
+            // delete authentication cookies
             await HttpContext.SignOutAsync();
 
             // set this so UI rendering sees an anonymous user
             HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
 
-            return Redirect(redirectUrl);
+            return Redirect(returnUrl);
         }
 
         #endregion
@@ -218,10 +193,7 @@ namespace IdentityServer.Controllers
 
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
 
                 return View();
             }
@@ -239,7 +211,7 @@ namespace IdentityServer.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _options.Email, Name = _options.Name },
+                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Name },
                 Subject = "Conferma Email",
                 Body = $"Ciao {username}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
                 To = new[] { new MailAddress { Name = username, Email = email } }
@@ -278,7 +250,7 @@ namespace IdentityServer.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _options.Email, Name = _options.Name },
+                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Name },
                 Subject = "Conferma Email",
                 Body = $"Ciao {user}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
                 To = new[] { new MailAddress { Name = username, Email = email } }
@@ -323,10 +295,9 @@ namespace IdentityServer.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
+            // Don't reveal that the user does not exist or is not confirmed
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
-                // Don't reveal that the user does not exist or is not confirmed
-                return View("ForgotPasswordConfirmation", model.Email);
+            if (user == default || !await _userManager.IsEmailConfirmedAsync(user)) return View("ForgotPasswordConfirmation", model.Email);
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -341,7 +312,7 @@ namespace IdentityServer.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _options.Email, Name = _options.Name },
+                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Name },
                 Subject = "Recupero password",
                 Body = $"Ciao {username}, <br /> Per recuperare la tua password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
                 To = new[] { new MailAddress { Name = username, Email = email } }
@@ -377,10 +348,7 @@ namespace IdentityServer.Controllers
             var result = await _userManager.ResetPasswordAsync(user, code, model.Password);
             if (result.Succeeded) return View("ResetPasswordConfirmation");
 
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
+            foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
 
             return View();
         }
