@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AlbyOnContainers.Messages;
 using IdentityModel;
-using IdentityServer.Exceptions;
 using IdentityServer.Models;
 using IdentityServer.Models.AccountViewModels;
+using IdentityServer.Options;
+using IdentityServer.Publishers;
 using IdentityServer.Requests;
 using IdentityServer4;
 using IdentityServer4.Models;
@@ -14,21 +18,40 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Controllers
 {
     public class AccountController : Controller
     {
         readonly IIdentityServerInteractionService _interaction;
+        readonly EmailOptions _options;
         readonly ILogger<AccountController> _logger;
         readonly IMediator _mediator;
+        readonly UserManager<ApplicationUser> _userManager;
+        readonly SignInManager<ApplicationUser> _signInManager;
+        readonly IEmailPublisher _publisher;
 
-        public AccountController(IMediator mediator, IIdentityServerInteractionService interaction, ILogger<AccountController> logger)
+        public AccountController(IMediator mediator, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailPublisher publisher, IIdentityServerInteractionService interaction, IOptions<EmailOptions> options, ILogger<AccountController> logger)
         {
             _mediator = mediator;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _publisher = publisher;
             _interaction = interaction;
+            _options = options.Value;
             _logger = logger;
+        }
+
+        async Task<(string userId, string username, string email)> GetUserInfoAsync(ApplicationUser user)
+        {
+            var userId = await _userManager.GetUserIdAsync(user);
+            var username = await _userManager.GetUserNameAsync(user);
+            var email = await _userManager.GetEmailAsync(user);
+
+            return (userId, username, email);
         }
 
         #region Login
@@ -184,161 +207,183 @@ namespace IdentityServer.Controllers
             return View();
         }
 
-        [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = default)
         {
-            ViewData["ReturnUrl"] = model.ReturnUrl;
-            
-            var host = $@"{Request.Scheme}://{Request.Host}/account/confirmemail";
-            var request = new AccountRequests.Register(model.Username, model.Email, model.Password, host, model.ReturnUrl);
-            
-            if (ModelState.IsValid)
-            {
-                var result = await _mediator.Send(request);
+            if (!ModelState.IsValid) return View(model);
 
-                if (result.HasErrors())
+            var user = new ApplicationUser { UserName = model.Username ?? model.Email, Email = model.Email };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-
-                    // If we got this far, something failed, redisplay form
-                    return View(model);
+                    ModelState.AddModelError(string.Empty, error.Description);
                 }
+
+                return View();
             }
 
-            if (request.ReturnUrl == null)
-                return RedirectToAction("emailconfirmation", "account", new { model.Email });
+            var (userId, username, email) = await GetUserInfoAsync(user);
 
-            if (HttpContext?.User?.Identity?.IsAuthenticated ?? false)
-                return Redirect(request.ReturnUrl);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-            if (ModelState.IsValid)
-                return RedirectToAction("login", "account", new { request.ReturnUrl });
+            var callbackUrl = Url.Action(
+                "ConfirmEmail",
+                "Account",
+                new { userId, code, returnUrl },
+                Request.Scheme);
 
-            return View(model);
+            var message = new EmailMessage
+            {
+                Sender = new MailAddress { Email = _options.Email, Name = _options.Name },
+                Subject = "Conferma Email",
+                Body = $"Ciao {username}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] { new MailAddress { Name = username, Email = email } }
+            };
+
+            await _publisher.SendAsync(message);
+
+            return View("RegisterConfirmation", email);
         }
 
         [HttpGet]
-        public IActionResult EmailConfirmation([FromQuery] EmailConfirmationViewModel model) => View(model);
-
-        [HttpGet]
-        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailViewModel model)
-        {
-            if (model.UserId == default || string.IsNullOrEmpty(model.Code)) return Redirect("/Index");
-
-            try
-            {
-                var request = new AccountRequests.ConfirmEmail(model.UserId, model.Code);
-                await _mediator.Publish(request);
-            }
-            catch (Exception e)
-            {
-                model.Message = "Si e' verificato un errore. Riprova piu' tardi.";
-                return View(model.Message);
-            }
-
-            model.Message = "Grazie per aver confermato la tua email.";
-            return View(model);
-        }
-
-        [HttpGet]
-        public IActionResult ResendConfirmationEmail(string returnUrl = null)
+        public IActionResult ResendEmail(string returnUrl)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResendConfirmationEmail(ResendConfirmationEmailViewModel model)
+        public async Task<IActionResult> ResendEmail(ResendConfirmationEmailViewModel model, string returnUrl = default)
         {
             if (!ModelState.IsValid) return View();
 
-            try
-            {
-                var request = new AccountRequests.ResendConfirmationEmail(model.Email, $@"{Request.Scheme}://{Request.Host}/account/confirmemail", model.ReturnUrl);
-                await _mediator.Publish(request);
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) return View("ResendEmailConfirmation", model.Email);
 
-                return RedirectToAction("emailconfirmation", "account", new { model.Email });
-            }
-            catch (Exception e)
-            {
-                if (e is not AuthenticationExceptions.EmailNotFound) return View("Error", new ErrorViewModel { Error = new ErrorMessage { Error = "Ops... si e' verificato un errore inaspettato!" } });
+            var (userId, username, email) = await GetUserInfoAsync(user);
 
-                ModelState.AddModelError(string.Empty, "L'email inserita non e' stata trovata!");
-                return View();
-            }
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            var callbackUrl = Url.Action(
+                "ConfirmEmail",
+                "Account",
+                new { userId, code, returnUrl },
+                Request.Scheme);
+
+            var message = new EmailMessage
+            {
+                Sender = new MailAddress { Email = _options.Email, Name = _options.Name },
+                Subject = "Conferma Email",
+                Body = $"Ciao {user}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] { new MailAddress { Name = username, Email = email } }
+            };
+
+            await _publisher.SendAsync(message);
+
+            return View("ResendEmailConfirmation", email);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code, string returnUrl = default)
+        {
+            ViewData["ReturnRul"] = returnUrl;
+
+            if (userId == null || code == null) return RedirectToPage("/Index");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound($"Unable to load user with ID '{userId}'.");
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            ViewData["StatusMessage"] = result.Succeeded ? "Grazie per aver confermato la tua email." : "Ops... si e' verificato un errore durante la consegna della mail.";
+            return View();
         }
 
         #endregion
 
-        #region RecoverPassword
+        #region ForgotPassword
 
         [HttpGet, AllowAnonymous]
-        public IActionResult RecoverPassword(string returnUrl = null)
+        public IActionResult ForgotPassword(string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
-        [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(RecoverPasswordViewModel model, string returnUrl = default)
         {
             if (!ModelState.IsValid) return View(model);
 
-            try
-            {
-                var request = new AccountRequests.RecoverPassword(model.Email, $@"{Request.Scheme}://{Request.Host}/Account/ResetPassword", model.ReturnUrl);
-                await _mediator.Publish(request);
-            }
-            catch (Exception e)
-            {
-                if (e is not AuthenticationExceptions) return View("Error", new ErrorViewModel { Error = new ErrorMessage { Error = "Ops... si e' verificato un errore inaspettato!" } });
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
+                // Don't reveal that the user does not exist or is not confirmed
+                return View("ForgotPasswordConfirmation", model.Email);
 
-                ModelState.AddModelError(string.Empty, "Email non ancora confermata!");
-                return View();
-            }
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-            return RedirectToAction("RecoverPasswordConfirmation", "account", new { model.Email });
+            var (_, username, email) = await GetUserInfoAsync(user);
+
+            var callbackUrl = Url.Action(
+                "ResetPassword",
+                "Account",
+                new { code, returnUrl },
+                Request.Scheme);
+
+            var message = new EmailMessage
+            {
+                Sender = new MailAddress { Email = _options.Email, Name = _options.Name },
+                Subject = "Recupero password",
+                Body = $"Ciao {username}, <br /> Per recuperare la tua password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] { new MailAddress { Name = username, Email = email } }
+            };
+
+            await _publisher.SendAsync(message);
+
+            return View("ForgotPasswordConfirmation", email);
         }
 
         [HttpGet]
-        public IActionResult RecoverPasswordConfirmation([FromQuery] RecoverPasswordConfirmationViewModel model) => View(model);
-
-        [HttpGet, AllowAnonymous]
-        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        public IActionResult ResetPassword(string code = default, string returnUrl = default)
         {
-            ViewData["ReturnUrl"] = model.ReturnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
 
-            if (string.IsNullOrEmpty(model.Code)) return RedirectToAction("Index", "Home");
+            if (string.IsNullOrEmpty(code)) return BadRequest("A code must be supplied for password reset.");
 
+            var model = new ResetPasswordViewModel { Code = code };
             return View(model);
         }
 
-        [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPasswordPost(ResetPasswordViewModel model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model, string returnUrl = default)
         {
-            if (!ModelState.IsValid) return View("ResetPassword", model);
+            if (!ModelState.IsValid) return View();
 
-            try
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            // Don't reveal that the user does not exist
+            if (user == null) return View("ResetPasswordConfirmation");
+
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code));
+            var result = await _userManager.ResetPasswordAsync(user, code, model.Password);
+            if (result.Succeeded) return View("ResetPasswordConfirmation");
+
+            foreach (var error in result.Errors)
             {
-                var request = new AccountRequests.ResetPassword(model.Email, model.Password, model.Code);
-                await _mediator.Publish(request);
-            }
-            catch (Exception e)
-            {
-                if (e is not AuthenticationExceptions.UserNotFound) return View("Error", new ErrorViewModel { Error = new ErrorMessage { Error = "Ops... si e' verificato un errore inaspettato!" } });
-
-                ModelState.AddModelError(string.Empty, "Email non ancora confermata!");
-                return View("ResetPassword", model);
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            return RedirectToAction("ResetPasswordConfirmation", "Account");
+            return View();
         }
-
-        [HttpGet]
-        public IActionResult ResetPasswordConfirmation() => View();
 
         #endregion
     }

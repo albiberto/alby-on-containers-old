@@ -1,7 +1,8 @@
 ﻿@model IdentityServer.Models.AccountViewModels.RegisterViewModel
 
 @{
-    ViewBag.Title = "Registrati";
+    ViewData["Title"] = "Registrati";
+
     Layout = "_Layout";
 }
 
@@ -9,13 +10,13 @@
 
     <div class="text-left">
         <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
-        <h5>Completa i seguenti campi e premi registrati</h5>
+        <h5>Completa i seguenti campi per registrarti</h5>
     </div>
 
     <div class="row">
         <div class="col-md-8">
 
-            <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+            <form class="form-horizontal" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
 
                 <div asp-validation-summary="All" class="text-danger"></div>
 

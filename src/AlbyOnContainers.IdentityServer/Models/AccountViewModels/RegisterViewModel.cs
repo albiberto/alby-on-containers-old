@@ -14,6 +14,5 @@ namespace IdentityServer.Models.AccountViewModels
 
         [DataType(DataType.Password), Compare("Password", ErrorMessage = "Le password inserite non coincidono."), Display(Name = "Conferma Password")]
         public string ConfirmPassword { get; set; }
-        public string ReturnUrl { get; set; }
     }
 }
