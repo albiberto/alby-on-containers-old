@@ -1,0 +1,116 @@
+version: "3.7"
+services:
+  postgres:
+    image: postgres:latest   
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/postgres:/var/lib/postgresql
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    restart: always
+    ports:
+      - '8080:80'
+      - '5341:5341'
+    environment:
+        ACCEPT_EULA: Y
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/seq:/data
+  rabbitmq:
+    image: 'rabbitmq:3.6-management-alpine'
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/rabbitmq/rabbitmq.conf:/etc/rabbitmq.conf:ro
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+  pollon:
+    image: cowboysteam/pollon:latest
+    container_name: pollon
+    restart: unless-stopped
+    ports:
+      - 5010:80
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Staging"
+      HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS: "60"
+      HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS: "240"
+      HEALTHCHECKS__IDENTITYSERVERURL: "http://identityserver:80/identity-server/healthz"
+      HEALTHCHECKS__HERMESURL: "http://hermes:80/hermes/healthz"
+      HEALTHCHECKS__POLLONURL: "http://localhost/pollon/healthz"
+      CONNECTIONSTRINGS__POLLON: "Host=postgres;Database=pollon;Username=postgres;Password=postgres;Port=5432"  
+      CONNECTIONSTRINGS__SEQ: "http://seq:5341"
+  
+  identityserver:
+    image: ${DOCKER_REGISTRY-}identityserver-local
+    build:
+      context: .
+      dockerfile: src/AlbyOnContainers.IdentityServer/Dockerfile
+    container_name: identityserver
+    restart: unless-stopped
+    depends_on:
+      - "postgres"
+    ports:
+      - 5000:80
+      - 5001:443
+    environment:
+      "ASPNETCORE_ENVIRONMENT": "Development"
+      "ASPNETCORE_URLS": "https://+:443;http://+:80"
+      "ASPNETCORE_HTTPS_PORT": "443"
+      "ASPNETCORE_Kestrel__Certificates__Default__Path": "/https/cert.pfx"
+      "SEQ__ENDPOINT": "http://seq:5341"
+      "RABBITMQ__HOST": "rabbitmq"
+      "RABBITMQ__USERNAME": "guest"
+      "RABBITMQ__PASSWORD": "guest"
+      "EMAILOPTIONS__NAME": "IdentityServer Compose.STAGE"
+      "EMAILOPTIONS__EMAIL": "cowboysteamts@gmail.com"
+      "TOKENLIFETIMEOPTIONS__MINUTES": "120"
+      "TOKENLIFETIMEOPTIONS__DAYS": "365"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+    
+  hermes:
+    image: cowboysteam/hermes:latest
+    container_name: hermes
+    restart: unless-stopped
+    ports:
+      - 5002:80
+    depends_on:
+      - "rabbitmq"
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      CONNECTIONSTRINGS__SEQ: "http://seq:5341"
+      EMAILOPTIONS__SMPTSERVER: "smtp.gmail.com"
+      EMAILOPTIONS__SMTPPORT: "587"
+      EMAILOPTIONS__SMTPUSERNAME: "cowboysteamts@gmail.com"
+      EMAILOPTIONS__SMTPPASSWORD: "nyQvrW6fpvC8UPj"
+      EMAILOPTIONS__DEFAULTSENDERNAME: "Identity Compose.STAGE"
+      EMAILOPTIONS__DEFAULT__SENDER__EMAIL: "cowboysteamts@gmail.com"
+      EMAILOPTIONS__USESSL: "false"
+      RABBITMQ__HOST: "rabbitmq"
+      RABBITMQ__USERNAME: "guest"
+      RABBITMQ__PASSWORD: "guest"
+      APPOPTIONS__URI: "hermes"
+  sherlock:
+    image: cowboysteam/sherlock:latest
+    container_name: sherlock
+    restart: unless-stopped
+    ports:
+      - 6000:80
+      - 6001:443
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      CONNECTIONSTRINGS__SEQ: "http://seq:5341"
+      CONNECTIONSTRINGS__LUCIFER: "Host=postgres;Database=hulk;Username=postgres;Password=postgres;Port=5432"

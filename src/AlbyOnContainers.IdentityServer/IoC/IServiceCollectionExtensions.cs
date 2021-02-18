@@ -1,8 +1,8 @@
 ﻿using System;
-using IdentityServer.Certificate;
 using IdentityServer.Infrastructure;
 using IdentityServer.Models;
 using IdentityServer.Options;
+using IdentityServer.Publishers;
 using IdentityServer.Services;
 using IdentityServer4.Services;
 using MassTransit;
@@ -39,7 +39,7 @@ namespace IdentityServer.IoC
                     x.IssuerUri = "null";
                     x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 })
-                .AddSigningCredential(CertificateManager.Get())
+                // .AddSigningCredential(CertificateManager.Get())
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(options =>
                 {
@@ -64,7 +64,7 @@ namespace IdentityServer.IoC
 
         public static void AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
         {
-            var connection = configuration.GetConnectionString("Hulk");
+            var connection = configuration.GetConnectionString("DefaultDatabase");
 
             var options = new HealthChecksOptions();
             configuration.GetSection("HealthChecks").Bind(options);
@@ -101,6 +101,12 @@ namespace IdentityServer.IoC
             });
 
             services.AddMassTransitHostedService(true);
+        }
+
+        public static void AddCustom(this IServiceCollection services)
+        {
+            services.AddScoped<IEmailPublisher, EmailPublisher>();
+            services.AddTransient<IRedirectService, RedirectService>();
         }
     }
 }

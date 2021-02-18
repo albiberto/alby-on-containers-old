@@ -9,6 +9,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 WORKDIR /src
 COPY ["src/AlbyOnContainers.IdentityServer/AlbyOnContainers.IdentityServer.csproj", "src/AlbyOnContainers.IdentityServer/"]
 COPY ["src/AlbyOnContainers.Shared.Messages/AlbyOnContainers.Shared.Messages.csproj", "src/AlbyOnContainers.Shared.Messages/"]
+COPY ["src/AlbyOnContainers.Shared.Libraries/AlbyOnContainers.Shared.Libraries.csproj", "src/AlbyOnContainers.Shared.Libraries/"]
 RUN dotnet restore "src/AlbyOnContainers.IdentityServer/AlbyOnContainers.IdentityServer.csproj"
 COPY . .
 WORKDIR "/src/src/AlbyOnContainers.IdentityServer"

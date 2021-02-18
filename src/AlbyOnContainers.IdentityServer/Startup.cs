@@ -1,8 +1,5 @@
-using System.Reflection;
-using IdentityServer.Extensions;
 using IdentityServer.IoC;
-using IdentityServer.Publishers;
-using IdentityServer.Services;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +10,11 @@ namespace IdentityServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        readonly IWebHostEnvironment _env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
         }
 
@@ -23,20 +23,21 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = Configuration.GetConnectionString("Hulk");
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var connection = Configuration.GetConnectionString("DefaultDatabase");
+            var migrationsAssembly = Assembly.GetExecutingAssembly().GetName().Name;
 
             services.AddIdentity(connection, migrationsAssembly);
             services.AddIdentityServer(connection, migrationsAssembly, Configuration.GetValue("EnableDevspaces", false));
             services.AddHealthChecks(Configuration);
 
             services.AddOptions(Configuration);
-
-            services.AddScoped<IEmailPublisher, EmailPublisher>();
-            
             services.AddMassTransit(Configuration);
 
-            services.AddTransient<IRedirectService, RedirectService>();
+            services.AddCustom();
+
+            services.AddHttpsRedirection(Configuration, _env);
+            services.AddHsts(Configuration);
+            services.AddReverseProxy();
 
             services.AddControllersWithViews();
         }
@@ -44,23 +45,21 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseForwardedHeaders();
+
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHsts(); // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
+            app.UseStaticFiles();
             app.UseIdentityServer();
 
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
