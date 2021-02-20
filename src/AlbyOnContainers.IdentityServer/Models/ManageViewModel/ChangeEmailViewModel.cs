@@ -6,6 +6,7 @@ namespace IdentityServer.Models.ManageViewModel
     {
         [Display(Name = "Nuova Email"), Required, EmailAddress]
         public string NewEmail { get; set; }
+
         public string Email { get; set; }
         public bool IsEmailConfirmed { get; set; }
     }

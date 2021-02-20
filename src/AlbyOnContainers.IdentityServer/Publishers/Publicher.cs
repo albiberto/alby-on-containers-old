@@ -12,11 +12,11 @@ namespace IdentityServer.Publishers
     {
         Task SendAsync(EmailMessage message, CancellationToken cancellationToken = default);
     }
-    
+
     public class EmailPublisher : IEmailPublisher
     {
-        readonly IPublishEndpoint _publishEndpoint;
         readonly ILogger<EmailPublisher> _logger;
+        readonly IPublishEndpoint _publishEndpoint;
 
         public EmailPublisher(IPublishEndpoint publishEndpoint, ILogger<EmailPublisher> logger)
         {
@@ -30,8 +30,10 @@ namespace IdentityServer.Publishers
 
             var retry = Policy.Handle<Exception>()
                 .WaitAndRetryAsync(retries,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(x: 2, retryAttempt)),
-                    (exception, _, r, _) => _logger.LogWarning(exception, "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}", nameof(Program), exception.GetType().Name,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, _, r, _) => _logger.LogWarning(exception,
+                        "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}",
+                        nameof(Program), exception.GetType().Name,
                         exception.Message, r, retries)
                 );
 

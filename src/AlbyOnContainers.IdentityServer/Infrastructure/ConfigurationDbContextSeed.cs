@@ -46,7 +46,8 @@ namespace IdentityServer.Infrastructure
 
             if (!context.IdentityResources.Any())
             {
-                foreach (var resource in Config.GetResources()) await context.IdentityResources.AddAsync(resource.ToEntity());
+                foreach (var resource in Config.GetResources())
+                    await context.IdentityResources.AddAsync(resource.ToEntity());
                 await context.SaveChangesAsync();
             }
 

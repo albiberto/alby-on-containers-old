@@ -24,7 +24,8 @@ namespace IdentityServer
 
         static async Task Main(string[] args)
         {
-            var minLevel = string.Equals(Env, "Debug", StringComparison.InvariantCultureIgnoreCase) || string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase)
+            var minLevel = string.Equals(Env, "Debug", StringComparison.InvariantCultureIgnoreCase) ||
+                           string.Equals(Env, "Development", StringComparison.InvariantCultureIgnoreCase)
                 ? LogEventLevel.Information
                 : LogEventLevel.Warning;
 
@@ -43,10 +44,14 @@ namespace IdentityServer
 
                 var host = CreateHostBuilder(args).Build();
 
-                await host.MigrateAsync<ApplicationDbContext>(async (context, services) => await new ApplicationDbContextSeed().SeedAsync(context));
-                await host.MigrateAsync<ConfigurationDbContext>(async (context, _) => { await new ConfigurationDbContextSeed().SeedAsync(context); });
+                await host.MigrateAsync<ApplicationDbContext>(async (context, services) =>
+                    await new ApplicationDbContextSeed().SeedAsync(context));
+                await host.MigrateAsync<ConfigurationDbContext>(async (context, _) =>
+                {
+                    await new ConfigurationDbContextSeed().SeedAsync(context);
+                });
                 await host.MigrateAsync<PersistedGrantDbContext>((_, __) => Task.CompletedTask);
-                
+
                 await host.RunAsync();
 
                 Log.Information("IdentityServer Started");
@@ -65,8 +70,9 @@ namespace IdentityServer
         // https://docs.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-5.0
         // https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-5.0&tabs=visual-studio
         // https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-5.0&tabs=windows
-        static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, builder) =>
                 {
                     if (context.HostingEnvironment.IsDevelopment())
@@ -78,5 +84,6 @@ namespace IdentityServer
                 .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
                 .ConfigureLogging(builder => builder.AddSerilog(Log.Logger, true))
                 .UseSerilog();
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using IdentityServer.Infrastructure;
 using IdentityServer.Models;
@@ -8,7 +7,6 @@ using IdentityServer.Publishers;
 using IdentityServer.Services;
 using IdentityServer4.Services;
 using MassTransit;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,14 +36,15 @@ namespace IdentityServer.IoC
             services.AddOptions<RabbitMQOptions>()
                 .Bind(configuration.GetSection("RabbitMQ"));
         }
-        
+
         public static void AddIdentity(this IServiceCollection services, string connection)
         {
             services.AddDbContext<ApplicationDbContext>(o =>
                 o.UseNpgsql(connection, sqlOptions =>
                 {
                     sqlOptions.MigrationsAssembly(AssemblyName);
-                    sqlOptions.EnableRetryOnFailure(15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                    sqlOptions.EnableRetryOnFailure(
+                        15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
                 }));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(o => o.SignIn.RequireConfirmedAccount = true)
@@ -69,7 +68,8 @@ namespace IdentityServer.IoC
                         sqlOptions =>
                         {
                             sqlOptions.MigrationsAssembly(AssemblyName);
-                            sqlOptions.EnableRetryOnFailure(15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                            sqlOptions.EnableRetryOnFailure(
+                                15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
                         });
                 })
                 .AddOperationalStore(o =>
@@ -78,7 +78,8 @@ namespace IdentityServer.IoC
                         sqlOptions =>
                         {
                             sqlOptions.MigrationsAssembly(AssemblyName);
-                            sqlOptions.EnableRetryOnFailure(15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
+                            sqlOptions.EnableRetryOnFailure(
+                                15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
                         });
                 })
                 .Services.AddTransient<IProfileService, ProfileService>();
@@ -86,17 +87,19 @@ namespace IdentityServer.IoC
 
         public static void AddHealthChecks(this IServiceCollection services, string connection)
         {
-            var options = (services.BuildServiceProvider().GetService<IOptions<HealthChecksOptions>>())?.Value;
+            var options = services.BuildServiceProvider().GetService<IOptions<HealthChecksOptions>>()?.Value;
 
             services.AddHealthChecks()
-                .AddCheck(options?.Self?.Name ?? "self", () => HealthCheckResult.Healthy(), options?.Self?.Tags ?? new []{ "identity", "service", "identityserver4", "debug" } )
-                .AddNpgSql(connection, name: options?.NpgSql?.Name ?? "postgres", tags: options?.NpgSql?.Tags ?? new []{ "identity", "db", "postgres", "debug" });
+                .AddCheck(options?.Self?.Name ?? "self", () => HealthCheckResult.Healthy(),
+                    options?.Self?.Tags ?? new[] {"identity", "service", "identityserver4", "debug"})
+                .AddNpgSql(connection, name: options?.NpgSql?.Name ?? "postgres",
+                    tags: options?.NpgSql?.Tags ?? new[] {"identity", "db", "postgres", "debug"});
         }
 
         public static void AddMassTransit(this IServiceCollection services)
         {
-            var options = (services.BuildServiceProvider().GetService<IOptions<RabbitMQOptions>>())?.Value;
-            
+            var options = services.BuildServiceProvider().GetService<IOptions<RabbitMQOptions>>()?.Value;
+
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>

@@ -1,11 +1,10 @@
 ﻿@if (ViewContext.ModelState.IsValid == false)
 {
-   
     <div class="alert alert-danger alert-dismissible" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">&times;</span>
         </button>
-        
+
         <div asp-validation-summary="All" class="danger"></div>
     </div>
 }

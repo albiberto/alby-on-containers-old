@@ -19,11 +19,12 @@ namespace IdentityServer.Controllers
     public class ManageController : Controller
     {
         readonly IEmailPublisher _email;
-        readonly UserManager<ApplicationUser> _userManager;
         readonly EmailOptions _options;
         readonly SignInManager<ApplicationUser> _signInManager;
+        readonly UserManager<ApplicationUser> _userManager;
 
-        public ManageController(IEmailPublisher email, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<EmailOptions> options)
+        public ManageController(IEmailPublisher email, UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager, IOptions<EmailOptions> options)
         {
             _email = email;
             _userManager = userManager;
@@ -52,7 +53,8 @@ namespace IdentityServer.Controllers
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var confirmed = await _userManager.IsPhoneNumberConfirmedAsync(user);
 
-            var model = new ProfileViewModel { Username = username, PhoneNumber = phoneNumber ?? string.Empty, IsPhoneNumberConfirmed = confirmed };
+            var model = new ProfileViewModel
+                {Username = username, PhoneNumber = phoneNumber ?? string.Empty, IsPhoneNumberConfirmed = confirmed};
 
             return View(model);
         }
@@ -71,7 +73,8 @@ namespace IdentityServer.Controllers
                 var setUsername = await _userManager.SetUserNameAsync(user, model.Username);
                 if (!setUsername.Succeeded)
                 {
-                    ViewData["StatusMessage"] = "Ops... si &egrave; verificato un errore inaspettato durante il salvataggio dello username.";
+                    ViewData["StatusMessage"] =
+                        "Ops... si &egrave; verificato un errore inaspettato durante il salvataggio dello username.";
                     return View(model);
                 }
             }
@@ -82,7 +85,8 @@ namespace IdentityServer.Controllers
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, model.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    ViewData["StatusMessage"] = "Ops... si &egrave; verificato un errore inaspettato durante il salvataggio del nuovo numero di telefono.";
+                    ViewData["StatusMessage"] =
+                        "Ops... si &egrave; verificato un errore inaspettato durante il salvataggio del nuovo numero di telefono.";
                     return View(model);
                 }
             }
@@ -103,7 +107,7 @@ namespace IdentityServer.Controllers
             var email = await _userManager.GetEmailAsync(user);
             var confirmed = await _userManager.IsEmailConfirmedAsync(user);
 
-            return new()
+            return new ChangeEmailViewModel
             {
                 NewEmail = email,
                 Email = email,
@@ -143,20 +147,22 @@ namespace IdentityServer.Controllers
             var callbackUrl = Url.Action(
                 "ChangeEmailConfirmation",
                 "Manage",
-                new { userId, email = model.NewEmail, code },
+                new {userId, email = model.NewEmail, code},
                 Request.Scheme);
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _options.Email, Name = _options.Address },
+                Sender = new MailAddress {Email = _options.Email, Name = _options.Address},
                 Subject = "Confermi la modifica della Email?",
-                Body = $"Ciao {user}, <br /> Per confermare il cambio di email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
-                To = new[] { new MailAddress { Name = username, Email = model.NewEmail } }
+                Body =
+                    $"Ciao {user}, <br /> Per confermare il cambio di email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] {new MailAddress {Name = username, Email = model.NewEmail}}
             };
 
             await _email.SendAsync(message);
 
-            ViewData["StatusMessage"] = "Ti abbiamo inviato una mail di conferma. Controlla la tua casella di posta elettronica.";
+            ViewData["StatusMessage"] =
+                "Ti abbiamo inviato una mail di conferma. Controlla la tua casella di posta elettronica.";
             return View(model);
         }
 
@@ -180,15 +186,16 @@ namespace IdentityServer.Controllers
             var callbackUrl = Url.Action(
                 "ConfirmEmail",
                 "Account",
-                new { userId, code },
+                new {userId, code},
                 Request.Scheme);
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _options.Email, Name = _options.Address },
+                Sender = new MailAddress {Email = _options.Email, Name = _options.Address},
                 Subject = "Confermi la tua email?",
-                Body = $"Ciao {user}, <br /> Per confermare la email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
-                To = new[] { new MailAddress { Name = username, Email = email } }
+                Body =
+                    $"Ciao {user}, <br /> Per confermare la email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] {new MailAddress {Name = username, Email = email}}
             };
 
             await _email.SendAsync(message);
@@ -200,7 +207,8 @@ namespace IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string code)
         {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code)) RedirectToAction("Index", "Home");
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code))
+                RedirectToAction("Index", "Home");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound($"Unable to load user with ID '{userId}'.");
@@ -248,10 +256,12 @@ namespace IdentityServer.Controllers
                 return View(model);
             }
 
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            var changePasswordResult =
+                await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                foreach (var error in changePasswordResult.Errors) ModelState.AddModelError(string.Empty, error.Description);
+                foreach (var error in changePasswordResult.Errors)
+                    ModelState.AddModelError(string.Empty, error.Description);
 
                 return View(model);
             }
@@ -289,7 +299,8 @@ namespace IdentityServer.Controllers
             var personalData = personalDataProps.ToDictionary(p => p.Name, p => p.GetValue(user)?.ToString() ?? "null");
 
             var logins = await _userManager.GetLoginsAsync(user);
-            foreach (var login in logins) personalData.Add($"{login.LoginProvider} external login provider key", login.ProviderKey);
+            foreach (var login in logins)
+                personalData.Add($"{login.LoginProvider} external login provider key", login.ProviderKey);
 
             Response.Headers.Add("Content-Disposition", "attachment; filename=PersonalData.json");
 
@@ -322,7 +333,8 @@ namespace IdentityServer.Controllers
             var result = await _userManager.DeleteAsync(user);
 
             var userId = await _userManager.GetUserIdAsync(user);
-            if (!result.Succeeded) throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
+            if (!result.Succeeded)
+                throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
 
             await _signInManager.SignOutAsync();
 

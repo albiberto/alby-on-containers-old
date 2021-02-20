@@ -1,6 +1,5 @@
-using IdentityServer.IoC;
-using System.Reflection;
 using HealthChecks.UI.Client;
+using IdentityServer.IoC;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -54,7 +53,7 @@ namespace IdentityServer
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-            
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseIdentityServer();
@@ -67,7 +66,7 @@ namespace IdentityServer
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
-                
+
                 endpoints.MapControllerRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");

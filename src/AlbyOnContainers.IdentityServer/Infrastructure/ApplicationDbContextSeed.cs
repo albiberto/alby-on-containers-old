@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Infrastructure
 {

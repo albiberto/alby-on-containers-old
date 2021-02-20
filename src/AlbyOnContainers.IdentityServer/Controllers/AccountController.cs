@@ -23,18 +23,19 @@ namespace IdentityServer.Controllers
 {
     public class AccountController : Controller
     {
-        readonly IIdentityServerInteractionService _interaction;
-        readonly TokenLifetimeOptions _tokenOptions;
         readonly EmailOptions _emailOptions;
+        readonly IIdentityServerInteractionService _interaction;
         readonly ILogger<AccountController> _logger;
-        readonly UserManager<ApplicationUser> _userManager;
-        readonly SignInManager<ApplicationUser> _signInManager;
         readonly IEmailPublisher _publisher;
+        readonly SignInManager<ApplicationUser> _signInManager;
+        readonly TokenLifetimeOptions _tokenOptions;
+        readonly UserManager<ApplicationUser> _userManager;
 
         public AccountController(
             UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
             IEmailPublisher publisher, IIdentityServerInteractionService interaction,
-            IOptions<EmailOptions> emailOptions, IOptions<TokenLifetimeOptions> tokenOptions, ILogger<AccountController> logger
+            IOptions<EmailOptions> emailOptions, IOptions<TokenLifetimeOptions> tokenOptions,
+            ILogger<AccountController> logger
         )
         {
             _userManager = userManager;
@@ -65,7 +66,7 @@ namespace IdentityServer.Controllers
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null) throw new NotImplementedException("External login is not implemented!");
 
-            var model = new LoginViewModel { Email = context?.LoginHint };
+            var model = new LoginViewModel {Email = context?.LoginHint};
             return View(model);
         }
 
@@ -98,7 +99,6 @@ namespace IdentityServer.Controllers
             }
 
             // something went wrong, show form with error
-
             ModelState.AddModelError(string.Empty, "Invalid username or password.");
             return View(model);
         }
@@ -110,7 +110,7 @@ namespace IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId = default)
         {
-            var model = new LogoutViewModel { LogoutId = logoutId };
+            var model = new LogoutViewModel {LogoutId = logoutId};
 
             // if the user is not authenticated, then just show logged out page
             if (!(User?.Identity?.IsAuthenticated ?? true)) return await Logout(model);
@@ -187,7 +187,7 @@ namespace IdentityServer.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var user = new ApplicationUser { UserName = model.Username ?? model.Email, Email = model.Email };
+            var user = new ApplicationUser {UserName = model.Username ?? model.Email, Email = model.Email};
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -206,15 +206,16 @@ namespace IdentityServer.Controllers
             var callbackUrl = Url.Action(
                 "ConfirmEmail",
                 "Account",
-                new { userId, code, returnUrl },
+                new {userId, code, returnUrl},
                 Request.Scheme);
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Address },
+                Sender = new MailAddress {Email = _emailOptions.Email, Name = _emailOptions.Address},
                 Subject = "Conferma Email",
-                Body = $"Ciao {username}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
-                To = new[] { new MailAddress { Name = username, Email = email } }
+                Body =
+                    $"Ciao {username}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] {new MailAddress {Name = username, Email = email}}
             };
 
             await _publisher.SendAsync(message);
@@ -245,15 +246,16 @@ namespace IdentityServer.Controllers
             var callbackUrl = Url.Action(
                 "ConfirmEmail",
                 "Account",
-                new { userId, code, returnUrl },
+                new {userId, code, returnUrl},
                 Request.Scheme);
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Address },
+                Sender = new MailAddress {Email = _emailOptions.Email, Name = _emailOptions.Address},
                 Subject = "Conferma Email",
-                Body = $"Ciao {user}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
-                To = new[] { new MailAddress { Name = username, Email = email } }
+                Body =
+                    $"Ciao {user}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] {new MailAddress {Name = username, Email = email}}
             };
 
             await _publisher.SendAsync(message);
@@ -275,7 +277,9 @@ namespace IdentityServer.Controllers
 
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
-            ViewData["StatusMessage"] = result.Succeeded ? "Grazie per aver confermato la tua email." : "Ops... si e' verificato un errore durante la consegna della mail.";
+            ViewData["StatusMessage"] = result.Succeeded
+                ? "Grazie per aver confermato la tua email."
+                : "Ops... si e' verificato un errore durante la consegna della mail.";
             return View();
         }
 
@@ -297,7 +301,8 @@ namespace IdentityServer.Controllers
 
             // Don't reveal that the user does not exist or is not confirmed
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == default || !await _userManager.IsEmailConfirmedAsync(user)) return View("ForgotPasswordConfirmation", model.Email);
+            if (user == default || !await _userManager.IsEmailConfirmedAsync(user))
+                return View("ForgotPasswordConfirmation", model.Email);
 
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -307,15 +312,16 @@ namespace IdentityServer.Controllers
             var callbackUrl = Url.Action(
                 "ResetPassword",
                 "Account",
-                new { code, returnUrl },
+                new {code, returnUrl},
                 Request.Scheme);
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Address },
+                Sender = new MailAddress {Email = _emailOptions.Email, Name = _emailOptions.Address},
                 Subject = "Recupero password",
-                Body = $"Ciao {username}, <br /> Per recuperare la tua password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
-                To = new[] { new MailAddress { Name = username, Email = email } }
+                Body =
+                    $"Ciao {username}, <br /> Per recuperare la tua password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
+                To = new[] {new MailAddress {Name = username, Email = email}}
             };
 
             await _publisher.SendAsync(message);
@@ -330,7 +336,7 @@ namespace IdentityServer.Controllers
 
             if (string.IsNullOrEmpty(code)) return BadRequest("A code must be supplied for password reset.");
 
-            var model = new ResetPasswordViewModel { Code = code };
+            var model = new ResetPasswordViewModel {Code = code};
             return View(model);
         }
 

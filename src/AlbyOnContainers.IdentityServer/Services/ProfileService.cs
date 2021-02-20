@@ -48,7 +48,8 @@ namespace IdentityServer.Services
             {
                 if (_userManager.SupportsUserSecurityStamp)
                 {
-                    var stamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value).SingleOrDefault();
+                    var stamp = subject.Claims.Where(c => c.Type == "security_stamp").Select(c => c.Value)
+                        .SingleOrDefault();
                     if (stamp != null)
                     {
                         var securityStamp = await _userManager.GetSecurityStampAsync(user);
@@ -77,14 +78,16 @@ namespace IdentityServer.Services
                 claims.AddRange(new[]
                 {
                     new Claim(JwtClaimTypes.Email, user.Email),
-                    new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
+                    new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false",
+                        ClaimValueTypes.Boolean)
                 });
 
             if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
                 claims.AddRange(new[]
                 {
                     new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber),
-                    new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false", ClaimValueTypes.Boolean)
+                    new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false",
+                        ClaimValueTypes.Boolean)
                 });
 
             return claims;

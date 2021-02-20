@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 
 namespace IdentityServer.Services
@@ -16,7 +15,7 @@ namespace IdentityServer.Services
             var decodedUrl = WebUtility.HtmlDecode(url);
 
             var results = Regex.Split(decodedUrl, "redirect_uri=");
-            
+
             if (results.Length < 2) return string.Empty;
 
             var result = results[1];
