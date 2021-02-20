@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using IdentityServer.Infrastructure;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -36,7 +34,7 @@ namespace IdentityServer
                 .Enrich.WithEnvironmentUserName()
                 .Enrich.WithApplicationName()
                 .WriteTo.Console()
-                .WriteTo.Seq(Configuration["Seq:Endpoint"], minLevel)
+                .WriteTo.Seq(Configuration["Seq:Host"], minLevel)
                 .CreateLogger();
 
             try

@@ -7,6 +7,6 @@ namespace Libraries.Options
     public class Check
     {
         public string Name { get; set; }
-        public IEnumerable<string> Tags { get; set; }
+        public IReadOnlyCollection<string> Tags { get; set; }
     }
 }

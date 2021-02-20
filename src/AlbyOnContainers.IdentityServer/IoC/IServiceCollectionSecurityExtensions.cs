@@ -24,12 +24,12 @@ namespace IdentityServer.IoC
             });
         }
 
-        public static void AddHttpsRedirection(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment env)
+        public static void AddHttpsRedirection(this IServiceCollection services, IWebHostEnvironment env)
         {
             var result = int.TryParse(Environment.GetEnvironmentVariable("ASPNETCORE_HTTPS_PORT"), out var port);
             if (!result) port = 443;
 
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || env.IsEnvironment("Debug"))
                 services.AddHttpsRedirection(opts =>
                 {
                     opts.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
@@ -43,14 +43,12 @@ namespace IdentityServer.IoC
                 });
         }
 
-        public static void AddHsts(this IServiceCollection services, IConfiguration configuration)
-        {
-                services.AddHsts(options =>
+        public static void AddHsts(this IServiceCollection services) =>
+            services.AddHsts(options =>
             {
                 options.Preload = true;
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(15);
             });
-        }
     }
 }

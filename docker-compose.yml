@@ -68,15 +68,27 @@ services:
       "ASPNETCORE_ENVIRONMENT": "Development"
       "ASPNETCORE_URLS": "https://+:443;http://+:80"
       "ASPNETCORE_HTTPS_PORT": "443"
-      "ASPNETCORE_Kestrel__Certificates__Default__Path": "/https/cert.pfx"
-      "SEQ__ENDPOINT": "http://seq:5341"
+
+      "KESTREL__CERTIFICATES__DEFAULT__PATH": "/https/cert.pfx"
+
+      "SEQ__HOST": "http://seq:5341"
       "RABBITMQ__HOST": "rabbitmq"
-      "RABBITMQ__USERNAME": "guest"
-      "RABBITMQ__PASSWORD": "guest"
-      "EMAILOPTIONS__NAME": "IdentityServer Compose.STAGE"
-      "EMAILOPTIONS__EMAIL": "cowboysteamts@gmail.com"
-      "TOKENLIFETIMEOPTIONS__MINUTES": "120"
-      "TOKENLIFETIMEOPTIONS__DAYS": "365"
+
+      "EMAIL__NAME": "IdentityServer-Staging"
+
+      "TOKENLIFETIME__MINUTES": "120"
+      "TOKENLIFETIME__DAYS": "365"
+
+      "HEALTHCHECKS__SELF__NAME": "self"
+      "HEALTHCHECKS__SELF__TAGS__0": "identity"
+      "HEALTHCHECKS__SELF__TAGS__1": "service"
+      "HEALTHCHECKS__SELF__TAGS__2": "identityserver4"
+      "HEALTHCHECKS__SELF__TAGS__3": "staging"
+      "HEALTHCHECKS__NPGSQL__NAME": "database"
+      "HEALTHCHECKS__NPGSQL__TAGS__0": "identity"
+      "HEALTHCHECKS__NPGSQL__TAGS__1": "db"
+      "HEALTHCHECKS__NPGSQL__TAGS__2": "postgres"
+      "HEALTHCHECKS__NPGSQL__TAGS__3": "staging"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ~/.aspnet/https:/https:ro

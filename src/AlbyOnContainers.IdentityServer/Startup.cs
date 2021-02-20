@@ -1,6 +1,8 @@
 using IdentityServer.IoC;
 using System.Reflection;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,20 +25,19 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = Configuration.GetConnectionString("DefaultDatabase");
-            var migrationsAssembly = Assembly.GetExecutingAssembly().GetName().Name;
-
-            services.AddIdentity(connection, migrationsAssembly);
-            services.AddIdentityServer(connection, migrationsAssembly, Configuration.GetValue("EnableDevspaces", false));
-            services.AddHealthChecks(Configuration);
-
             services.AddOptions(Configuration);
-            services.AddMassTransit(Configuration);
+
+            var connection = Configuration.GetConnectionString("DefaultDatabase");
+            services.AddIdentity(connection);
+            services.AddIdentityServer(connection);
+            services.AddHealthChecks(connection);
+
+            services.AddMassTransit();
 
             services.AddCustom();
 
-            services.AddHttpsRedirection(Configuration, _env);
-            services.AddHsts(Configuration);
+            services.AddHttpsRedirection(_env);
+            services.AddHsts();
             services.AddReverseProxy();
 
             services.AddControllersWithViews();
@@ -55,18 +56,21 @@ namespace IdentityServer
             }
             
             app.UseHttpsRedirection();
-
             app.UseStaticFiles();
             app.UseIdentityServer();
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/healthz", new HealthCheckOptions
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                
                 endpoints.MapControllerRoute(
                     "default",
                     "{controller=Home}/{action=Index}/{id?}");
-
-                endpoints.MapHealthChecks();
             });
         }
     }

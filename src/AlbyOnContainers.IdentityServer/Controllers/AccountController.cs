@@ -211,7 +211,7 @@ namespace IdentityServer.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Name },
+                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Address },
                 Subject = "Conferma Email",
                 Body = $"Ciao {username}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
                 To = new[] { new MailAddress { Name = username, Email = email } }
@@ -250,7 +250,7 @@ namespace IdentityServer.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Name },
+                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Address },
                 Subject = "Conferma Email",
                 Body = $"Ciao {user}, <br /> Per confermare il tuo account <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
                 To = new[] { new MailAddress { Name = username, Email = email } }
@@ -312,7 +312,7 @@ namespace IdentityServer.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Name },
+                Sender = new MailAddress { Email = _emailOptions.Email, Name = _emailOptions.Address },
                 Subject = "Recupero password",
                 Body = $"Ciao {username}, <br /> Per recuperare la tua password <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicca qui!</a>.",
                 To = new[] { new MailAddress { Name = username, Email = email } }

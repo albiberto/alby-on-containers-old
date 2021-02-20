@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using IdentityServer.Infrastructure;
 using IdentityServer.Models;
 using IdentityServer.Options;
@@ -6,32 +8,52 @@ using IdentityServer.Publishers;
 using IdentityServer.Services;
 using IdentityServer4.Services;
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 
 namespace IdentityServer.IoC
 {
     // ReSharper disable once InconsistentNaming
     public static class IServiceCollectionExtensions
     {
-        public static void AddIdentity(this IServiceCollection services, string connection, string assembly)
+        static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+
+        public static void AddOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connection, sqlOptions =>
+            services.AddOptions<TokenLifetimeOptions>()
+                .Bind(configuration.GetSection("TokenLifetime"))
+                .ValidateDataAnnotations();
+
+            services.AddOptions<EmailOptions>()
+                .Bind(configuration.GetSection("Email"));
+
+            services.AddOptions<HealthChecksOptions>()
+                .Bind(configuration.GetSection("HealthChecks"));
+
+            services.AddOptions<RabbitMQOptions>()
+                .Bind(configuration.GetSection("RabbitMQ"));
+        }
+        
+        public static void AddIdentity(this IServiceCollection services, string connection)
+        {
+            services.AddDbContext<ApplicationDbContext>(o =>
+                o.UseNpgsql(connection, sqlOptions =>
                 {
-                    sqlOptions.MigrationsAssembly(assembly);
+                    sqlOptions.MigrationsAssembly(AssemblyName);
                     sqlOptions.EnableRetryOnFailure(15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
                 }));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<ApplicationUser, IdentityRole>(o => o.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
         }
 
-        public static void AddIdentityServer(this IServiceCollection services, string connection, string assembly, bool enableDevspaces)
+        public static void AddIdentityServer(this IServiceCollection services, string connection)
         {
             // Adds AlbyOnContainers.IdentityServer
             services.AddIdentityServer(x =>
@@ -41,59 +63,48 @@ namespace IdentityServer.IoC
                 })
                 // .AddSigningCredential(CertificateManager.Get())
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddConfigurationStore(options =>
+                .AddConfigurationStore(o =>
                 {
-                    options.ConfigureDbContext = builder => builder.UseNpgsql(connection,
+                    o.ConfigureDbContext = builder => builder.UseNpgsql(connection,
                         sqlOptions =>
                         {
-                            sqlOptions.MigrationsAssembly(assembly);
+                            sqlOptions.MigrationsAssembly(AssemblyName);
                             sqlOptions.EnableRetryOnFailure(15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
                         });
                 })
-                .AddOperationalStore(options =>
+                .AddOperationalStore(o =>
                 {
-                    options.ConfigureDbContext = builder => builder.UseNpgsql(connection,
+                    o.ConfigureDbContext = builder => builder.UseNpgsql(connection,
                         sqlOptions =>
                         {
-                            sqlOptions.MigrationsAssembly(assembly);
+                            sqlOptions.MigrationsAssembly(AssemblyName);
                             sqlOptions.EnableRetryOnFailure(15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
                         });
                 })
                 .Services.AddTransient<IProfileService, ProfileService>();
         }
 
-        public static void AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        public static void AddHealthChecks(this IServiceCollection services, string connection)
         {
-            var connection = configuration.GetConnectionString("DefaultDatabase");
-
-            var options = new HealthChecksOptions();
-            configuration.GetSection("HealthChecks").Bind(options);
+            var options = (services.BuildServiceProvider().GetService<IOptions<HealthChecksOptions>>())?.Value;
 
             services.AddHealthChecks()
-                .AddCheck(options.Self.Name, () => HealthCheckResult.Healthy(), options.Self.Tags)
-                .AddNpgSql(connection, name: options.NpgSql.Name, tags: options.NpgSql.Tags);
+                .AddCheck(options?.Self?.Name ?? "self", () => HealthCheckResult.Healthy(), options?.Self?.Tags ?? new []{ "identity", "service", "identityserver4", "debug" } )
+                .AddNpgSql(connection, name: options?.NpgSql?.Name ?? "postgres", tags: options?.NpgSql?.Tags ?? new []{ "identity", "db", "postgres", "debug" });
         }
 
-        public static void AddOptions(this IServiceCollection services, IConfiguration configuration)
+        public static void AddMassTransit(this IServiceCollection services)
         {
-            services.AddOptions<TokenLifetimeOptions>()
-                .Bind(configuration.GetSection("TokenLifetimeOptions"))
-                .ValidateDataAnnotations();
-
-            services.AddOptions<EmailOptions>()
-                .Bind(configuration.GetSection("EmailOptions"));
-        }
-
-        public static void AddMassTransit(this IServiceCollection services, IConfiguration configuration)
-        {
+            var options = (services.BuildServiceProvider().GetService<IOptions<RabbitMQOptions>>())?.Value;
+            
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(configuration["RabbitMQ:Host"], config =>
+                    cfg.Host(options?.Host ?? "localhost", config =>
                     {
-                        config.Username(configuration["RabbitMQ:Username"]);
-                        config.Password(configuration["RabbitMQ:Password"]);
+                        config.Username(options?.Username ?? "guest");
+                        config.Password(options?.Password ?? "guest");
                     });
 
                     cfg.ExchangeType = "fanout";

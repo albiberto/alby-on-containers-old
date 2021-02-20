@@ -20,15 +20,27 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "https://+:5001;http://+:5000",
         "ASPNETCORE_HTTPS_PORT": "5001",
+        
         "KESTREL__CERTIFICATES__DEFAULT__PATH": "C:\\Users\\viezzi\\.aspnet\\https\\cert.pfx",
-        "SEQ__ENDPOINT": "http://localhost:5341",
+        
+        "SEQ__HOST": "http://localhost:5341",
         "RABBITMQ__HOST": "localhost",
-        "RABBITMQ__USERNAME": "guest",
-        "RABBITMQ__PASSWORD": "guest",
-        "EMAILOPTIONS__NAME": "IdentityServer Compose.STAGE",
-        "EMAILOPTIONS__EMAIL": "cowboysteamts@gmail.com",
-        "TOKENLIFETIMEOPTIONS__MINUTES": "120",
-        "TOKENLIFETIMEOPTIONS__DAYS": "365"
+        
+        "EMAIL__NAME": "IdentityServer-Development",
+        
+        "TOKENLIFETIME__MINUTES": "1200",
+        "TOKENLIFETIME__DAYS": "3650",
+        
+        "HEALTHCHECKS__SELF__NAME": "self",
+        "HEALTHCHECKS__SELF__TAGS__0": "identity",
+        "HEALTHCHECKS__SELF__TAGS__1": "service",
+        "HEALTHCHECKS__SELF__TAGS__2": "identityserver4",
+        "HEALTHCHECKS__SELF__TAGS__3": "development",        
+        "HEALTHCHECKS__NPGSQL__NAME": "database",
+        "HEALTHCHECKS__NPGSQL__TAGS__0": "identity",
+        "HEALTHCHECKS__NPGSQL__TAGS__1": "db",
+        "HEALTHCHECKS__NPGSQL__TAGS__2": "postgres",
+        "HEALTHCHECKS__NPGSQL__TAGS__3": "development"
       }
     },
     "Docker": {
