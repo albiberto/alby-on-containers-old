@@ -68,17 +68,11 @@ services:
       "ASPNETCORE_ENVIRONMENT": "Development"
       "ASPNETCORE_URLS": "https://+:443;http://+:80"
       "ASPNETCORE_HTTPS_PORT": "443"
-
       "KESTREL__CERTIFICATES__DEFAULT__PATH": "/https/cert.pfx"
-
-      "SEQ__HOST": "http://seq:5341"
       "RABBITMQ__HOST": "rabbitmq"
-
       "EMAIL__NAME": "IdentityServer-Staging"
-
       "TOKENLIFETIME__MINUTES": "120"
       "TOKENLIFETIME__DAYS": "365"
-
       "HEALTHCHECKS__SELF__NAME": "self"
       "HEALTHCHECKS__SELF__TAGS__0": "identity"
       "HEALTHCHECKS__SELF__TAGS__1": "service"
@@ -89,6 +83,18 @@ services:
       "HEALTHCHECKS__NPGSQL__TAGS__1": "db"
       "HEALTHCHECKS__NPGSQL__TAGS__2": "postgres"
       "HEALTHCHECKS__NPGSQL__TAGS__3": "staging"
+      "SERILOG__USING__0": "Serilog.Sinks.Console"
+      "SERILOG__USING__1": "Serilog.Sinks.Seq"
+      "SERILOG__MINIMUMLEVEL": "Information"
+      "SERILOG__WRITETO__0__NAME": "Console"
+      "SERILOG__WRITETO__1__NAME": "Seq"
+      "SERILOG__WRITETO__1__ARGS__SERVERURL": "http://localhost:5341"
+      "SERILOG__ENRICH__0": "FromLogContext"
+      "SERILOG__ENRICH__1": "WithMachineName"
+      "SERILOG__ENRICH__2": "WithEnvironmentName"
+      "SERILOG__ENRICH__3": "WithEnvironmentUserName"
+      "SERILOG__ENRICH__4": "WithApplicationName"
+      "SERILOG__PROPERTIES__APPLICATION": "AlbyOnContainers.IdentityServer.Development"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ~/.aspnet/https:/https:ro
