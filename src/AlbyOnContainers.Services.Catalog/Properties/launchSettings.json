@@ -1,46 +1,47 @@
 ﻿{
   "profiles": {
-    "Catalog.API.DEV": {
+    "Sherlock.DEBUG": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:5003",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5003/ui/altair",
+      "launchUrl": "http://localhost:5004/ui/altair",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Debug",
+        "ASPNETCORE_URLS": "http://+:5004"
       }
     },
-    "Catalog.API.STAG": {
+    "Sherlock.DEVELOPMENT": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5004/healthchecks-ui",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Staging",
-        "HEALTHCHECKS__ENDPOINTS__0__NAME": "IdentityServer",
-        "HEALTHCHECKS__ENDPOINTS__0__URL": "https://localhost:5001/identity-server/healthz",
-        "HEALTHCHECKS__ENDPOINTS__1__NAME": "Pollon",
-        "HEALTHCHECKS__ENDPOINTS__1__URL": "http://localhost:5010/pollon/healthz",
-        "HEALTHCHECKS__ENDPOINTS__2__NAME": "Hermes",
-        "HEALTHCHECKS__ENDPOINTS__2__URL": "http://localhost:5002/hermes/healthz",
-        "HEALTHCHECKS__ENDPOINTS__3__NAME": "CatalogAPI",
-        "HEALTHCHECKS__ENDPOINTS__3__URL": "http://localhost:5002/catalog/healthz",
-        "HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS": "60",
-        "HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS": "240",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:5004",
         "HEALTHCHECKS__CHECKS__SELF__NAME": "Self",
-        "HEALTHCHECKS__CHECKS__SELF__TAGS__0": "pollon",
-        "HEALTHCHECKS__CHECKS__SELF__TAGS__1": "health",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__0": "sherlock",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__1": "catalog",
         "HEALTHCHECKS__CHECKS__SELF__TAGS__2": "service",
-        "HEALTHCHECKS__CHECKS__SELF__TAGS__3": "ui",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__3": "development",
         "HEALTHCHECKS__CHECKS__NPGSQL__NAME": "Postgres",
-        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__0": "pollon",
-        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__1": "health",
+        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__0": "sherlock",
+        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__1": "catalog",
         "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__2": "db",
         "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__3": "postgres",
-        "CONNECTIONSRINGS__POLLON": "Host=localhost;Database=pollon;Username=robotboy;Password=robotboy;Port=5432",
-        "CONNECTIONSRINGS__SEQ": "http://localhost:5341"
-      },
-      "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:5003",
-      "launchBrowser": true,
-      "launchUrl": "http://localhost:5003/healthchecks-ui"
+        "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__4": "development",
+        "SERILOG__USING__0": "Serilog.Sinks.Console",
+        "SERILOG__USING__1": "Serilog.Sinks.Seq",
+        "SERILOG__MINIMUMLEVEL": "Information",
+        "SERILOG__WRITETO__0__NAME": "Console",
+        "SERILOG__WRITETO__1__NAME": "Seq",
+        "SERILOG__WRITETO__1__ARGS__SERVERURL": "http://localhost:5341",
+        "SERILOG__ENRICH__0": "FromLogContext",
+        "SERILOG__ENRICH__1": "WithMachineName",
+        "SERILOG__ENRICH__2": "WithEnvironmentName",
+        "SERILOG__ENRICH__3": "WithEnvironmentUserName",
+        "SERILOG__ENRICH__4": "WithApplicationName",
+        "SERILOG__PROPERTIES__APPLICATION": "AlbyOnContainers.Sherlock.Development"
+      }
     },
     "Docker": {
       "commandName": "Docker",

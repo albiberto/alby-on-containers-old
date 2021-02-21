@@ -4,10 +4,11 @@ using System.Collections.Generic;
 
 namespace Catalog
 {
-    public class Options
+    public class Configuration
     {
         public Check? Self { get; set; }
         public Check? NpgSql { get; set; }
+      
         public class Check
         {
             public string Name { get; set; }

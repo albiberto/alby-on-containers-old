@@ -6,13 +6,13 @@ namespace Catalog.IoC
     // ReSharper disable once InconsistentNaming
     public static class IServiceCollectionExtensions
     {
-        public static void AddHealthChecks(this IServiceCollection services, string connection, Options options)
+        public static void AddHealthChecks(this IServiceCollection services, string connection, Configuration configuration)
         {
-            var selfName = options?.Self?.Name ?? "self";
-            var selfTags = options?.Self?.Tags ?? new[] { "catalog", "api", "graphQL" };
+            var selfName = configuration?.Self?.Name ?? "self";
+            var selfTags = configuration?.Self?.Tags ?? new[] { "catalog", "api", "graphQL" };
 
-            var postgresName = options?.NpgSql?.Name ?? "postgres";
-            var postgresTags = options?.NpgSql?.Tags ?? new[] { "catalog", "lucifer", "db", "postgres" };
+            var postgresName = configuration?.NpgSql?.Name ?? "postgres";
+            var postgresTags = configuration?.NpgSql?.Tags ?? new[] { "catalog", "lucifer", "db", "postgres" };
 
             services.AddHealthChecks()
                 .AddCheck(selfName, () => HealthCheckResult.Healthy(), selfTags)

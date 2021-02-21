@@ -32,7 +32,7 @@ namespace Catalog
         {
             var connection = Configuration.GetConnectionString("Lucifer");
 
-            var options = new Options();
+            var options = new Configuration();
             Configuration.GetSection("HealthChecks").Bind(options);
 
             services.AddDbContext<LuciferContext>(optionsBuilder => optionsBuilder.UseNpgsql(connection), ServiceLifetime.Transient);
@@ -67,7 +67,7 @@ namespace Catalog
             app.UseGraphQLWebSockets<Schema>();
             app.UseGraphQL<Schema>();
 
-            if (Environment.IsDevelopment() || Environment.IsStaging())
+            if (Environment.IsEnvironment("Debug") || Environment.IsDevelopment() || Environment.IsStaging())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseGraphQLAltair(new GraphQLAltairOptions());
