@@ -18,7 +18,7 @@ namespace Catalog
                 var host = CreateHostBuilder(args).Build();
                 Log.Information("Sherlock Starting");
 
-                await host.MigrateAsync<LuciferContext>(async (context, _) => await new LuciferDbContextSeed().SeedAsync(context));
+                await host.MigrateAsync<ApplicationContext>(async (context, _) => await new ApplicationDbContextSeed().SeedAsync(context));
                 Log.Information("Migrations Applied");
 
                 await host.RunAsync();

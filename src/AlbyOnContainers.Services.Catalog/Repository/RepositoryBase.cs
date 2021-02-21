@@ -32,9 +32,9 @@ namespace Catalog.Repository
 
     public class RepositoryBase<T> : IRepository<T> where T : EntityBase
     {
-        protected readonly LuciferContext _context;
+        protected readonly ApplicationContext _context;
 
-        public RepositoryBase(LuciferContext context)
+        public RepositoryBase(ApplicationContext context)
         {
             UnitOfWork = context;
             _context = context;

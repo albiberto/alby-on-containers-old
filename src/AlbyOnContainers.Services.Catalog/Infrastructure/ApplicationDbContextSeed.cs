@@ -6,14 +6,14 @@ using Catalog.Models;
 
 namespace Catalog.Infrastructure
 {
-    public class LuciferDbContextSeed
+    public class ApplicationDbContextSeed
     {
         static readonly ICollection<Guid> _categoryIds = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
         static readonly ICollection<Guid> _attrIds = new[] { Guid.NewGuid(), Guid.NewGuid() };
         static readonly ICollection<Guid> _attrDescIds = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
         static readonly ICollection<Guid> _productIds = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
 
-        public async Task SeedAsync(LuciferContext context)
+        public async Task SeedAsync(ApplicationContext context)
         {
             if (!context.Categories!.Any())
             {

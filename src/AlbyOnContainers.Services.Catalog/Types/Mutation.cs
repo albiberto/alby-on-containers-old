@@ -66,10 +66,10 @@ namespace Catalog.Types
                 resolve: async context =>
                 {
                     var category = context.GetArgument<Category>(name);
-                    var lucifer = _provider.GetRequiredService<CategoryRepository>();
+                    var repository = _provider.GetRequiredService<CategoryRepository>();
 
-                    await lucifer.AddAsync(category);
-                    return await lucifer.UnitOfWork.SaveChangesAsync();
+                    await repository.AddAsync(category);
+                    return await repository.UnitOfWork.SaveChangesAsync();
                 });
 
             FieldAsync<CategoryType>(

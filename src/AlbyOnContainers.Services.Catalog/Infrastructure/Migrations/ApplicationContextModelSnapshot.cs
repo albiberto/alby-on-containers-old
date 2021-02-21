@@ -8,8 +8,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Catalog.Infrastructure.Migrations
 {
-    [DbContext(typeof(LuciferContext))]
-    partial class LuciferContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationContext))]
+    partial class ApplicationContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

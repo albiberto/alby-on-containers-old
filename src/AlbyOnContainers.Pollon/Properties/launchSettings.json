@@ -18,6 +18,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://+:5003",
+        
         "HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS": "60",
         "HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS": "240",
         "HEALTHCHECKS__ENDPOINTS__0__NAME": "IdentityServer",
@@ -33,11 +34,13 @@
         "HEALTHCHECKS__CHECKS__SELF__TAGS__1": "health",
         "HEALTHCHECKS__CHECKS__SELF__TAGS__2": "service",
         "HEALTHCHECKS__CHECKS__SELF__TAGS__3": "ui",
+        "HEALTHCHECKS__CHECKS__SELF__TAGS__4": "local",
         "HEALTHCHECKS__CHECKS__NPGSQL__NAME": "Postgres",
         "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__0": "pollon",
         "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__1": "health",
         "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__2": "db",
         "HEALTHCHECKS__CHECKS__NPGSQL__TAGS__3": "postgres",
+        
         "SERILOG__USING__0": "Serilog.Sinks.Console",
         "SERILOG__USING__1": "Serilog.Sinks.Seq",
         "SERILOG__MINIMUMLEVEL": "Information",

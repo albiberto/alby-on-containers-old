@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Infrastructure
 {
-    public class LuciferContext : DbContext, IUnitOfWork
+    public class ApplicationContext : DbContext, IUnitOfWork
     {
-        public LuciferContext(DbContextOptions<LuciferContext> options) : base(options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
         }
 

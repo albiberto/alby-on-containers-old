@@ -12,7 +12,7 @@ namespace Catalog.IoC
             var selfTags = configuration?.Self?.Tags ?? new[] { "catalog", "api", "graphQL" };
 
             var postgresName = configuration?.NpgSql?.Name ?? "postgres";
-            var postgresTags = configuration?.NpgSql?.Tags ?? new[] { "catalog", "lucifer", "db", "postgres" };
+            var postgresTags = configuration?.NpgSql?.Tags ?? new[] { "catalog", "sherlock", "db", "postgres" };
 
             services.AddHealthChecks()
                 .AddCheck(selfName, () => HealthCheckResult.Healthy(), selfTags)

@@ -11,7 +11,7 @@ namespace Catalog.Repository
     // ReSharper disable once ClassNeverInstantiated.Global
     public class CategoryRepository : RepositoryBase<Category>
     {
-        public CategoryRepository(LuciferContext context) : base(context)
+        public CategoryRepository(ApplicationContext context) : base(context)
         {
         }
 

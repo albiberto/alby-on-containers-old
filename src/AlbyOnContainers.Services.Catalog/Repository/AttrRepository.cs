@@ -13,7 +13,7 @@ namespace Catalog.Repository
     {
         readonly RepositoryBase<AttrDesc> _repository;
 
-        public AttrRepository(LuciferContext context) : base(context)
+        public AttrRepository(ApplicationContext context) : base(context)
         {
             _repository = new RepositoryBase<AttrDesc>(context);
         }

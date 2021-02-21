@@ -10,7 +10,7 @@ namespace Catalog.Repository
     // ReSharper disable once ClassNeverInstantiated.Global
     public class ProductRepository : RepositoryBase<ProductAggregate>
     {
-        public ProductRepository(LuciferContext context) : base(context: context)
+        public ProductRepository(ApplicationContext context) : base(context: context)
         {
         }
 

@@ -1,5 +1,4 @@
 using HealthChecks.UI.Client;
-using HealthChecks.UI.Core.Data;
 using IdentityServer.IoC;
 using IdentityServer.Options;
 using Microsoft.AspNetCore.Builder;
@@ -29,7 +28,7 @@ namespace IdentityServer
             var (healthChecksConfiguration, rabbitMqConfiguration, connection) = GetConfiguration();
             
             services.AddIdentity(connection);
-            services.AddIdentityServer();
+            services.AddIdentityServer(connection);
             
             services.AddHealthChecks(connection, healthChecksConfiguration);
             

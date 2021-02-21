@@ -30,12 +30,12 @@ namespace Catalog
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = Configuration.GetConnectionString("Lucifer");
+            var connection = Configuration.GetConnectionString("DefaultDatabase");
 
             var options = new Configuration();
             Configuration.GetSection("HealthChecks").Bind(options);
 
-            services.AddDbContext<LuciferContext>(optionsBuilder => optionsBuilder.UseNpgsql(connection), ServiceLifetime.Transient);
+            services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseNpgsql(connection), ServiceLifetime.Transient);
 
             services.AddHealthChecks(connection, options);
 
