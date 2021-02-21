@@ -22,20 +22,21 @@ namespace Pollon
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = Configuration.GetConnectionString("Pollon");
-            var options = new Options();
-            Configuration.GetSection("HealthChecks").Bind(options);
+            var configuration = new Configuration();
+            Configuration.GetSection("HealthChecks").Bind(configuration);
+            
+            var connection = Configuration.GetConnectionString("DefaultDatabase");
 
             services.AddHealthChecks()
-                .AddCheck(options.Checks.Self.Name, () => HealthCheckResult.Healthy(), options.Checks.Self.Tags)
-                .AddNpgSql(connection, name: options.Checks.NpgSql.Name, tags: options.Checks.NpgSql.Tags);
+                .AddCheck(configuration.Checks.Self.Name, () => HealthCheckResult.Healthy(), configuration.Checks.Self.Tags)
+                .AddNpgSql(connection, name: configuration.Checks.NpgSql.Name, tags: configuration.Checks.NpgSql.Tags);
 
             services.AddHealthChecksUI(setup =>
                 {
-                    setup.SetEvaluationTimeInSeconds(options.EvaluationTimeInSeconds);
-                    setup.SetMinimumSecondsBetweenFailureNotifications(options.MinimumSecondsBetweenFailureNotifications);
+                    setup.SetEvaluationTimeInSeconds(configuration.EvaluationTimeInSeconds);
+                    setup.SetMinimumSecondsBetweenFailureNotifications(configuration.MinimumSecondsBetweenFailureNotifications);
 
-                    foreach (var endpoint in options.Endpoints)
+                    foreach (var endpoint in configuration.Endpoints)
                     {
                         setup.AddHealthCheckEndpoint(endpoint.Name, endpoint.Url);
                     }
@@ -43,7 +44,6 @@ namespace Pollon
                 .AddPostgreSqlStorage(connection);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();

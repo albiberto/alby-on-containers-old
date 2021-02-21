@@ -1,5 +1,6 @@
 version: "3.7"
 services:
+  
   postgres:
     image: postgres:latest   
     container_name: postgres
@@ -11,6 +12,7 @@ services:
       - 5432:5432
     volumes:
       - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/postgres:/var/lib/postgresql
+
   seq:
     image: datalust/seq:latest
     container_name: seq
@@ -22,6 +24,7 @@ services:
         ACCEPT_EULA: Y
     volumes:
       - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/seq:/data
+
   rabbitmq:
     image: 'rabbitmq:3.6-management-alpine'
     container_name: rabbitmq
@@ -36,21 +39,6 @@ services:
     volumes:
       - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/rabbitmq/rabbitmq.conf:/etc/rabbitmq.conf:ro
       - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
-  pollon:
-    image: cowboysteam/pollon:latest
-    container_name: pollon
-    restart: unless-stopped
-    ports:
-      - 5010:80
-    environment:
-      ASPNETCORE_ENVIRONMENT: "Staging"
-      HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS: "60"
-      HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS: "240"
-      HEALTHCHECKS__IDENTITYSERVERURL: "http://identityserver:80/identity-server/healthz"
-      HEALTHCHECKS__HERMESURL: "http://hermes:80/hermes/healthz"
-      HEALTHCHECKS__POLLONURL: "http://localhost/pollon/healthz"
-      CONNECTIONSTRINGS__POLLON: "Host=postgres;Database=pollon;Username=postgres;Password=postgres;Port=5432"  
-      CONNECTIONSTRINGS__SEQ: "http://seq:5341"
   
   identityserver:
     image: ${DOCKER_REGISTRY-}identityserver-local
@@ -77,12 +65,12 @@ services:
       "HEALTHCHECKS__SELF__TAGS__0": "identity"
       "HEALTHCHECKS__SELF__TAGS__1": "service"
       "HEALTHCHECKS__SELF__TAGS__2": "identityserver4"
-      "HEALTHCHECKS__SELF__TAGS__3": "staging"
+      "HEALTHCHECKS__SELF__TAGS__3": "development"
       "HEALTHCHECKS__NPGSQL__NAME": "database"
       "HEALTHCHECKS__NPGSQL__TAGS__0": "identity"
       "HEALTHCHECKS__NPGSQL__TAGS__1": "db"
       "HEALTHCHECKS__NPGSQL__TAGS__2": "postgres"
-      "HEALTHCHECKS__NPGSQL__TAGS__3": "staging"
+      "HEALTHCHECKS__NPGSQL__TAGS__3": "development"
       "SERILOG__USING__0": "Serilog.Sinks.Console"
       "SERILOG__USING__1": "Serilog.Sinks.Seq"
       "SERILOG__MINIMUMLEVEL": "Information"
@@ -129,13 +117,59 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
+pollon:
+  image: ${DOCKER_REGISTRY-}identityserver-local
+    build:
+      context: .
+      dockerfile: src/AlbyOnContainers.Pollon/Dockerfile
+  container_name: pollon
+  restart: unless-stopped
+  ports:
+    - 5010:80
+  environment:
+    ASPNETCORE_ENVIRONMENT: "Development"
+    ASPNETCORE_URLS: "http://+:5003"
+    HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS: "60"
+    HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS: "240"
+    HEALTHCHECKS__ENDPOINTS__0__NAME: "IdentityServer"
+    HEALTHCHECKS__ENDPOINTS__0__URL: "https://localhost:5001/healthz"
+    HEALTHCHECKS__ENDPOINTS__1__NAME: "Pollon"
+    HEALTHCHECKS__ENDPOINTS__1__URL: "http://localhost:5002/healthz"
+    HEALTHCHECKS__ENDPOINTS__2__NAME: "Hermes"
+    HEALTHCHECKS__ENDPOINTS__2__URL: "http://localhost:5003/healthz"
+    HEALTHCHECKS__ENDPOINTS__3__NAME: "CatalogAPI"
+    HEALTHCHECKS__ENDPOINTS__3__URL: "http://localhost:5004/healthz"
+    HEALTHCHECKS__CHECKS__SELF__NAME: "Self"
+    HEALTHCHECKS__CHECKS__SELF__TAGS__0: "pollon"
+    HEALTHCHECKS__CHECKS__SELF__TAGS__1: "health"
+    HEALTHCHECKS__CHECKS__SELF__TAGS__2: "service"
+    HEALTHCHECKS__CHECKS__SELF__TAGS__3: "ui"
+    HEALTHCHECKS__CHECKS__NPGSQL__NAME: "Postgres"
+    HEALTHCHECKS__CHECKS__NPGSQL__TAGS__0: "pollon"
+    HEALTHCHECKS__CHECKS__NPGSQL__TAGS__1: "health"
+    HEALTHCHECKS__CHECKS__NPGSQL__TAGS__2: "db"
+    HEALTHCHECKS__CHECKS__NPGSQL__TAGS__3: "postgres"
+    SERILOG__USING__0: "Serilog.Sinks.Console"
+    SERILOG__USING__1: "Serilog.Sinks.Seq"
+    SERILOG__MINIMUMLEVEL: "Information"
+    SERILOG__WRITETO__0__NAME: "Console"
+    SERILOG__WRITETO__1__NAME: "Seq"
+    SERILOG__WRITETO__1__ARGS__SERVERURL: "http://localhost:5341"
+    SERILOG__ENRICH__0: "FromLogContext"
+    SERILOG__ENRICH__1: "WithMachineName"
+    SERILOG__ENRICH__2: "WithEnvironmentName"
+    SERILOG__ENRICH__3: "WithEnvironmentUserName"
+    SERILOG__ENRICH__4: "WithApplicationName"
+    SERILOG__PROPERTIES__APPLICATION: "AlbyOnContainers.Pollon.Development"
+
   sherlock:
-    image: cowboysteam/sherlock:latest
+    build:
+      context: .
+      dockerfile: src/AlbyOnContainers.Sherlock/Dockerfile
     container_name: sherlock
     restart: unless-stopped
     ports:
-      - 6000:80
-      - 6001:443
+      - 5004:80
     environment:
       DOTNET_ENVIRONMENT: Development
       CONNECTIONSTRINGS__SEQ: "http://seq:5341"

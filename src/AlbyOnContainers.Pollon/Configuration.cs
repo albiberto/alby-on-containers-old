@@ -2,7 +2,7 @@
 
 namespace Pollon
 {
-    public class Options
+    public class Configuration
     {
         public IEnumerable<Endpoint> Endpoints { get; set; }
         public int MinimumSecondsBetweenFailureNotifications { get; set; }

@@ -1,6 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 
-using Libraries.Options;
+using System.Collections.Generic;
 
 namespace Catalog
 {
@@ -8,5 +8,10 @@ namespace Catalog
     {
         public Check? Self { get; set; }
         public Check? NpgSql { get; set; }
+        public class Check
+        {
+            public string Name { get; set; }
+            public IReadOnlyCollection<string> Tags { get; set; }
+        }
     }
 }
