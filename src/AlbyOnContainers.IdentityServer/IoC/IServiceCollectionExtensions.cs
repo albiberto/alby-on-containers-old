@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 
 namespace IdentityServer.IoC
 {
@@ -29,12 +28,6 @@ namespace IdentityServer.IoC
 
             services.AddOptions<EmailOptions>()
                 .Bind(configuration.GetSection("Email"));
-
-            services.AddOptions<HealthChecksOptions>()
-                .Bind(configuration.GetSection("HealthChecks"));
-
-            services.AddOptions<RabbitMQOptions>()
-                .Bind(configuration.GetSection("RabbitMQ"));
         }
 
         public static void AddIdentity(this IServiceCollection services, string connection)
@@ -85,29 +78,25 @@ namespace IdentityServer.IoC
                 .Services.AddTransient<IProfileService, ProfileService>();
         }
 
-        public static void AddHealthChecks(this IServiceCollection services, string connection)
+        public static void AddHealthChecks(this IServiceCollection services, string connection, HealthChecksConfiguration configuration)
         {
-            var options = services.BuildServiceProvider().GetService<IOptions<HealthChecksOptions>>()?.Value;
-
             services.AddHealthChecks()
-                .AddCheck(options?.Self?.Name ?? "self", () => HealthCheckResult.Healthy(),
-                    options?.Self?.Tags ?? new[] {"identity", "service", "identityserver4", "debug"})
-                .AddNpgSql(connection, name: options?.NpgSql?.Name ?? "postgres",
-                    tags: options?.NpgSql?.Tags ?? new[] {"identity", "db", "postgres", "debug"});
+                .AddCheck(configuration?.Self?.Name ?? "self", () => HealthCheckResult.Healthy(),
+                    configuration?.Self?.Tags ?? new[] {"identity", "service", "identityserver4", "debug"})
+                .AddNpgSql(connection, name: configuration?.NpgSql?.Name ?? "postgres",
+                    tags: configuration?.NpgSql?.Tags ?? new[] {"identity", "db", "postgres", "debug"});
         }
 
-        public static void AddMassTransit(this IServiceCollection services)
+        public static void AddMassTransit(this IServiceCollection services, RabbitMQConfiguration configuration)
         {
-            var options = services.BuildServiceProvider().GetService<IOptions<RabbitMQOptions>>()?.Value;
-
             services.AddMassTransit(x =>
             {
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(options?.Host ?? "localhost", config =>
+                    cfg.Host(configuration?.Host ?? "localhost", c =>
                     {
-                        config.Username(options?.Username ?? "guest");
-                        config.Password(options?.Password ?? "guest");
+                        c.Username(configuration?.Username ?? "guest");
+                        c.Password(configuration?.Password ?? "guest");
                     });
 
                     cfg.ExchangeType = "fanout";

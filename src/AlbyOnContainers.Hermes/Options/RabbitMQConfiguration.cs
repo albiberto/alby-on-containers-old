@@ -1,7 +1,8 @@
-﻿namespace IdentityServer.Options
+﻿// ReSharper disable InconsistentNaming
+
+namespace Hermes.Options
 {
-    // ReSharper disable once InconsistentNaming
-    public class RabbitMQOptions
+    public class RabbitMQConfiguration
     {
         public string Host { get; set; }
         public string Username { get; set; }

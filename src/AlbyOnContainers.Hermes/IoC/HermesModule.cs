@@ -1,17 +1,17 @@
 ﻿using System.Reflection;
 using Autofac;
+using Hermes.Options;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using Module = Autofac.Module;
 
 namespace Hermes.IoC
 {
     public class HermesModule : Module
     {
-        readonly IConfiguration _configuration;
+        readonly RabbitMQConfiguration _configuration;
 
-        public HermesModule(IConfiguration configuration)
+        public HermesModule(RabbitMQConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -25,14 +25,12 @@ namespace Hermes.IoC
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    Log.Logger.Information($"RabbitMQ {{Host: {_configuration["RabbitMQ:Host"]} User: {_configuration["RabbitMQ:Username"]} Pass: {_configuration["RabbitMQ:Password"]}}}");
-                    
-                    cfg.Host(_configuration["RabbitMQ:Host"], config =>
+                    cfg.Host(_configuration.Host, config =>
                     {
-                        config.Username(_configuration["RabbitMQ:Username"]);
-                        config.Password(_configuration["RabbitMQ:Password"]);
+                        config.Username(_configuration.Username);
+                        config.Password(_configuration.Password);
                     });
-                    
+
                     cfg.ConfigureEndpoints(context);
                     cfg.Durable = true;
                     cfg.PrefetchCount = 5;

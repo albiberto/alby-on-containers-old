@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <UserSecretsId>dotnet-AlbyOnContainers.Hermes-10B6E14D-541F-4380-81D9-259A31F8BEA7</UserSecretsId>
+        <UserSecretsId>c133766a-bad8-47fa-9145-f2c12dc84c35</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <DockerfileContext>..\..</DockerfileContext>
         <RootNamespace>Hermes</RootNamespace>
@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
       <ProjectReference Include="..\AlbyOnContainers.Shared.Messages\AlbyOnContainers.Shared.Messages.csproj" />
     </ItemGroup>
     

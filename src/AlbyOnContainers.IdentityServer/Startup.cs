@@ -1,5 +1,7 @@
 using HealthChecks.UI.Client;
+using HealthChecks.UI.Core.Data;
 using IdentityServer.IoC;
+using IdentityServer.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -24,15 +26,16 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions(Configuration);
-
-            var connection = Configuration.GetConnectionString("DefaultDatabase");
+            var (healthChecksConfiguration, rabbitMqConfiguration, connection) = GetConfiguration();
+            
             services.AddIdentity(connection);
-            services.AddIdentityServer(connection);
-            services.AddHealthChecks(connection);
+            services.AddIdentityServer();
+            
+            services.AddHealthChecks(connection, healthChecksConfiguration);
+            
+            services.AddMassTransit(rabbitMqConfiguration);
 
-            services.AddMassTransit();
-
+            services.AddOptions(Configuration);
             services.AddCustom();
 
             services.AddHttpsRedirection(_env);
@@ -40,6 +43,18 @@ namespace IdentityServer
             services.AddReverseProxy();
 
             services.AddControllersWithViews();
+        }
+
+        (HealthChecksConfiguration, RabbitMQConfiguration rabbitMqConfig, string connection) GetConfiguration()
+        {
+            var healthChecksConfig = new HealthChecksConfiguration();
+            Configuration.GetSection("HealthChecks").Bind(healthChecksConfig);
+
+            var rabbitMqConfig = new RabbitMQConfiguration();
+            Configuration.GetSection("RabbitMQ").Bind(rabbitMqConfig);
+
+            var connection = Configuration.GetConnectionString("DefaultDatabase");
+            return (healthChecksConfig, rabbitMqConfig, connection);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

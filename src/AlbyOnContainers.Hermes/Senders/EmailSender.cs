@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AlbyOnContainers.Messages;
 using Hermes.Abstract;
+using Hermes.Options;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,9 +13,9 @@ namespace Hermes.Senders
     public class EmailSender : ISender<EmailMessage>
     {
         readonly ILogger<EmailSender> _logger;
-        readonly Options _options;
+        readonly EmailOptions _options;
 
-        public EmailSender(IOptions<Options> options, ILogger<EmailSender> logger)
+        public EmailSender(IOptions<EmailOptions> options, ILogger<EmailSender> logger)
         {
             _options = options.Value;
             _logger = logger;
@@ -42,17 +43,6 @@ namespace Hermes.Senders
             await smtpClient.SendAsync(mailMessage);
 
             await smtpClient.DisconnectAsync(true);
-        }
-
-        public class Options
-        {
-            public string SmtpServer { get; set; }
-            public int SmtpPort { get; set; }
-            public string SmtpUsername { get; set; }
-            public string SmtpPassword { get; set; }
-            public string DefaultSenderName { get; set; }
-            public string DefaultSenderEmail { get; set; }
-            public bool UseSsl { get; set; }
         }
     }
 }

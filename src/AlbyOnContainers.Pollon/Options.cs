@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Libraries.Options;
 
 namespace Pollon
 {
@@ -21,5 +20,11 @@ namespace Pollon
     {
         public Check Self { get; set; }
         public Check NpgSql { get; set; }
+    }
+    
+    public class Check
+    {
+        public string Name { get; set; }
+        public IReadOnlyCollection<string> Tags { get; set; }
     }
 }

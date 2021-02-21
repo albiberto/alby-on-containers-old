@@ -88,7 +88,7 @@ services:
       "SERILOG__MINIMUMLEVEL": "Information"
       "SERILOG__WRITETO__0__NAME": "Console"
       "SERILOG__WRITETO__1__NAME": "Seq"
-      "SERILOG__WRITETO__1__ARGS__SERVERURL": "http://localhost:5341"
+      "SERILOG__WRITETO__1__ARGS__SERVERURL": "http://seq:5341"
       "SERILOG__ENRICH__0": "FromLogContext"
       "SERILOG__ENRICH__1": "WithMachineName"
       "SERILOG__ENRICH__2": "WithEnvironmentName"
@@ -100,7 +100,10 @@ services:
       - ~/.aspnet/https:/https:ro
     
   hermes:
-    image: cowboysteam/hermes:latest
+    image: ${DOCKER_REGISTRY-}hermes-local
+    build:
+      context: .
+      dockerfile: src/AlbyOnContainers.Hermes/Dockerfile
     container_name: hermes
     restart: unless-stopped
     ports:
@@ -108,19 +111,24 @@ services:
     depends_on:
       - "rabbitmq"
     environment:
-      DOTNET_ENVIRONMENT: Development
-      CONNECTIONSTRINGS__SEQ: "http://seq:5341"
-      EMAILOPTIONS__SMPTSERVER: "smtp.gmail.com"
-      EMAILOPTIONS__SMTPPORT: "587"
-      EMAILOPTIONS__SMTPUSERNAME: "cowboysteamts@gmail.com"
-      EMAILOPTIONS__SMTPPASSWORD: "nyQvrW6fpvC8UPj"
-      EMAILOPTIONS__DEFAULTSENDERNAME: "Identity Compose.STAGE"
-      EMAILOPTIONS__DEFAULT__SENDER__EMAIL: "cowboysteamts@gmail.com"
-      EMAILOPTIONS__USESSL: "false"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:80"
       RABBITMQ__HOST: "rabbitmq"
-      RABBITMQ__USERNAME: "guest"
-      RABBITMQ__PASSWORD: "guest"
-      APPOPTIONS__URI: "hermes"
+      SERILOG__USING__0: "Serilog.Sinks.Console"
+      SERILOG__USING__1: "Serilog.Sinks.Seq"
+      SERILOG__MINIMUMLEVEL: "Information"
+      SERILOG__WRITETO__0__NAME: "Console"
+      SERILOG__WRITETO__1__NAME: "Seq"
+      SERILOG__WRITETO__1__ARGS__SERVERURL: "http://seq:5341"
+      SERILOG__ENRICH__0: "FromLogContext"
+      SERILOG__ENRICH__1: "WithMachineName"
+      SERILOG__ENRICH__2: "WithEnvironmentName"
+      SERILOG__ENRICH__3: "WithEnvironmentUserName"
+      SERILOG__ENRICH__4: "WithApplicationName"
+      SERILOG__PROPERTIES__APPLICATION: "AlbyOnContainers.Hermes.Development"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+
   sherlock:
     image: cowboysteam/sherlock:latest
     container_name: sherlock

@@ -1,31 +1,36 @@
 {
   "profiles": {
-    "Hermes.DEV": {
+    "Hermes.DEBUG": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:5002",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5002/healthz",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Debug",
+        "ASPNETCORE_URLS": "http://+:5002"
       }
     },
-    "Hermes.STAGE": {
+    "Hermes.DEVELOPMENT": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
-      "applicationUrl": "http://localhost:5002",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5002/healthz",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Staging",
-        "EMAILOPTIONS__SMTPSERVER": "smtp.gmail.com",
-        "EMAILOPTIONS__SMTPPORT": 587,
-        "EMAILOPTIONS__SMTPUSERNAME": "cowboysteam@gmail.com",
-        "EMAILOPTIONS__SMTPPASSWORD": "",
-        "EMAILOPTIONS__DEFAULTSENDERNAME": "Identity",
-        "EMAILOPTIONS__DEFAULTSENDEREMAIL": "cowboysteam@gmail.com",
-        "EMAILOPTIONS__USESSL": false,
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://+:5002",
         "RABBITMQ__HOST": "localhost",
-        "RABBITMQ__USERNAME": "guest",
-        "RABBITMQ__PASSWORD": "guest"
+        "SERILOG__USING__0": "Serilog.Sinks.Console",
+        "SERILOG__USING__1": "Serilog.Sinks.Seq",
+        "SERILOG__MINIMUMLEVEL": "Information",
+        "SERILOG__WRITETO__0__NAME": "Console",
+        "SERILOG__WRITETO__1__NAME": "Seq",
+        "SERILOG__WRITETO__1__ARGS__SERVERURL": "http://localhost:5341",
+        "SERILOG__ENRICH__0": "FromLogContext",
+        "SERILOG__ENRICH__1": "WithMachineName",
+        "SERILOG__ENRICH__2": "WithEnvironmentName",
+        "SERILOG__ENRICH__3": "WithEnvironmentUserName",
+        "SERILOG__ENRICH__4": "WithApplicationName",
+        "SERILOG__PROPERTIES__APPLICATION": "AlbyOnContainers.Hermes.Development"
       },
       "Docker": {
         "commandName": "Docker"

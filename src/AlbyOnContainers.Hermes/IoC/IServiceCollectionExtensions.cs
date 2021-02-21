@@ -1,7 +1,7 @@
 ﻿// ReSharper disable InconsistentNaming
 
+using Hermes.Options;
 using MassTransit;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -9,16 +9,14 @@ namespace Hermes.IoC
 {
     public static class IServiceCollectionExtensions
     {
-        public static void AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        public static void AddHermesChecks(this IServiceCollection services, HealthChecksConfiguration configuration)
         {
-            var options = new Options();
-            configuration.GetSection("HealthChecks").Bind(options);
-
             services
                 .AddHealthChecks()
-                .AddCheck(options.Self.Name, () => HealthCheckResult.Healthy(), options.Self.Tags);
+                .AddCheck(configuration?.Self?.Name ?? "Hermes", () => HealthCheckResult.Healthy(),
+                    configuration?.Self?.Tags ?? new[] {"hermes", "service", "debug"});
 
-            services.AddMassTransitHostedService(waitUntilStarted: true);
+            services.AddMassTransitHostedService(true);
         }
     }
 }
