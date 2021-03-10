@@ -1,3 +1,4 @@
+using System.Linq;
 using HealthChecks.UI.Client;
 using IdentityServer.IoC;
 using IdentityServer.Options;
@@ -59,6 +60,17 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.Use(async (context, next) =>
+            {
+                var forwardedPath = context.Request.Headers["X-Forwarded-Path"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(forwardedPath))
+                {
+                    context.Request.PathBase = forwardedPath;
+                }
+
+                await next();
+            });
+            
             app.UseForwardedHeaders();
 
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();

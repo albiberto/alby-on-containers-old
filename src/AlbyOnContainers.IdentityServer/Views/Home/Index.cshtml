@@ -1,8 +1,20 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> _signInManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Per procedere registrati oppure accedi con le tue credenziali.</p>
+
+    @if (_signInManager.IsSignedIn(User))
+    {
+        <a class="nav-link text-dark" asp-controller="Manage" asp-action="Index">Ciao @User?.Identity?.Name!</a>
+        <p>Ciao @User?.Identity?.Name! Benvenuto nella tua area personale.</p>
+    }
+    else
+    {
+        <p>Per procedere registrati oppure accedi con le tue credenziali.</p>
+    }
 </div>

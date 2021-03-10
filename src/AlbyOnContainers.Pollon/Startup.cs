@@ -1,3 +1,4 @@
+using System.Net.Http;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -36,6 +37,11 @@ namespace Pollon
                     setup.SetEvaluationTimeInSeconds(configuration.EvaluationTimeInSeconds);
                     setup.SetMinimumSecondsBetweenFailureNotifications(configuration.MinimumSecondsBetweenFailureNotifications);
 
+                    setup.UseApiEndpointHttpMessageHandler(_ => new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = (_, __, ___, ____) => true
+                    });
+                    
                     foreach (var endpoint in configuration.Endpoints)
                     {
                         setup.AddHealthCheckEndpoint(endpoint.Name, endpoint.Url);

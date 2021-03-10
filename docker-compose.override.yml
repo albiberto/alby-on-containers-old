@@ -1,0 +1,184 @@
+﻿version: "3.7"
+services:
+
+  postgres:
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/postgres:/var/lib/postgresql
+          
+  seq:
+    ports:
+      - '8080:80'
+      - '5341:5341'
+    environment:
+      ACCEPT_EULA: Y
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/seq:/data
+          
+  rabbitmq:
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      AMQP_URL: 'amqp://rabbitmq?connection_attempts=5&retry_delay=5'
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/rabbitmq/rabbitmq.conf:/etc/rabbitmq.conf:ro
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/IdentityServer/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+          
+  identityserver:
+    depends_on:
+      - "postgres"
+      - "rabbitmq"
+    ports:
+      - 5000:80
+      - 5001:443
+    environment:
+      "ASPNETCORE_ENVIRONMENT": "Development"
+      "ASPNETCORE_URLS": "https://+:443;http://+:80"
+      "ASPNETCORE_HTTPS_PORT": "443"
+      "KESTREL__CERTIFICATES__DEFAULT__PATH": "/https/cert.pfx"
+      "RABBITMQ__HOST": "rabbitmq"
+      "EMAIL__NAME": "IdentityServer-Staging"
+      "TOKENLIFETIME__MINUTES": "120"
+      "TOKENLIFETIME__DAYS": "365"
+      "HEALTHCHECKS__SELF__NAME": "self"
+      "HEALTHCHECKS__SELF__TAGS__0": "identity"
+      "HEALTHCHECKS__SELF__TAGS__1": "service"
+      "HEALTHCHECKS__SELF__TAGS__2": "identityserver4"
+      "HEALTHCHECKS__SELF__TAGS__3": "development"
+      "HEALTHCHECKS__SELF__TAGS__4": "compose"
+      "HEALTHCHECKS__NPGSQL__NAME": "database"
+      "HEALTHCHECKS__NPGSQL__TAGS__0": "identity"
+      "HEALTHCHECKS__NPGSQL__TAGS__1": "db"
+      "HEALTHCHECKS__NPGSQL__TAGS__2": "postgres"
+      "HEALTHCHECKS__NPGSQL__TAGS__3": "development"
+      "SERILOG__USING__0": "Serilog.Sinks.Console"
+      "SERILOG__USING__1": "Serilog.Sinks.Seq"
+      "SERILOG__MINIMUMLEVEL": "Information"
+      "SERILOG__WRITETO__0__NAME": "Console"
+      "SERILOG__WRITETO__1__NAME": "Seq"
+      "SERILOG__WRITETO__1__ARGS__SERVERURL": "http://seq:5341"
+      "SERILOG__ENRICH__0": "FromLogContext"
+      "SERILOG__ENRICH__1": "WithMachineName"
+      "SERILOG__ENRICH__2": "WithEnvironmentName"
+      "SERILOG__ENRICH__3": "WithEnvironmentUserName"
+      "SERILOG__ENRICH__4": "WithApplicationName"
+      "SERILOG__PROPERTIES__APPLICATION": "AlbyOnContainers.IdentityServer.Development"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+        
+  hermes:
+    ports:
+      - 5002:80
+    depends_on:
+      - "rabbitmq"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:80"
+      RABBITMQ__HOST: "rabbitmq"
+      HEALTHCHECKS__SELF__NAME: "Self"
+      HEALTHCHECKS__SELF__TAGS__0: "hermes"
+      HEALTHCHECKS__SELF__TAGS__1: "scheduler"
+      HEALTHCHECKS__SELF__TAGS__2: "service"
+      HEALTHCHECKS__SELF__TAGS__3: "development"
+      HEALTHCHECKS__SELF__TAGS__4: "compose"
+      SERILOG__USING__0: "Serilog.Sinks.Console"
+      SERILOG__USING__1: "Serilog.Sinks.Seq"
+      SERILOG__MINIMUMLEVEL: "Information"
+      SERILOG__WRITETO__0__NAME: "Console"
+      SERILOG__WRITETO__1__NAME: "Seq"
+      SERILOG__WRITETO__1__ARGS__SERVERURL: "http://seq:5341"
+      SERILOG__ENRICH__0: "FromLogContext"
+      SERILOG__ENRICH__1: "WithMachineName"
+      SERILOG__ENRICH__2: "WithEnvironmentName"
+      SERILOG__ENRICH__3: "WithEnvironmentUserName"
+      SERILOG__ENRICH__4: "WithApplicationName"
+      SERILOG__PROPERTIES__APPLICATION: "AlbyOnContainers.Hermes.Development"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+
+  pollon:
+    depends_on:
+      - "postgres"
+    ports:
+      - 5003:80
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:80"
+      HEALTHCHECKS__SETEVALUTATIONTIMEINSECONS: "60"
+      HEALTHCHECKS__SETMINIMUMSECONDSBETWEENFAILURENOTIFICATIONS: "240"
+      HEALTHCHECKS__ENDPOINTS__0__NAME: "IdentityServer"
+      HEALTHCHECKS__ENDPOINTS__0__URL: "https://identityserver/healthz"
+      HEALTHCHECKS__ENDPOINTS__1__NAME: "Pollon"
+      HEALTHCHECKS__ENDPOINTS__1__URL: "http://pollon/healthz"
+      HEALTHCHECKS__ENDPOINTS__2__NAME: "Hermes"
+      HEALTHCHECKS__ENDPOINTS__2__URL: "http://hermes/healthz"
+      HEALTHCHECKS__ENDPOINTS__3__NAME: "Sherlock"
+      HEALTHCHECKS__ENDPOINTS__3__URL: "http://sherlock/healthz"
+      HEALTHCHECKS__CHECKS__SELF__NAME: "Self"
+      HEALTHCHECKS__CHECKS__SELF__TAGS__0: "pollon"
+      HEALTHCHECKS__CHECKS__SELF__TAGS__1: "health"
+      HEALTHCHECKS__CHECKS__SELF__TAGS__2: "service"
+      HEALTHCHECKS__CHECKS__SELF__TAGS__3: "ui"
+      HEALTHCHECKS__CHECKS__SELF__TAGS__4: "compose"
+      HEALTHCHECKS__CHECKS__NPGSQL__NAME: "Postgres"
+      HEALTHCHECKS__CHECKS__NPGSQL__TAGS__0: "pollon"
+      HEALTHCHECKS__CHECKS__NPGSQL__TAGS__1: "health"
+      HEALTHCHECKS__CHECKS__NPGSQL__TAGS__2: "db"
+      HEALTHCHECKS__CHECKS__NPGSQL__TAGS__3: "postgres"
+      SERILOG__USING__0: "Serilog.Sinks.Console"
+      SERILOG__USING__1: "Serilog.Sinks.Seq"
+      SERILOG__MINIMUMLEVEL: "Information"
+      SERILOG__WRITETO__0__NAME: "Console"
+      SERILOG__WRITETO__1__NAME: "Seq"
+      SERILOG__WRITETO__1__ARGS__SERVERURL: "http://seq:5341"
+      SERILOG__ENRICH__0: "FromLogContext"
+      SERILOG__ENRICH__1: "WithMachineName"
+      SERILOG__ENRICH__2: "WithEnvironmentName"
+      SERILOG__ENRICH__3: "WithEnvironmentUserName"
+      SERILOG__ENRICH__4: "WithApplicationName"
+      SERILOG__PROPERTIES__APPLICATION: "AlbyOnContainers.Pollon.Development"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+
+  sherlock:
+    depends_on:
+      - "postgres"
+    ports:
+      - 5004:80
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:80"
+      HEALTHCHECKS__SELF__NAME: "Self"
+      HEALTHCHECKS__SELF__TAGS__0: "sherlock"
+      HEALTHCHECKS__SELF__TAGS__1: "catalog"
+      HEALTHCHECKS__SELF__TAGS__2: "service"
+      HEALTHCHECKS__SELF__TAGS__3: "development"
+      HEALTHCHECKS__SELF__TAGS__4: "compose"
+      HEALTHCHECKS__NPGSQL__NAME: "Postgres"
+      HEALTHCHECKS__NPGSQL__TAGS__0: "sherlock"
+      HEALTHCHECKS__NPGSQL__TAGS__1: "catalog"
+      HEALTHCHECKS__NPGSQL__TAGS__2: "db"
+      HEALTHCHECKS__NPGSQL__TAGS__3: "postgres"
+      HEALTHCHECKS__NPGSQL__TAGS__4: "development"
+      SERILOG__USING__0: "Serilog.Sinks.Console"
+      SERILOG__USING__1: "Serilog.Sinks.Seq"
+      SERILOG__MINIMUMLEVEL: "Information"
+      SERILOG__WRITETO__0__NAME: "Console"
+      SERILOG__WRITETO__1__NAME: "Seq"
+      SERILOG__WRITETO__1__ARGS__SERVERURL: "http://seq:5341"
+      SERILOG__ENRICH__0: "FromLogContext"
+      SERILOG__ENRICH__1: "WithMachineName"
+      SERILOG__ENRICH__2: "WithEnvironmentName"
+      SERILOG__ENRICH__3: "WithEnvironmentUserName"
+      SERILOG__ENRICH__4: "WithApplicationName"
+      SERILOG__PROPERTIES__APPLICATION: "AlbyOnContainers.Sherlock.Development"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
