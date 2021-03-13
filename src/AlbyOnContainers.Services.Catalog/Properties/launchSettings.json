@@ -34,10 +34,13 @@
         
         "SERILOG__USING__0": "Serilog.Sinks.Console",
         "SERILOG__USING__1": "Serilog.Sinks.Seq",
+        "SERILOG__USING__2": "Serilog.Sinks.Loki",
         "SERILOG__MINIMUMLEVEL": "Information",
         "SERILOG__WRITETO__0__NAME": "Console",
         "SERILOG__WRITETO__1__NAME": "Seq",
         "SERILOG__WRITETO__1__ARGS__SERVERURL": "http://localhost:5341",
+        "SERILOG__WRITETO__2__NAME": "LokiHttp",
+        "SERILOG__WRITETO__2__ARGS__SERVERURL": "http://localhost:3100",
         "SERILOG__ENRICH__0": "FromLogContext",
         "SERILOG__ENRICH__1": "WithMachineName",
         "SERILOG__ENRICH__2": "WithEnvironmentName",

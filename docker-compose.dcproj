@@ -14,5 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="docker-compose.override.yml" />
+    <Content Include="loki-local-config.yaml" />
   </ItemGroup>
 </Project>

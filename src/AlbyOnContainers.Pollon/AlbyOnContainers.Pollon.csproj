@@ -20,6 +20,7 @@
         <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.2-dev-00741" />
         <PackageReference Include="Serilog.Enrichers.Thread" Version="3.2.0-dev-00747" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+        <PackageReference Include="Serilog.Sinks.Loki" Version="3.0.1-beta1" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.0-dev-00174" />
     </ItemGroup>
     

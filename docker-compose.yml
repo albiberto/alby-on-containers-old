@@ -1,20 +1,41 @@
 version: "3.7"
+
 services:
-  
-  postgres:
-    image: postgres:latest   
-    container_name: postgres
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    command: -config.file=/etc/loki/loki-local-config.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/loki:/data/loki
+      - ./loki:/etc/loki/
+        
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
     restart: always
 
   seq:
     image: datalust/seq:latest
     container_name: seq
     restart: always
-
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/seq:/data
+  
+  postgres:
+    image: postgres:latest   
+    container_name: postgres
+    restart: always
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/postgres:/var/lib/postgresql
   rabbitmq:
     image: 'rabbitmq:3.6-management-alpine'
     container_name: rabbitmq
     restart: always
+    volumes:
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/rabbitmq/rabbitmq.conf:/etc/rabbitmq.conf:ro
+      - ${APPDATA}/ASP.NET/Sites/AlbyOnContainers/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
   
   identityserver:
     image: ${DOCKER_REGISTRY-}identityserver-local
@@ -22,15 +43,25 @@ services:
       context: .
       dockerfile: src/AlbyOnContainers.IdentityServer/Dockerfile
     container_name: identityserver
+    depends_on:
+      - "postgres"
+      - "rabbitmq"
     restart: unless-stopped
-    
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+
   hermes:
     image: ${DOCKER_REGISTRY-}hermes-local
     build:
       context: .
       dockerfile: src/AlbyOnContainers.Hermes/Dockerfile
     container_name: hermes
+    depends_on:
+      - "rabbitmq"
     restart: unless-stopped
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   pollon:
     image: ${DOCKER_REGISTRY-}pollon-local
@@ -38,7 +69,11 @@ services:
       context: .
       dockerfile: src/AlbyOnContainers.Pollon/Dockerfile
     container_name: pollon
+    depends_on:
+      - "postgres"
     restart: unless-stopped
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
   
   sherlock:
     image: ${DOCKER_REGISTRY-}sherlock-local
@@ -46,4 +81,8 @@ services:
       context: .
       dockerfile: src/AlbyOnContainers.Services.Catalog/Dockerfile
     container_name: sherlock
+    depends_on:
+      - "postgres"
     restart: unless-stopped
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

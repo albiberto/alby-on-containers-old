@@ -6,6 +6,7 @@ using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using Serilog.Sinks.Loki;
 
 namespace Catalog
 {
