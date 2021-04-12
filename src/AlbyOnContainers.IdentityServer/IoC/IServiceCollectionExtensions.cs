@@ -53,6 +53,7 @@ namespace IdentityServer.IoC
                     x.IssuerUri = "null";
                     x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 })
+                .AddDeveloperSigningCredential()  // not recommended for production - you need to store your key material somewhere secure
                 // .AddSigningCredential(CertificateManager.Get())
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(o =>
