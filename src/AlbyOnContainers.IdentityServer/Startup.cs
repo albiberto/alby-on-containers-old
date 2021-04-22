@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Net.Mime;
 using HealthChecks.UI.Client;
 using IdentityServer.IoC;
+using IdentityServer.Models;
 using IdentityServer.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -41,6 +43,15 @@ namespace IdentityServer
             services.AddHttpsRedirection(_env);
             services.AddHsts();
             services.AddReverseProxy();
+            
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AlbyPolicy",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                    });
+            });
 
             services.AddControllersWithViews();
         }
@@ -60,6 +71,8 @@ namespace IdentityServer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors("AlbyPolicy");
+            
             app.Use(async (context, next) =>
             {
                 var forwardedPath = context.Request.Headers["X-Forwarded-Path"].FirstOrDefault();
@@ -70,7 +83,7 @@ namespace IdentityServer
 
                 await next();
             });
-            
+
             app.UseForwardedHeaders();
 
             if (!env.IsProduction()) app.UseDeveloperExceptionPage();

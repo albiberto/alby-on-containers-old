@@ -55,6 +55,7 @@ namespace IdentityServer.IoC
                 })
                 .AddDeveloperSigningCredential()  // not recommended for production - you need to store your key material somewhere secure
                 // .AddSigningCredential(CertificateManager.Get())
+                .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(o =>
                 {

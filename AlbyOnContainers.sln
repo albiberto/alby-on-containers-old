@@ -13,11 +13,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Pollon", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Services.Catalog", "src\AlbyOnContainers.Services.Catalog\AlbyOnContainers.Services.Catalog.csproj", "{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Tools.Catalog", "src\AlbyOnContainers.Tools.Catalog\AlbyOnContainers.Tools.Catalog.csproj", "{C936052E-702A-4E97-9421-68C6E1748136}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Shared.Libraries", "src\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj", "{455F6695-3769-44F8-B1C0-097CC2EB3441}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B912D1BF-BBF8-471B-BE1C-A05998771F92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Tools.Catalog", "..\AlbyOnContainers.Tools.Catalog\AlbyOnContainers.Tools.Catalog.csproj", "{56D47618-EC66-44E3-B36F-09D91AB29C25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +45,6 @@ Global
 		{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B8C518B-ABAB-4520-86F0-6DED750D4A7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C936052E-702A-4E97-9421-68C6E1748136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C936052E-702A-4E97-9421-68C6E1748136}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C936052E-702A-4E97-9421-68C6E1748136}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C936052E-702A-4E97-9421-68C6E1748136}.Release|Any CPU.Build.0 = Release|Any CPU
 		{455F6695-3769-44F8-B1C0-097CC2EB3441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{455F6695-3769-44F8-B1C0-097CC2EB3441}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{455F6695-3769-44F8-B1C0-097CC2EB3441}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +53,10 @@ Global
 		{B912D1BF-BBF8-471B-BE1C-A05998771F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B912D1BF-BBF8-471B-BE1C-A05998771F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B912D1BF-BBF8-471B-BE1C-A05998771F92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

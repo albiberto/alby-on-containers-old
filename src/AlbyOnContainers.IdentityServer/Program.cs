@@ -18,7 +18,7 @@ namespace IdentityServer
                 var host = CreateHostBuilder(args).Build();
                 Log.Information("IdentityServer Starting");
 
-                await host.MigrateAsync<ApplicationDbContext>(async (context, services) => await new ApplicationDbContextSeed().SeedAsync(context));
+                await host.MigrateAsync<ApplicationDbContext>(async (_, services) => await new ApplicationDbContextSeed().SeedAsync(services));
                 await host.MigrateAsync<ConfigurationDbContext>(async (context, _) => { await new ConfigurationDbContextSeed().SeedAsync(context); });
                 await host.MigrateAsync<PersistedGrantDbContext>((_, __) => Task.CompletedTask);
 
