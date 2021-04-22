@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -28,10 +29,11 @@ namespace IdentityServer.Services
             var subjectId = subject.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
 
             var user = await _userManager.FindByIdAsync(subjectId);
+            var c = await _userManager.GetClaimsAsync(user);
             if (user == null)
                 throw new ArgumentException("Invalid subject identifier");
 
-            var claims = GetClaimsFromUser(user);
+            var claims = GetClaimsFromUser(user, c);
             context.IssuedClaims = claims.ToList();
         }
 
@@ -65,14 +67,16 @@ namespace IdentityServer.Services
             }
         }
 
-        IEnumerable<Claim> GetClaimsFromUser(ApplicationUser user)
+        IEnumerable<Claim> GetClaimsFromUser(ApplicationUser user, IEnumerable<Claim> c)
         {
             var claims = new List<Claim>
             {
                 new(JwtClaimTypes.Subject, user.Id),
                 new(JwtClaimTypes.PreferredUserName, user.UserName),
-                new(JwtRegisteredClaimNames.UniqueName, user.UserName)
+                new(JwtRegisteredClaimNames.UniqueName, user.UserName),
             };
+            
+            claims.AddRange(c);
 
             if (_userManager.SupportsUserEmail)
                 claims.AddRange(new[]

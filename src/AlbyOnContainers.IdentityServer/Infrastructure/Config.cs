@@ -26,22 +26,21 @@ namespace IdentityServer.Infrastructure
         public static IEnumerable<Client> GetClients(Dictionary<string, string> clientsUrl) =>
             new List<Client>
             {
-                // JavaScript Client
                 new()
                 {
-                    ClientId = "js",
-                    ClientName = "eShop SPA OpenId Client",
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
-                    RedirectUris = {$"{clientsUrl["Spa"]}/"},
-                    RequireConsent = false,
-                    PostLogoutRedirectUris = {$"{clientsUrl["Spa"]}/"},
-                    AllowedCorsOrigins = {$"{clientsUrl["Spa"]}"},
+                    ClientId = "Catalog",
+                    ClientName = "Wasm Client",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequireClientSecret = false,
+
+                    RedirectUris =           { "http://localhost:5005/authentication/login-callback" },
+                    PostLogoutRedirectUris = { "http://localhost:5005/authentication/logout-callback" },
+                    AllowedCorsOrigins =     { "http://localhost:5005" },
+
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        "products"
+                        IdentityServerConstants.StandardScopes.Profile
                     }
                 }
             };

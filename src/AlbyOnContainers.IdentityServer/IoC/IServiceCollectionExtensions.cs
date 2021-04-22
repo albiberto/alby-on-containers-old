@@ -54,6 +54,7 @@ namespace IdentityServer.IoC
                     x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 })
                 // .AddSigningCredential(CertificateManager.Get())
+                .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(o =>
                 {
