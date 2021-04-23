@@ -1,6 +1,6 @@
 ﻿using System;
 using Catalog.Types;
-using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Catalog
 {

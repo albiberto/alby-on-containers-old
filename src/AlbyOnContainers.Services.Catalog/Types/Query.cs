@@ -3,6 +3,7 @@ using Catalog.Repository;
 using GraphQL;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Catalog.Types
 {
@@ -34,7 +35,7 @@ namespace Catalog.Types
                     return await _provider
                         .GetRequiredService<ProductRepository>()
                         .FindAsync(id);
-                });
+                }).AuthorizeWith("AlbyTestPolicy");
 
             FieldAsync<ListGraphType<ProductType>>(
                 "products",
@@ -42,7 +43,7 @@ namespace Catalog.Types
                 resolve: async context =>
                     await _provider
                         .GetRequiredService<ProductRepository>()
-                        .GetAllAsync());
+                        .GetAllAsync()).AuthorizeWith("AlbyTestPolicy");;
         }
 
         void CategoryQueries()
