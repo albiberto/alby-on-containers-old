@@ -22,7 +22,7 @@ namespace IdentityServer.Infrastructure
             
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             
-            var alby = userManager.FindByNameAsync("alice").Result;
+            var alby = userManager.FindByNameAsync("alby").Result;
             if (alby == default)
             {
                 alby = new ApplicationUser
@@ -49,7 +49,7 @@ namespace IdentityServer.Infrastructure
                     new (JwtClaimTypes.GivenName, "Alberto"),
                     new (JwtClaimTypes.FamilyName, "Viezzi")
                 });
-                
+
                 if (!result.Succeeded)
                 {
                     throw new Exception(result.Errors.First().Description);

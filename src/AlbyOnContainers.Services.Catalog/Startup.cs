@@ -5,6 +5,7 @@ using Catalog.IoC;
 using GraphQL.Server;
 using GraphQL.Server.Ui.Altair;
 using HealthChecks.UI.Client;
+using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -34,6 +35,19 @@ namespace Catalog
 
             var options = new Configuration();
             Configuration.GetSection("HealthChecks").Bind(options);
+            
+            services.AddAuthentication(o =>
+                {
+                    o.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                    o.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddIdentityServerAuthentication(o =>
+                {
+                    o.Authority = "https://localhost:5001";
+                    o.SupportedTokens = SupportedTokens.Jwt;
+                    o.RequireHttpsMetadata = false; // Note: Set to true in production
+                    o.ApiName = "Catalog.GraphQL";
+                });
 
             services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseNpgsql(connection), ServiceLifetime.Transient);
 
@@ -41,7 +55,11 @@ namespace Catalog
 
             services.AddCors(corsOptions => corsOptions.AddPolicy("AlbyPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-            services.AddGraphQL(graphQLOptions => graphQLOptions.EnableMetrics = Environment.IsDevelopment() || Environment.IsStaging())
+            services.AddGraphQL(o => o.EnableMetrics = Environment.IsDevelopment() || Environment.IsStaging())
+                .AddGraphQLAuthorization(o =>
+                {
+                    o.AddPolicy("AlbyPolicyTest", policy => policy.RequireAuthenticatedUser());
+                })
                 .AddSystemTextJson()
                 .AddWebSockets()
                 .AddDataLoader();

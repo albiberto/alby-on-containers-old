@@ -6,6 +6,7 @@ using Catalog.Repository;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using GraphQL.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Catalog.Types
 {
