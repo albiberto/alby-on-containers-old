@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using IdentityModel;
 using IdentityServer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 
 namespace IdentityServer.Infrastructure
 {
@@ -17,12 +15,13 @@ namespace IdentityServer.Infrastructure
 
         public async Task SeedAsync(IServiceProvider serviceProvider)
         {
-            // await using ServiceProvider serviceProvider = services.BuildServiceProvider();
             using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
+
+            await AddRoles(scope);
             
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             
-            var alby = userManager.FindByNameAsync("alby").Result;
+            var alby = userManager.FindByNameAsync("Albiberto").Result;
             if (alby == default)
             {
                 alby = new ApplicationUser
@@ -44,6 +43,9 @@ namespace IdentityServer.Infrastructure
                     throw new Exception(result.Errors.First().Description);
                 }
 
+                var albyRole = await userManager.IsInRoleAsync(alby, "Admin");
+                if (!albyRole) await userManager.AddToRoleAsync(alby, "Admin");
+                    
                 result = await userManager.AddClaimsAsync(alby, new Claim[]{
                     new (JwtClaimTypes.Name, "Alberto Viezzi"),
                     new (JwtClaimTypes.GivenName, "Alberto"),
@@ -55,6 +57,15 @@ namespace IdentityServer.Infrastructure
                     throw new Exception(result.Errors.First().Description);
                 }
             }
+        }
+
+        private async Task AddRoles(IServiceScope scope)
+        {
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            if (await roleManager.FindByNameAsync("User") == null) 
+                await roleManager.CreateAsync(new IdentityRole() { Name = "User" });
+            if (await roleManager.FindByNameAsync("Admin") == null) 
+                await roleManager.CreateAsync(new IdentityRole() { Name = "Admin" });
         }
     }
 }
