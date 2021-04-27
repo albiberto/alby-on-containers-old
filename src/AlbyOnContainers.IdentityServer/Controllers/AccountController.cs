@@ -1,16 +1,21 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AlbyOnContainers.Messages;
 using IdentityModel;
+using IdentityServer;
+using IdentityServer.Extensions;
 using IdentityServer.Models;
 using IdentityServer.Models.AccountViewModels;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
 using IdentityServer4;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,22 +26,25 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Controllers
 {
+    [SecurityHeaders]
+    [AllowAnonymous]
     public class AccountController : Controller
     {
         readonly EmailOptions _emailOptions;
         readonly IIdentityServerInteractionService _interaction;
+        private readonly IAuthenticationSchemeProvider _schemeProvider;
         readonly ILogger<AccountController> _logger;
         readonly IEmailPublisher _publisher;
         readonly SignInManager<ApplicationUser> _signInManager;
         readonly TokenLifetimeOptions _tokenOptions;
         readonly UserManager<ApplicationUser> _userManager;
+        private readonly IClientStore _clientStore;
 
         public AccountController(
             UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
             IEmailPublisher publisher, IIdentityServerInteractionService interaction,
             IOptions<EmailOptions> emailOptions, IOptions<TokenLifetimeOptions> tokenOptions,
-            ILogger<AccountController> logger
-        )
+            ILogger<AccountController> logger, IClientStore clientStore, IAuthenticationSchemeProvider schemeProvider)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -45,6 +53,8 @@ namespace IdentityServer.Controllers
             _emailOptions = emailOptions.Value;
             _tokenOptions = tokenOptions.Value;
             _logger = logger;
+            _clientStore = clientStore;
+            _schemeProvider = schemeProvider;
         }
 
         async Task<(string userId, string username, string email)> GetUserInfoAsync(ApplicationUser user)
@@ -61,43 +71,87 @@ namespace IdentityServer.Controllers
         [HttpGet]
         public async Task<IActionResult> Login(string returnUrl)
         {
-            ViewData["ReturnUrl"] = returnUrl;
+            // build a model so we know what to show on the login page
+            var vm = await BuildLoginViewModelAsync(returnUrl);
 
-            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            if (context?.IdP != null) throw new NotImplementedException("External login is not implemented!");
+            if (vm.IsExternalLoginOnly)
+            {
+                // we only have one option for logging in and it's an external provider
+                return View(); //RedirectToAction("Challenge", "External", new { provider = vm.ExternalLoginScheme, returnUrl });
+            }
 
-            var model = new LoginViewModel {Email = context?.LoginHint};
-            return View(model);
+            return View(vm);
+            // ViewData["ReturnUrl"] = returnUrl;
+            //            
+            // var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            // if (context?.IdP != null) throw new NotImplementedException("External login is not implemented!");
+            //
+            // var model = new LoginInputModel {Email = context?.LoginHint};
+            // return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = default)
-        {
+        public async Task<IActionResult> Login(LoginViewModel model, string button)
+        {  
             if (!ModelState.IsValid) return View(model);
-
+            var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+            
             var user = await _userManager.FindByEmailAsync(model.Email);
-
+            
             if (await _userManager.CheckPasswordAsync(user, model.Password))
-            {
+            { 
                 var props = new AuthenticationProperties
                 {
                     ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(_tokenOptions.Minutes),
                     AllowRefresh = true,
-                    RedirectUri = returnUrl
+                    RedirectUri = model.ReturnUrl
                 };
-
+            
                 if (model.RememberMe)
                 {
                     props.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(_tokenOptions.Days);
                     props.IsPersistent = true;
                 }
-
+            
                 await _signInManager.SignInAsync(user, props);
+                if (context != null)
+                {
+                    if (await _clientStore.IsPkceClientAsync(context.Client.ClientId))
+                    {
+                        // if the client is PKCE then we assume it's native, so this change in how to
+                        // return the response is for better UX for the end user.
+                        return this.LoadingPage("Redirect", model.ReturnUrl);
+                    }
+                    
+                    if (context.IsNativeClient())
+                    {
+                        // The client is native, so this change in how to
+                        // return the response is for better UX for the end user.
+                        return this.LoadingPage("Redirect", model.ReturnUrl);
+                    }
 
+                    // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+                    return Redirect(model.ReturnUrl);
+                }
+
+                // request for a local page
+                if (Url.IsLocalUrl(model.ReturnUrl))
+                {
+                    return Redirect(model.ReturnUrl);
+                }
+                else if (string.IsNullOrEmpty(model.ReturnUrl))
+                {
+                    return Redirect("~/");
+                }
+                else
+                {
+                    // user might have clicked on a malicious link - should be logged
+                    throw new Exception("invalid return URL");
+                }
                 // make sure the returnUrl is still valid, and if yes - redirect back to authorize endpoint
-                return Redirect(_interaction.IsValidReturnUrl(returnUrl) ? returnUrl : "~/");
+                return Redirect(_interaction.IsValidReturnUrl(model.ReturnUrl) ? props.RedirectUri : "~/");
             }
-
+            
             // something went wrong, show form with error
             ModelState.AddModelError(string.Empty, "Invalid username or password.");
             return View(model);
@@ -360,5 +414,64 @@ namespace IdentityServer.Controllers
         }
 
         #endregion
+         private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl)
+        {
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
+            {
+                var local = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
+
+                // this is meant to short circuit the UI and only trigger the one external IdP
+                var vm = new LoginViewModel
+                {
+                    EnableLocalLogin = local,
+                    ReturnUrl = returnUrl,
+                    Email = context?.LoginHint,
+                };
+
+                if (!local)
+                {
+                    vm.ExternalProviders = new[] { new ExternalProvider { AuthenticationScheme = context.IdP } };
+                }
+
+                return vm;
+            }
+
+            var schemes = await _schemeProvider.GetAllSchemesAsync();
+
+            var providers = schemes
+                .Where(x => x.DisplayName != null ||
+                            (x.Name.Equals(AccountOptions.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
+                )
+                .Select(x => new ExternalProvider
+                {
+                    DisplayName = x.DisplayName ?? x.Name,
+                    AuthenticationScheme = x.Name
+                }).ToList();
+
+            var allowLocal = true;
+            if (context?.Client.ClientId != null)
+            {
+                var client = await _clientStore.FindEnabledClientByIdAsync(context.Client.ClientId);
+                if (client != null)
+                {
+                    allowLocal = client.EnableLocalLogin;
+
+                    if (client.IdentityProviderRestrictions != null && client.IdentityProviderRestrictions.Any())
+                    {
+                        providers = providers.Where(provider => client.IdentityProviderRestrictions.Contains(provider.AuthenticationScheme)).ToList();
+                    }
+                }
+            }
+
+            return new LoginViewModel
+            {
+                AllowRememberLogin = AccountOptions.AllowRememberLogin,
+                EnableLocalLogin = allowLocal && AccountOptions.AllowLocalLogin,
+                ReturnUrl = returnUrl,
+                Email = context?.LoginHint,
+                ExternalProviders = providers.ToArray()
+            };
+        }
     }
 }

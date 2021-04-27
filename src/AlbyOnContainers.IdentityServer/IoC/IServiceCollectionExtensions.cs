@@ -5,6 +5,7 @@ using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
 using IdentityServer.Services;
+using IdentityServer4.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +53,7 @@ namespace IdentityServer.IoC
                     x.IssuerUri = "null";
                     x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 })
+                .AddDeveloperSigningCredential()  // not recommended for production - you need to store your key material somewhere secure
                 // .AddSigningCredential(CertificateManager.Get())
                 .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<ApplicationUser>()
@@ -73,8 +75,8 @@ namespace IdentityServer.IoC
                             sqlOptions.EnableRetryOnFailure(
                                 15); //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
                         });
-                });
-            // .Services.AddTransient<IProfileService, ProfileService>();
+                })
+             .Services.AddTransient<IProfileService, ProfileService>();
         }
 
         public static void AddHealthChecks(this IServiceCollection services, string connection, HealthChecksConfiguration configuration)

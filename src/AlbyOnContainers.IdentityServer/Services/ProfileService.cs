@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityModel;
 using IdentityServer.Models;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace IdentityServer.Services
 {
     public class ProfileService : IProfileService
     {
         readonly UserManager<ApplicationUser> _userManager;
+        readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
 
-        public ProfileService(UserManager<ApplicationUser> userManager)
+        public ProfileService(UserManager<ApplicationUser> userManager,
+            IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory)
         {
             _userManager = userManager;
+            _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
         }
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
@@ -29,12 +27,8 @@ namespace IdentityServer.Services
             var subjectId = subject.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
 
             var user = await _userManager.FindByIdAsync(subjectId);
-            var c = await _userManager.GetClaimsAsync(user);
-            if (user == null)
-                throw new ArgumentException("Invalid subject identifier");
-
-            var claims = GetClaimsFromUser(user, c);
-            context.IssuedClaims = claims.ToList();
+            var userClaims = await _userClaimsPrincipalFactory.CreateAsync(user);
+            context.IssuedClaims = userClaims.Claims.ToList();
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
@@ -65,36 +59,6 @@ namespace IdentityServer.Services
                     !user.LockoutEnd.HasValue ||
                     user.LockoutEnd <= DateTime.Now;
             }
-        }
-
-        IEnumerable<Claim> GetClaimsFromUser(ApplicationUser user, IEnumerable<Claim> c)
-        {
-            var claims = new List<Claim>
-            {
-                new(JwtClaimTypes.Subject, user.Id),
-                new(JwtClaimTypes.PreferredUserName, user.UserName),
-                new(JwtRegisteredClaimNames.UniqueName, user.UserName),
-            };
-            
-            claims.AddRange(c);
-
-            if (_userManager.SupportsUserEmail)
-                claims.AddRange(new[]
-                {
-                    new Claim(JwtClaimTypes.Email, user.Email),
-                    new Claim(JwtClaimTypes.EmailVerified, user.EmailConfirmed ? "true" : "false",
-                        ClaimValueTypes.Boolean)
-                });
-
-            if (_userManager.SupportsUserPhoneNumber && !string.IsNullOrWhiteSpace(user.PhoneNumber))
-                claims.AddRange(new[]
-                {
-                    new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber),
-                    new Claim(JwtClaimTypes.PhoneNumberVerified, user.PhoneNumberConfirmed ? "true" : "false",
-                        ClaimValueTypes.Boolean)
-                });
-
-            return claims;
         }
     }
 }

@@ -54,7 +54,12 @@ namespace IdentityServer.Infrastructure
             if (!context.ApiResources.Any())
             {
                 foreach (var api in Config.GetApis()) await context.ApiResources.AddAsync(api.ToEntity());
-
+                await context.SaveChangesAsync();
+            }
+            
+            if (!context.ApiScopes.Any())
+            {
+                foreach (var apiScope in Config.GetApiScopes()) await context.ApiScopes.AddAsync(apiScope.ToEntity());
                 await context.SaveChangesAsync();
             }
         }
