@@ -1,11 +1,14 @@
 ﻿@page "/fetchdata"
-@inject HttpClient Http
+@using AlbyOnContainers.Tools.Catalog.Model
+@using GraphQL
+@using GraphQL.Client.Http
+@inject GraphQLHttpClient Http
 
 <h1>Weather forecast</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@if (_products == null)
 {
     <p>
         <em>Loading...</em>
@@ -16,20 +19,16 @@ else
     <table class="table">
         <thead>
         <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
+            <th>Id</th>
+            <th>Name</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var forecast in forecasts)
+        @foreach (var product in _products)
         {
             <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
+                <td>@product.Id</td>
+                <td>@product.Name</td>
             </tr>
         }
         </tbody>
@@ -37,22 +36,13 @@ else
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    private ProductType[] _products;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        var request = new GraphQLRequest {Query = @"{products { id, name }}"};
+        var response = await Http.SendQueryAsync<ProductsType>(request);
+
+        _products = response.Data.Products.ToArray();
     }
-
-    public class WeatherForecast
-    {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string Summary { get; set; }
-
-        public int TemperatureF => 32 + (int) (TemperatureC / 0.5556);
-    }
-
 }

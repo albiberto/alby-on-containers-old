@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbyOnContainers.Shared.Lib
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{B912D1BF-BBF8-471B-BE1C-A05998771F92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Tools.Catalog", "..\AlbyOnContainers.Tools.Catalog\AlbyOnContainers.Tools.Catalog.csproj", "{56D47618-EC66-44E3-B36F-09D91AB29C25}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbyOnContainers.Tools.Catalog", "src\AlbyOnContainers.Tools.Catalog\AlbyOnContainers.Tools.Catalog.csproj", "{A63D2AC8-12E2-44D1-8354-30F765D4AD8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +53,10 @@ Global
 		{B912D1BF-BBF8-471B-BE1C-A05998771F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B912D1BF-BBF8-471B-BE1C-A05998771F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B912D1BF-BBF8-471B-BE1C-A05998771F92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56D47618-EC66-44E3-B36F-09D91AB29C25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A63D2AC8-12E2-44D1-8354-30F765D4AD8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A63D2AC8-12E2-44D1-8354-30F765D4AD8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A63D2AC8-12E2-44D1-8354-30F765D4AD8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A63D2AC8-12E2-44D1-8354-30F765D4AD8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
