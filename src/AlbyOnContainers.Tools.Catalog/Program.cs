@@ -1,5 +1,4 @@
 using System;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using GraphQL.Client.Http;
@@ -13,9 +12,6 @@ namespace AlbyOnContainers.Tools.Catalog
 {
     public class Program
     {
-        private static HttpMessageHandler BuildHttpMessageHandler(IServiceProvider provider) =>
-            provider.GetService<AuthorizationMessageHandler>()?.ConfigureHandler(authorizedUrls: new[] {"https://localhost:5001"}, scopes: new[] {"companyApi"});
-
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -30,19 +26,13 @@ namespace AlbyOnContainers.Tools.Catalog
                     var tokenResult = await provider.RequestAccessToken();
 
                     var result = tokenResult.TryGetToken(out var token);
-
                     if(result) client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Value);
                     
                     return new GraphQLHttpRequest(request);
                 }
             }, new SystemTextJsonSerializer()));
 
-            builder.Services.AddOidcAuthentication(options =>
-            {
-                // Configure your authentication provider options here.
-                // For more information, see https://aka.ms/blazor-standalone-auth
-                builder.Configuration.Bind("Local", options.ProviderOptions);
-            });
+            builder.Services.AddOidcAuthentication(options => builder.Configuration.Bind("Oidc", options.ProviderOptions));
 
             await builder.Build().RunAsync();
         }
