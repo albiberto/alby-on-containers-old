@@ -35,7 +35,7 @@ namespace Catalog
 
             var options = new Configuration();
             Configuration.GetSection("HealthChecks").Bind(options);
-            
+
             services.AddAuthentication(o =>
                 {
                     o.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
@@ -46,7 +46,6 @@ namespace Catalog
                     o.Authority = "https://localhost:5001";
                     o.SupportedTokens = SupportedTokens.Jwt;
                     o.RequireHttpsMetadata = false; // Note: Set to true in production
-                    o.ApiName = "Catalog.GraphQL";
                 });
 
             services.AddDbContext<ApplicationContext>(optionsBuilder => optionsBuilder.UseNpgsql(connection), ServiceLifetime.Transient);
@@ -55,10 +54,15 @@ namespace Catalog
 
             services.AddCors(corsOptions => corsOptions.AddPolicy("AlbyPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
-            services.AddGraphQL(o => o.EnableMetrics = Environment.IsDevelopment() || Environment.IsStaging())
+            services.AddGraphQL(o => o.EnableMetrics = !Environment.IsProduction())
                 .AddGraphQLAuthorization(o =>
                 {
-                    o.AddPolicy("AlbyPolicyTest", policy => policy.RequireAuthenticatedUser());
+                    o.AddPolicy("AlbyTestPolicy", policy => policy.RequireAuthenticatedUser());
+                    o.AddPolicy("YanierTestPolicy", policy =>
+                    {
+                        policy.RequireAuthenticatedUser();
+                        policy.RequireRole("Admin");
+                    });
                 })
                 .AddSystemTextJson()
                 .AddWebSockets()
@@ -71,6 +75,8 @@ namespace Catalog
             app.UseCors("AlbyPolicy");
 
             app.UseRouting();
+            app.UseAuthentication();
+            // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -1,0 +1,31 @@
+﻿@page "/products"
+@inherits ProductsComponent
+
+<h3>Products</h3>
+
+@if (_products == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var product in _products)
+        {
+            <tr>
+                <td>@product.Id</td>
+                <td>@product.Name</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
