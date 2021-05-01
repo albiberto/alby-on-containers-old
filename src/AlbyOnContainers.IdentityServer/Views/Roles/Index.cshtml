@@ -1,0 +1,63 @@
+@model UpdateUserRoleViewModel
+
+<div>
+    <form asp-controller="Roles" asp-action="UpdateUserRole" method="post">
+        <h4>Roles List</h4>
+        <ul>
+            @foreach (var role in Model.Roles)
+            {
+                <li>
+                    <input type="radio" asp-for="Role" value="@role" />
+                    @role
+                </li>
+            }
+        </ul>
+        
+        <h2>Add User to Role</h2>
+        <ul>
+            @foreach (var user in Model.Users)
+            {
+                <li>
+                    <input type="radio" asp-for="UserEmail" value="@user.Email"/>
+                    @user.Email
+                </li>
+                <li>
+                    <ul>
+                        @foreach (var role in user.Roles)
+                        {
+                            <li>
+                                @role.Name
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+
+        <input type="submit" value="Add"/>
+        <input type="hidden" asp-for="Delete" value="false" id="delete"/>
+        <input type="submit" value="Delete" onclick="document.getElementById('delete').value = 'true'"/>
+    </form>
+</div>
+<div>
+    <h4>Manage Roles</h4>
+    <div>
+        <form asp-controller="Roles" asp-action="UpdateRoles" method="post">
+            <ul>
+                @foreach (var role in Model.Roles)
+                {
+                    <li>
+                        <input type="radio" asp-for="Role" value="@role" />
+                        @role
+                    </li>
+                }
+            </ul>
+            
+            <label>Create new Role</label>
+            <input asp-for="Role"/>
+            <input type="submit" value="Create new Role"/>
+            <input type="hidden" asp-for="Delete" value="false" id="deleteRole"/>
+            <input type="submit" value="Delete Role" onclick="document.getElementById('deleteRole').value = 'true'"/>
+        </form>
+    </div>
+</div>
