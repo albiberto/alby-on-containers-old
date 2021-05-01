@@ -1,18 +1,20 @@
 @model UpdateUserRoleViewModel
 
 <div>
+    <partial name="_ValidationSummary"/>
+    
     <form asp-controller="Roles" asp-action="UpdateUserRole" method="post">
         <h4>Roles List</h4>
         <ul>
             @foreach (var role in Model.Roles)
             {
                 <li>
-                    <input type="radio" asp-for="Role" value="@role" />
+                    <input type="radio" asp-for="Role" value="@role"/>
                     @role
                 </li>
             }
         </ul>
-        
+
         <h2>Add User to Role</h2>
         <ul>
             @foreach (var user in Model.Users)
@@ -61,3 +63,7 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

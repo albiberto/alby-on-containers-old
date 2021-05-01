@@ -54,6 +54,12 @@ namespace Roles.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateRoles(UpdateUserRoleViewModel vm)
         {
+            if (vm.Role == default)
+            {
+                ModelState.AddModelError(string.Empty, "You need to select a Role!");
+                return RedirectToAction("Index");
+            }
+            
             if (vm.Delete)
             {
                 var role = await _roleManager.FindByNameAsync(vm.Role);
@@ -68,8 +74,20 @@ namespace Roles.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateUserRole(UpdateUserRoleViewModel vm)
         {
+            if (vm.UserEmail == default)
+            {
+                ModelState.AddModelError(string.Empty, "You need to select an user !");
+                return RedirectToAction("Index");
+            }
+            
             var user = await _userManager.FindByEmailAsync(vm.UserEmail);
 
+            if (vm.UserEmail == default)
+            {
+                ModelState.AddModelError(string.Empty, "You need to select a role to be added/deleted!");
+                return RedirectToAction("Index");
+            }
+            
             if (vm.Delete)
                 await _userManager.RemoveFromRoleAsync(user, vm.Role);
             else
