@@ -1,0 +1,132 @@
+@* @model UpdateUserRoleViewModel *@
+@* *@
+@* @{ *@
+@*     ViewBag.Title = "Login"; *@
+@*     Layout = "_Layout"; *@
+@* } *@
+
+@* <div class="container"> *@
+@* *@
+@*     <div class="text-left"> *@
+@*         <h1 class="display-4 mb-2">@ViewData["Title"]</h1> *@
+@*         <h4> Inserisci le tue credenziali per accedere.</h4> *@
+@*     </div> *@
+@* *@
+@*     <div class="row"> *@
+@*         <div class="col-md-8"> *@
+@*             <section> *@
+@*                 <form class="form-horizontal" method="post"> *@
+@* *@
+@*                     <partial name="_ValidationSummary"/> *@
+@*                     <input type="hidden" asp-for="Role" /> *@
+@*                      *@
+@*                     <div class="form-group"> *@
+@*                         <label asp-for="UserEmail" class="control-label form-label"></label> *@
+@*                         <input asp-for="UserEmail" class="form-control form-input form-input-center"/> *@
+@*                         <span asp-validation-for="UserEmail" class="text-danger"></span> *@
+@*                     </div> *@
+@*                     <div class="form-group"> *@
+@*                         <label asp-for="Role" class="control-label form-label"></label> *@
+@*                         <input asp-for="Role" class="form-control form-input form-input-center"/> *@
+@*                         <span asp-validation-for="Role" class="text-danger"></span> *@
+@*                     </div> *@
+@*                     <div class="form-group"> *@
+@*                         <div class="checkbox"> *@
+@*                             <label asp-for="Delete"> *@
+@*                                 <input asp-for="Delete"/> *@
+@*                                 @Html.DisplayNameFor(m => m.Delete) *@
+@*                             </label> *@
+@*                         </div> *@
+@*                     </div> *@
+@*                     <div class="form-group"> *@
+@*                         <div> *@
+@*                             <button type="submit" class="btn btn-outline-success w-25">Accedi</button> *@
+@*                         </div> *@
+@*                     </div> *@
+@*                 </form> *@
+@*             </section> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+@* *@
+@* @section Scripts { *@
+@*     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); } *@
+@* } *@
+
+@model UpdateUserRoleViewModel
+
+@{
+    ViewData["Title"] = "Roles";
+    Layout = "_Layout";
+}
+
+<div>
+    <partial name="_ValidationSummary"/>
+    
+    <h4>Roles List</h4>
+    <form asp-controller="Roles" asp-action="UpdateUserRole" method="post">
+        <ul>
+            @foreach (var role in Model.Roles)
+            {
+                <li>
+                    <input type="radio" asp-for="Role" value="@role"/>
+                    <span asp-validation-for="Role" class="text-danger"></span>
+                    @role
+                </li>
+            }
+        </ul>
+
+        <h2>Add User to Role</h2>
+        <ul>
+            @foreach (var user in Model.Users)
+            {
+                <li>
+                    <input type="radio" asp-for="UserEmail" value="@user.Email"/>
+                    <span asp-validation-for="UserEmail" class="text-danger"></span>
+                    @user.Email
+                </li>
+                <li>
+                    <ul>
+                        @foreach (var role in user.Roles)
+                        {
+                            <li>
+                                @role.Name
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+
+        <input type="submit" value="Add"/>
+        <input type="hidden" asp-for="Delete" value="false" id="delete"/>
+        <input type="submit" value="Delete" onclick="document.getElementById('delete').value = 'true'"/>
+    </form>
+</div>
+<div>
+    <h4>Manage Roles</h4>
+    <div>
+        <form asp-controller="Roles" asp-action="UpdateRoles" method="post">
+            <ul>
+                @foreach (var role in Model.Roles)
+                {
+                    <li>
+                        <input type="radio" asp-for="Role" value="@role"/>
+                        <span asp-validation-for="Role" class="text-danger"></span> 
+                        @role
+                    </li>
+                }
+            </ul>
+
+            <label>Create new Role</label>
+            <input asp-for="Role"/>
+            <input type="submit" value="Create new Role"/>
+            <input type="hidden" asp-for="Delete" value="false" id="deleteRole"/>
+            <input type="submit" value="Delete Role" onclick="document.getElementById('deleteRole').value = 'true'"/>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

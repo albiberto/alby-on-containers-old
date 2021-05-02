@@ -1,14 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Infrastructure;
 using IdentityServer.Models;
 using IdentityServer.Models.RolesViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Roles.Controllers
+namespace IdentityServer.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class RolesController : Controller
@@ -27,48 +26,29 @@ namespace Roles.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
-        {
-            var roles = _context.Roles.ToList();
-            var users = _context.Users.ToList();
-            var userRoles = _context.UserRoles.ToList();
+        public IActionResult Index() => View(CreateModel());
 
-            var convertedUsers = users.Select(x => new UsersViewModel
-            {
-                Email = x.Email,
-                Roles = roles
-                    .Where(y => userRoles.Any(z => z.UserId == x.Id && z.RoleId == y.Id))
-                    .Select(y => new UsersRole
-                    {
-                        Name = y.NormalizedName
-                    })
-            });
-
-            return View(new UpdateUserRoleViewModel
-            {
-                Roles = roles.Select(x => x.NormalizedName),
-                Users = convertedUsers
-            });
-        }
-        
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateRoles(UpdateUserRoleViewModel vm)
         {
             if (vm.Role == default)
             {
                 ModelState.AddModelError(string.Empty, "You need to select a Role!");
-                return RedirectToAction("Index");
+                return View("Index", CreateModel());
             }
-            
+
             if (vm.Delete)
             {
                 var role = await _roleManager.FindByNameAsync(vm.Role);
-                await _roleManager.DeleteAsync(role);            
+                await _roleManager.DeleteAsync(role);
             }
             else
+            {
                 await _roleManager.CreateAsync(new IdentityRole { Name = vm.Role });
+            }
 
-            return RedirectToAction("Index");
+            return View("Index", CreateModel());
         }
 
         [HttpPost]
@@ -77,23 +57,50 @@ namespace Roles.Controllers
             if (vm.UserEmail == default)
             {
                 ModelState.AddModelError(string.Empty, "You need to select an user !");
-                return RedirectToAction("Index");
             }
-            
-            var user = await _userManager.FindByEmailAsync(vm.UserEmail);
 
-            if (vm.UserEmail == default)
+            if (vm.Role == default)
             {
                 ModelState.AddModelError(string.Empty, "You need to select a role to be added/deleted!");
-                return RedirectToAction("Index");
             }
-            
-            if (vm.Delete)
-                await _userManager.RemoveFromRoleAsync(user, vm.Role);
-            else
-                await _userManager.AddToRoleAsync(user, vm.Role);
 
-            return RedirectToAction("Index");
+            if (!ModelState.IsValid)
+            {
+                return View("Index", CreateModel());
+            }
+
+            var user = await _userManager.FindByEmailAsync(vm.UserEmail);
+
+            if (vm.Delete)
+            {
+                await _userManager.RemoveFromRoleAsync(user, vm.Role);
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, vm.Role);
+            }
+
+            return View("Index", CreateModel());
+        }
+
+        private UpdateUserRoleViewModel CreateModel()
+        {
+            var convertedUsers = _userManager.Users.ToArray()
+                .Select(x => new UsersViewModel
+                {
+                    Email = x.Email,
+                    Roles = _roleManager.Roles.ToArray()
+                        .Where(y => _context.UserRoles.ToArray().Any(z => z.UserId == x.Id && z.RoleId == y.Id))
+                        .Select(y => new UsersRole
+                        {
+                            Name = y.NormalizedName
+                        })
+                });
+            return new UpdateUserRoleViewModel
+            {
+                Roles = _roleManager.Roles.Select(x => x.NormalizedName),
+                Users = convertedUsers
+            };
         }
     }
 }
