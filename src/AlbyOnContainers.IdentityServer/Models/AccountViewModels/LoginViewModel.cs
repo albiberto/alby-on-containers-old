@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 
 namespace IdentityServer.Models.AccountViewModels
 {
-    public class LoginViewModel : LoginInputModel
+    public class LoginViewModel
     {
-        public bool AllowRememberLogin { get; set; } = true;
-        public bool EnableLocalLogin { get; set; } = true;
+        [Required, EmailAddress] 
+        public string Email { get; set; } = null!;
 
-        public IEnumerable<ExternalProvider> ExternalProviders { get; set; } = Enumerable.Empty<ExternalProvider>();
-        public IEnumerable<ExternalProvider> VisibleExternalProviders => ExternalProviders.Where(x => !string.IsNullOrWhiteSpace(x.DisplayName));
+        [Required, DataType(DataType.Password)]
+        public string Password { get; set; } = null!;
 
-        public bool IsExternalLoginOnly => EnableLocalLogin == false && ExternalProviders?.Count() == 1;
-        public string ExternalLoginScheme => IsExternalLoginOnly ? ExternalProviders?.SingleOrDefault()?.AuthenticationScheme : null;
+        [Display(Name = "Ricordami?")] public bool RememberMe { get; set; }
     }
 }

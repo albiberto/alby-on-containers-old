@@ -3,7 +3,7 @@ using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
 
-namespace IdentityServer.Infrastructure
+namespace IdentityServer.Infrastructure.Seeds.Config
 {
     public static class Config
     {
@@ -11,7 +11,7 @@ namespace IdentityServer.Infrastructure
         public static IEnumerable<ApiResource> GetApis() =>
             new List<ApiResource>
             {
-                new("products", "Products Service",  new[] { JwtClaimTypes.Role }),
+                new("productapi", "Products Service",  new[] { JwtClaimTypes.Role }),
                 new("weatherapi", "The Weather API", new[] { JwtClaimTypes.Role })
             };
 
@@ -38,7 +38,7 @@ namespace IdentityServer.Infrastructure
             };
 
         // client want to access resources (aka scopes)
-        public static IEnumerable<Client> GetClients(Dictionary<string, string> clientsUrl) =>
+        public static IEnumerable<Client> GetClients() =>
             new List<Client>
             {
                 new()
@@ -55,13 +55,14 @@ namespace IdentityServer.Infrastructure
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "productapi"
                     }
                 },
 
                 new()
                 {
-                    ClientId = "blazor",
+                    ClientId = "Blazor",
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
                     RequireClientSecret = false,

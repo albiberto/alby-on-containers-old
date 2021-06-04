@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Extensions;
+using IdentityServer.Models.AccountViewModels;
 using IdentityServer.Models.ConsentViewModels;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -70,9 +71,11 @@ namespace IdentityServer.Controllers
                 var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
                 if (context?.IsNativeClient() == true)
                 {
-                    // The client is native, so this change in how to
-                    // return the response is for better UX for the end user.
-                    return this.LoadingPage("Redirect", result.RedirectUri);
+                    // The client is native, so this change in how to return the response is for better UX for the end user.
+                    return View("Redirect", new RedirectViewModel
+                    {
+                        RedirectUrl = result.RedirectUri
+                    });
                 }
 
                 return Redirect(result.RedirectUri);

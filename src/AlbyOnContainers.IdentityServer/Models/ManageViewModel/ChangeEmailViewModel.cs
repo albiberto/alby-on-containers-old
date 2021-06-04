@@ -5,9 +5,10 @@ namespace IdentityServer.Models.ManageViewModel
     public class ChangeEmailViewModel
     {
         [Display(Name = "Nuova Email"), Required, EmailAddress]
-        public string NewEmail { get; set; }
+        public string NewEmail { get; set; } = string.Empty;
 
-        public string Email { get; set; }
+        [Required] public string Email { get; set; } = null!;
+
         public bool IsEmailConfirmed { get; set; }
     }
 }

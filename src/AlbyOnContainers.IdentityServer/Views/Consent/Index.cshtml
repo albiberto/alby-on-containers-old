@@ -1,14 +1,21 @@
 @model ConsentViewModel
 
+@if (Model == default)
+{
+    <span>Loafing ...</span>
+    return;
+}
+
 <div class="page-consent">
     <div class="lead">
-        @if (Model.ClientLogoUrl != null)
+        @if (Model.ClientLogoUrl != default)
         {
-            <div class="client-logo"><img src="@Model.ClientLogoUrl"></div>
+            <div class="client-logo">
+                <img src="@Model.ClientLogoUrl" alt="client logo">
+            </div>
         }
         <h1>
-            @Model.ClientName
-            <small class="text-muted">is requesting your permission</small>
+            @Model.ClientName ?? "Uknown"<small class="text-muted">is requesting your permission</small>
         </h1>
         <p>Uncheck the permissions you do not wish to grant.</p>
     </div>
@@ -19,10 +26,11 @@
         </div>
     </div>
 
-    <form asp-action="Index">
-        <input type="hidden" asp-for="ReturnUrl" />
+    <form asp-action="Index" asp-route-returnurl="@ViewData["ReturnUrl"]">
+        
         <div class="row">
             <div class="col-sm-8">
+                
                 @if (Model.IdentityScopes.Any())
                 {
                     <div class="form-group">
@@ -34,7 +42,7 @@
                             <ul class="list-group list-group-flush">
                                 @foreach (var scope in Model.IdentityScopes)
                                 {
-                                    <partial name="_ScopeListItem" model="@scope" />
+                                    <partial name="_ScopeListItem" model="@scope"/>
                                 }
                             </ul>
                         </div>
@@ -52,7 +60,7 @@
                             <ul class="list-group list-group-flush">
                                 @foreach (var scope in Model.ApiScopes)
                                 {
-                                    <partial name="_ScopeListItem" model="scope" />
+                                    <partial name="_ScopeListItem" model="scope"/>
                                 }
                             </ul>
                         </div>
@@ -87,9 +95,10 @@
 
         <div class="row">
             <div class="col-sm-4">
-                <button name="button" value="yes" class="btn btn-primary" autofocus>Yes, Allow</button>
-                <button name="button" value="no" class="btn btn-secondary">No, Do Not Allow</button>
+                <button name="button" asp-action="Index" class="btn btn-primary" autofocus>Yes, Allow</button>
+                <button name="button" asp-action="Index" class="btn btn-secondary">No, Do Not Allow</button>
             </div>
+            
             <div class="col-sm-4 col-lg-auto">
                 @if (Model.ClientUrl != null)
                 {

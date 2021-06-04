@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <UserSecretsId>c133766a-bad8-47fa-9145-f2c12dc84c35</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <DockerfileContext>..\..</DockerfileContext>
@@ -11,9 +11,9 @@
     <ItemGroup>
         <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
         <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
-        <PackageReference Include="MassTransit.AspNetCore" Version="7.1.4-develop.3245" />
-        <PackageReference Include="MassTransit.Autofac" Version="7.1.4-develop.3245" />
-        <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.4-develop.3245" />
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.2.0" />
+        <PackageReference Include="MassTransit.Autofac" Version="7.2.0" />
+        <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.0" />
         <PackageReference Include="Serilog" Version="2.10.1-dev-01265" />
         <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
         <PackageReference Include="Serilog.Enrichers.ApplicationName" Version="0.1.0-rc0000" />
@@ -22,7 +22,7 @@
         <PackageReference Include="Serilog.Enrichers.Thread" Version="3.2.0-dev-00747" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
         <PackageReference Include="Serilog.Sinks.Loki" Version="3.0.1-beta1" />
-        <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.0-dev-00174" />
+        <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
     </ItemGroup>
 
     <ItemGroup>

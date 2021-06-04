@@ -23,21 +23,22 @@
 
                 <div class="form-group">
                     <label asp-for="Email"></label>
-                    @if (Model.IsEmailConfirmed)
-                    {
                         <div class="input-group">
                             <input asp-for="Email" class="form-control" disabled/>
-                            <input type="hidden" asp-for="Email"/>
+                            <input asp-for="Email" type="hidden" />
+                            <input asp-for="IsEmailConfirmed" type="hidden" />
                             <div class="input-group-append">
-                                <span class="input-group-text text-success font-weight-bold">✓</span>
+                                @if (Model.IsEmailConfirmed)
+                                {
+                                    <span class="input-group-text text-success font-weight-bold">✓</span>
+                                }
+                                else
+                                {
+                                    <span class="input-group-text text-danger font-weight-bold">X</span>
+                                }
                             </div>
                         </div>
-                    }
-                    else
-                    {
-                        <input asp-for="Email" class="form-control" disabled/>
                         <button id="email-verification" class="btn btn-link" type="submit" asp-action="SendVerificationEmail">Non ti &egrave; arrivata la mail di conferma?</button>
-                    }
                 </div>
 
                 <div class="form-group">
