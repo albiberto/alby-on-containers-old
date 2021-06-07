@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace IdentityServer.Models.ConsentViewModels
+namespace IdentityServer.ViewModels.ConsentViewModels
 {
     public class ConsentViewModel : ConsentInputModel
     {

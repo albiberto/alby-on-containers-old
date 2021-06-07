@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using IdentityServer.Models;
-using IdentityServer.Models.AccountViewModels;
+using IdentityServer.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers

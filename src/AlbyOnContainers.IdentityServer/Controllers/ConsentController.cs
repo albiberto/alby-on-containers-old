@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Extensions;
-using IdentityServer.Models.AccountViewModels;
-using IdentityServer.Models.ConsentViewModels;
+using IdentityServer.ViewModels.AccountViewModels;
+using IdentityServer.ViewModels.ConsentViewModels;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -22,7 +22,6 @@ namespace IdentityServer.Controllers
     /// <summary>
     /// This controller processes the consent UI
     /// </summary>
-    [SecurityHeaders]
     [Authorize]
     public class ConsentController : Controller
     {

@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AlbyOnContainers.Messages;
-using IdentityServer.Models.ManageViewModel;
+using IdentityServer.ViewModels.ManageViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 

@@ -1,4 +1,4 @@
-namespace IdentityServer.Models.RolesViewModels
+namespace IdentityServer.ViewModels.RolesViewModels
 {
     public class UsersRole
     {

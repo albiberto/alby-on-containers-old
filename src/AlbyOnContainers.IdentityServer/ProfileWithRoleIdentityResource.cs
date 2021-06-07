@@ -7,7 +7,7 @@ namespace IdentityServer
     {
         public ProfileWithRoleIdentityResource()
         {
-            this.UserClaims.Add(JwtClaimTypes.Role);
+            UserClaims.Add(JwtClaimTypes.Role);
         }
     }
 }

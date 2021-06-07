@@ -1,6 +1,6 @@
 using System.Text;
 using System.Threading.Tasks;
-using IdentityServer.Models.AccountViewModels;
+using IdentityServer.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 

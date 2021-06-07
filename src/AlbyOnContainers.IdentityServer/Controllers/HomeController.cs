@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using IdentityServer.Models;
 using IdentityServer.Services;
+using IdentityServer.ViewModels;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
 

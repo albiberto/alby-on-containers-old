@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using IdentityServer.Models.AccountViewModels;
+using IdentityServer.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

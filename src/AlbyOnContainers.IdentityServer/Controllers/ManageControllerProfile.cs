@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using IdentityServer.Models.ManageViewModel;
+using IdentityServer.ViewModels.ManageViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Controllers

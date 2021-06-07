@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace IdentityServer.Models.RolesViewModels
+namespace IdentityServer.ViewModels.RolesViewModels
 {
     public class RoleViewModel
     {

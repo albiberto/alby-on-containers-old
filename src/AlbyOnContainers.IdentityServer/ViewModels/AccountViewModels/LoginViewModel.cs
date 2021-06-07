@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServer.Models.AccountViewModels
+namespace IdentityServer.ViewModels.AccountViewModels
 {
     public class LoginViewModel
     {

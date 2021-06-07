@@ -1,6 +1,6 @@
 using IdentityServer4.Models;
 
-namespace IdentityServer.Models
+namespace IdentityServer.ViewModels
 {
     public class ErrorViewModel
     {

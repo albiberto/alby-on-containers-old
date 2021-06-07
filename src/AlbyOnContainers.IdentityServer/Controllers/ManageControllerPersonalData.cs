@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using IdentityServer.Models;
-using IdentityServer.Models.ManageViewModel;
+using IdentityServer.ViewModels.ManageViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

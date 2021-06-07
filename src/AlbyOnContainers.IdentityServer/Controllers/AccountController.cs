@@ -9,7 +9,6 @@ using IdentityModel;
 using IdentityServer;
 using IdentityServer.Extensions;
 using IdentityServer.Models;
-using IdentityServer.Models.AccountViewModels;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
 using IdentityServer4;
@@ -26,7 +25,6 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Controllers
 {
-    [SecurityHeaders]
     [AllowAnonymous]
     public partial class AccountController : Controller
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using IdentityServer.Extensions;
-using IdentityServer.Models.AccountViewModels;
+using IdentityServer.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 

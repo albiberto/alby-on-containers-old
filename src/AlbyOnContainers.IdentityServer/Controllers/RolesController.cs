@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Infrastructure;
 using IdentityServer.Models;
-using IdentityServer.Models.RolesViewModels;
+using IdentityServer.ViewModels.RolesViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +24,7 @@ namespace IdentityServer.Controllers
             _context = context;
         }
 
+        [HttpGet]
         public IActionResult Index() => View(CreateModel());
 
         [HttpPost]
@@ -34,9 +35,22 @@ namespace IdentityServer.Controllers
         public async Task<IActionResult> RemoveUserFromRole(UpdateUserRoleViewModel vm) => 
             await UpsertUserRole(vm, (user, role) => _userManager.RemoveFromRoleAsync(user, role));
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRole(UpdateUserRoleViewModel vm) => await UpsertRole(vm.UpsertRole, role => 
+            _roleManager.CreateAsync(new IdentityRole {Name = role}));
+    
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteRole(UpdateUserRoleViewModel vm) => await UpsertRole(vm.UpsertRole, async role =>
+        {
+            var identityRole = await _roleManager.FindByNameAsync(role);
+            await _roleManager.DeleteAsync(identityRole);
+        });
+
         private async Task<IActionResult> UpsertUserRole(UpdateUserRoleViewModel vm, Func<ApplicationUser, string, Task> selector)
         {
-            if (string.IsNullOrEmpty(vm.UserEmail)) ModelState.AddModelError(string.Empty, "You need to select an user !");
+            if (string.IsNullOrEmpty(vm.UserEmail)) ModelState.AddModelError(string.Empty, "You need to select an user!");
             if (string.IsNullOrEmpty(vm.CurrentRole)) ModelState.AddModelError(string.Empty, "You need to select a role to be added/deleted!");
 
             if (!ModelState.IsValid) return View("Index", CreateModel());
@@ -47,20 +61,7 @@ namespace IdentityServer.Controllers
 
             return View("Index", CreateModel());
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddRole(UpdateUserRoleViewModel vm) => await UpsertRole(vm.UpsertRole, role => 
-            _roleManager.CreateAsync(new IdentityRole {Name = role}));
-    
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteRole(UpdateUserRoleViewModel vm) => await UpsertRole(vm.UpsertRole, async role =>
-        {
-            var r = await _roleManager.FindByNameAsync(role);
-            await _roleManager.DeleteAsync(r);
-        });
-
+        
         private async Task<IActionResult> UpsertRole(string? role, Func<string, Task> selector)
         {
             if (string.IsNullOrEmpty(role))
@@ -87,6 +88,7 @@ namespace IdentityServer.Controllers
                             Name = y.NormalizedName
                         })
                 });
+            
             return new UpdateUserRoleViewModel
             {
                 Roles = _roleManager.Roles.Select(x => x.NormalizedName),

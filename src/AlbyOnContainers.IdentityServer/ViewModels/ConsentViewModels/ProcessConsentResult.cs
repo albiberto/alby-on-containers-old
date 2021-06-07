@@ -3,7 +3,7 @@
 
 using IdentityServer4.Models;
 
-namespace IdentityServer.Models.ConsentViewModels
+namespace IdentityServer.ViewModels.ConsentViewModels
 {
     public class ProcessConsentResult
     {

@@ -33,7 +33,6 @@ namespace IdentityServer.Infrastructure.Seeds.Config
             {
                 new IdentityResources.OpenId(),
                 new ProfileWithRoleIdentityResource(),
-                //new IdentityResources.Profile(),
                 new IdentityResources.Email()
             };
 

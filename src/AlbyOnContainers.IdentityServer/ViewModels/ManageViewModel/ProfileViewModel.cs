@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServer.Models.ManageViewModel
+namespace IdentityServer.ViewModels.ManageViewModel
 {
     public class ProfileViewModel
     {
