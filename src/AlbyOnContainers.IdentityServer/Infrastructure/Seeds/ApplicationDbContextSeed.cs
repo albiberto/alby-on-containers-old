@@ -31,7 +31,7 @@ namespace IdentityServer.Infrastructure.Seeds
 
                 foreach (var role in roles)
                 {
-                    if (await roleManager.FindByNameAsync(role) == default) await roleManager.CreateAsync(new IdentityRole() { Name = role });
+                    if (await roleManager.FindByNameAsync(role) == default) await roleManager.CreateAsync(new IdentityRole { Name = role });
                     
                     var roleResult = await userManager.IsInRoleAsync(user, role);
                     if (!roleResult) await userManager.AddToRoleAsync(user, role);
