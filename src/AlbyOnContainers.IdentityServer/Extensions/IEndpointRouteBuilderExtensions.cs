@@ -8,13 +8,19 @@ namespace IdentityServer.Extensions
     // ReSharper disable once InconsistentNaming
     public static class IEndpointRouteBuilderExtensions
     {
-        public static void MapHealthChecks(this IEndpointRouteBuilder builder)
+        public static void MapIdentityHealthChecks(this IEndpointRouteBuilder builder)
         {
             builder.MapHealthChecks("/healthz", new HealthCheckOptions
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
+        }
+        public static void MapControllerRoute(this IEndpointRouteBuilder builder)
+        {
+            builder.MapControllerRoute(
+                "default",
+                "{controller=Home}/{action=Index}/{id?}");
         }
     }
 }

@@ -45,13 +45,12 @@ namespace IdentityServer.Controllers
         /// <param name="returnUrl"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Index(string returnUrl)
+        public async Task<IActionResult> Index(string? returnUrl = default)
         {
-            var vm = await BuildViewModelAsync(returnUrl);
-            if (vm != null)
-            {
-                return View("Index", vm);
-            }
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            if(context == default) return View("Error");
+
+            var vm = CreateConsentViewModel(context, returnUrl: returnUrl);
 
             return View("Error");
         }
@@ -61,13 +60,13 @@ namespace IdentityServer.Controllers
         /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(ConsentInputModel model)
+        public async Task<IActionResult> Index(ConsentInputModel model, string? returnUrl = default)
         {
-            var result = await ProcessConsent(model);
+            var result = await ProcessConsent(model, returnUrl);
 
             if (result.IsRedirect)
             {
-                var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+                var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
                 if (context?.IsNativeClient() == true)
                 {
                     // The client is native, so this change in how to return the response is for better UX for the end user.
@@ -96,12 +95,12 @@ namespace IdentityServer.Controllers
         /*****************************************/
         /* helper APIs for the ConsentController */
         /*****************************************/
-        private async Task<ProcessConsentResult> ProcessConsent(ConsentInputModel model)
+        private async Task<ProcessConsentResult> ProcessConsent(ConsentInputModel model, string? returnUrl)
         {
             var result = new ProcessConsentResult();
 
             // validate return url is still valid
-            var request = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+            var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (request == null) return result;
 
             ConsentResponse grantedConsent = null;
@@ -152,13 +151,13 @@ namespace IdentityServer.Controllers
                 await _interaction.GrantConsentAsync(request, grantedConsent);
 
                 // indicate that's it ok to redirect back to authorization endpoint
-                result.RedirectUri = model.ReturnUrl;
+                result.RedirectUri = returnUrl;
                 result.Client = request.Client;
             }
             else
             {
                 // we need to redisplay the consent UI
-                result.ViewModel = await BuildViewModelAsync(model.ReturnUrl, model);
+                result.ViewModel = await BuildViewModelAsync(returnUrl, model);
             }
 
             return result;
@@ -179,41 +178,45 @@ namespace IdentityServer.Controllers
             return null;
         }
 
-        private ConsentViewModel CreateConsentViewModel(
-            ConsentInputModel model, string returnUrl,
-            AuthorizationRequest request)
+        private ConsentViewModel CreateConsentViewModel(AuthorizationRequest? request = default, ConsentInputModel? model = default , string? returnUrl = default)
         {
             var vm = new ConsentViewModel
             {
                 RememberConsent = model?.RememberConsent ?? true,
                 ScopesConsented = model?.ScopesConsented ?? Enumerable.Empty<string>(),
-                Description = model?.Description,
-
-                ReturnUrl = returnUrl,
-
-                ClientName = request.Client.ClientName ?? request.Client.ClientId,
-                ClientUrl = request.Client.ClientUri,
-                ClientLogoUrl = request.Client.LogoUri,
-                AllowRememberConsent = request.Client.AllowRememberConsent
+                Description = model?.Description ?? string.Empty,
+                
+                ClientName = request?.Client?.ClientName ?? request?.Client?.ClientId,
+                ClientUrl = request?.Client?.ClientUri,
+                ClientLogoUrl = request?.Client?.LogoUri,
+                AllowRememberConsent = request?.Client?.AllowRememberConsent ?? false
             };
 
-            vm.IdentityScopes = request.ValidatedResources.Resources.IdentityResources.Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null)).ToArray();
-
-            var apiScopes = new List<ScopeViewModel>();
-            foreach(var parsedScope in request.ValidatedResources.ParsedScopes)
-            {
-                var apiScope = request.ValidatedResources.Resources.FindApiScope(parsedScope.ParsedName);
-                if (apiScope != null)
+            var identityResources = (request?.ValidatedResources?.Resources?.IdentityResources ?? new List<IdentityResource>())
+                .Select(x => CreateScopeViewModel(x, vm.ScopesConsented.Contains(x.Name) || model == null))
+                .ToArray();
+            
+            var apiScopes = (request?.ValidatedResources?.ParsedScopes ?? new List<ParsedScopeValue>())
+                .Select(parsedScope => new
                 {
-                    var scopeVm = CreateScopeViewModel(parsedScope, apiScope, vm.ScopesConsented.Contains(parsedScope.RawValue) || model == null);
-                    apiScopes.Add(scopeVm);
-                }
-            }
+                    parsedScope,
+                    apiScope = request?.ValidatedResources?.Resources?.FindApiScope(parsedScope.ParsedName)
+                })
+                .Where(t => t.apiScope != default)
+                .Select(t => CreateScopeViewModel(t.parsedScope, t.apiScope,
+                    vm.ScopesConsented.Contains(t.parsedScope.RawValue) || model == null)).ToList();
+            
+            
+            
+            vm.IdentityScopes.AddRange(identityResources);
+                
+            
             if (ConsentOptions.EnableOfflineAccess && request.ValidatedResources.Resources.OfflineAccess)
             {
                 apiScopes.Add(GetOfflineAccessScope(vm.ScopesConsented.Contains(IdentityServer4.IdentityServerConstants.StandardScopes.OfflineAccess) || model == null));
             }
             vm.ApiScopes = apiScopes;
+            vm.Claims = User.Claims;
 
             return vm;
         }

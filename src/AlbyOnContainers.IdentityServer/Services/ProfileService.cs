@@ -24,7 +24,7 @@ namespace IdentityServer.Services
         {
             var subject = context.Subject ?? throw new ArgumentNullException(nameof(context.Subject));
 
-            var subjectId = subject.Claims.FirstOrDefault(x => x.Type == "sub")?.Value;
+            var subjectId = subject.Claims.FirstOrDefault(x => string.Equals(x.Type, "sub", StringComparison.InvariantCultureIgnoreCase))?.Value;
 
             var user = await _userManager.FindByIdAsync(subjectId);
             var userClaims = await _userClaimsPrincipalFactory.CreateAsync(user);

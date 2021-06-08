@@ -15,7 +15,7 @@
             </div>
         }
         <h1>
-            @Model.ClientName ?? "Uknown"<small class="text-muted">is requesting your permission</small>
+            @(Model?.ClientName ?? "Uknown")<small class="text-muted">is requesting your permission</small>
         </h1>
         <p>Uncheck the permissions you do not wish to grant.</p>
     </div>
@@ -61,6 +61,24 @@
                                 @foreach (var scope in Model.ApiScopes)
                                 {
                                     <partial name="_ScopeListItem" model="scope"/>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+                
+                @if (Model.Claims.Any())
+                {
+                    <div class="form-group">
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="glyphicon glyphicon-tasks"></span>
+                                User claims
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var scope in Model.Claims)
+                                {
+                                    <li class="list-group-item">@scope.Type: @scope.Value</li>
                                 }
                             </ul>
                         </div>

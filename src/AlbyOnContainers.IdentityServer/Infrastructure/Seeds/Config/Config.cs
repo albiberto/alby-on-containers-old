@@ -8,21 +8,25 @@ namespace IdentityServer.Infrastructure.Seeds.Config
     public static class Config
     {
         // ApiResources define the apis in your system
-        public static IEnumerable<ApiResource> GetApis() =>
-            new List<ApiResource>
-            {
-                new("productapi", "Products Service",  new[] { JwtClaimTypes.Role }),
-                new("weatherapi", "The Weather API", new[] { JwtClaimTypes.Role })
-            };
+        public static IEnumerable<ApiResource> GetApis()
+        {
+            var resource1 = new ApiResource("productapi", "The ProductApi Resource", new[] {JwtClaimTypes.Role});
+            var resource2 = new ApiResource("catalogapi", "The CatalogApi Resource", new[] {JwtClaimTypes.Role});
+            var resource3 = new ApiResource("kharonte", "The PhotoGateway Resource", new[] {JwtClaimTypes.Role});
+
+            resource1.Scopes = new List<string> {"products"};
+            resource2.Scopes = new List<string> {"products"};
+            resource3.Scopes = new List<string> {"photos"};
+
+            return new List<ApiResource> {resource1, resource2, resource3};
+        }
 
         public static IEnumerable<ApiScope> GetApiScopes()
         {
             return new List<ApiScope>
             {
-                new ApiScope(name: "read",   displayName: "Read your data."),
-                new ApiScope(name: "write",  displayName: "Write your data."),
-                new ApiScope(name: "delete", displayName: "Delete your data."),
-                new ApiScope(name: "weatherapi", displayName: "The Weather API")
+                new(name: "photos", displayName: "The Photo Scopes"),
+                new(name: "products", displayName: "The Product Scopes")
             };
         }
         
@@ -33,7 +37,8 @@ namespace IdentityServer.Infrastructure.Seeds.Config
             {
                 new IdentityResources.OpenId(),
                 new ProfileWithRoleIdentityResource(),
-                new IdentityResources.Email()
+                new IdentityResources.Email(),
+                new IdentityResources.Address()
             };
 
         // client want to access resources (aka scopes)
@@ -45,18 +50,21 @@ namespace IdentityServer.Infrastructure.Seeds.Config
                     ClientId = "Catalog",
                     ClientName = "Wasm Client",
                     AllowedGrantTypes = GrantTypes.Code,
+
                     RequireClientSecret = false,
+                    RequirePkce = true,
+                    RequireConsent = true,
 
                     RedirectUris =           { "http://localhost:5005/authentication/login-callback" },
-                    PostLogoutRedirectUris = { "http://localhost:5005/authentication/logout-callback" },
+                    PostLogoutRedirectUris = { "http://localhost:5005" },
                     AllowedCorsOrigins =     { "http://localhost:5005" },
 
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "productapi"
-                    }
+                        "products"
+                    },
                 },
 
                 new()

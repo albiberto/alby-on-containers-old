@@ -1,15 +1,12 @@
 using System.Linq;
-using System.Net.Mime;
-using HealthChecks.UI.Client;
+using IdentityServer.Extensions;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Seeds;
 using IdentityServer.IoC;
-using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer4.EntityFramework.DbContexts;
 using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,7 +56,7 @@ namespace IdentityServer
                 options.AddPolicy("AlbyPolicy",
                     builder =>
                     {
-                        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                        builder.AllowAnyOrigin().WithMethods("GET", "POST").AllowAnyHeader();
                     });
             });
 
@@ -112,15 +109,8 @@ namespace IdentityServer
             
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/healthz", new HealthCheckOptions
-                {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
-
-                endpoints.MapControllerRoute(
-                    "default",
-                    "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapIdentityHealthChecks();
+                endpoints.MapControllerRoute();
             });
         }
     }
