@@ -5,23 +5,24 @@ using IdentityServer.Infrastructure.Seeds;
 using IdentityServer4.EntityFramework.DbContexts;
 using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace IdentityServer
 {
-    static class Program
+    internal static class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             try
             {
                 var host = CreateHostBuilder(args).Build();
                 Log.Information("IdentityServer Starting");
 
-                await host.MigrateAsync<ApplicationDbContext>(async (_, services) => await ApplicationDbContextSeed.SeedAsync(services));
-                await host.MigrateAsync<ConfigurationDbContext>(async (context, _) => { await ConfigurationDbContextSeed.SeedAsync(context); });
-                await host.MigrateAsync<PersistedGrantDbContext>((_, __) => Task.CompletedTask);
+                await host.MigrateAsync<ApplicationDbContext>();
+                await host.MigrateAsync<ConfigurationDbContext>();
+                await host.MigrateAsync<PersistedGrantDbContext>();
 
                 await host.RunAsync();
 
@@ -41,7 +42,7 @@ namespace IdentityServer
         // https://docs.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-5.0
         // https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-5.0&tabs=visual-studio
         // https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-5.0&tabs=windows
-        static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog()

@@ -1,9 +1,13 @@
 using System.Linq;
 using System.Net.Mime;
 using HealthChecks.UI.Client;
+using IdentityServer.Infrastructure;
+using IdentityServer.Infrastructure.Seeds;
 using IdentityServer.IoC;
 using IdentityServer.Models;
 using IdentityServer.Options;
+using IdentityServer4.EntityFramework.DbContexts;
+using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -43,6 +47,12 @@ namespace IdentityServer
             services.AddHttpsRedirection(_env);
             services.AddHsts();
             services.AddReverseProxy();
+
+            if (!_env.IsProduction())
+            {
+                services.AddSingleton<IDbContextSeed<ApplicationDbContext>, ApplicationDbContextSeed>();
+                services.AddSingleton<IDbContextSeed<ConfigurationDbContext>, ConfigurationDbContextSeed>();
+            }
             
             services.AddCors(options =>
             {

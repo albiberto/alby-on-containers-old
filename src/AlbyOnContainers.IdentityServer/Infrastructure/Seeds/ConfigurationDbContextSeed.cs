@@ -2,35 +2,43 @@
 using System.Threading.Tasks;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using Libraries.IHostExtensions;
 
 namespace IdentityServer.Infrastructure.Seeds
 {
-    public static class ConfigurationDbContextSeed
+    public class ConfigurationDbContextSeed : IDbContextSeed<ConfigurationDbContext>
     {
-        public static async Task SeedAsync(ConfigurationDbContext context)
+        private readonly ConfigurationDbContext _context;
+
+        public ConfigurationDbContextSeed(ConfigurationDbContext context)
         {
-            if (!context.Clients.Any())
+            _context = context;
+        }
+
+        public async Task SeedAsync()
+        {
+            if (!_context.Clients.Any())
             {
-                foreach (var client in Config.Config.GetClients()) await context.Clients.AddAsync(client.ToEntity());
-                await context.SaveChangesAsync();
+                foreach (var client in Config.Config.GetClients()) await _context.Clients.AddAsync(client.ToEntity());
+                await _context.SaveChangesAsync();
             }
 
-            if (!context.IdentityResources.Any())
+            if (!_context.IdentityResources.Any())
             {
-                foreach (var resource in Config.Config.GetResources()) await context.IdentityResources.AddAsync(resource.ToEntity());
-                await context.SaveChangesAsync();
+                foreach (var resource in Config.Config.GetResources()) await _context.IdentityResources.AddAsync(resource.ToEntity());
+                await _context.SaveChangesAsync();
             }
 
-            if (!context.ApiResources.Any())
+            if (!_context.ApiResources.Any())
             {
-                foreach (var api in Config.Config.GetApis()) await context.ApiResources.AddAsync(api.ToEntity());
-                await context.SaveChangesAsync();
+                foreach (var api in Config.Config.GetApis()) await _context.ApiResources.AddAsync(api.ToEntity());
+                await _context.SaveChangesAsync();
             }
             
-            if (!context.ApiScopes.Any())
+            if (!_context.ApiScopes.Any())
             {
-                foreach (var apiScope in Config.Config.GetApiScopes()) await context.ApiScopes.AddAsync(apiScope.ToEntity());
-                await context.SaveChangesAsync();
+                foreach (var apiScope in Config.Config.GetApiScopes()) await _context.ApiScopes.AddAsync(apiScope.ToEntity());
+                await _context.SaveChangesAsync();
             }
         }
     }

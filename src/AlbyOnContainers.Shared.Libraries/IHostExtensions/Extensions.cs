@@ -13,23 +13,24 @@ namespace Libraries.IHostExtensions
     // ReSharper disable once InconsistentNaming
     public static class Extensions
     {
-        public static async Task MigrateAsync<TContext>(this IHost host, Func<TContext, IServiceProvider, Task> seeder, int retries = 10) where TContext : DbContext
+        public static async Task MigrateAsync<TContext>(this IHost host, int retries = 10) where TContext : DbContext
         {
             var inK8S = host.IsInKubernetes();
 
             using var scope = host.Services.CreateScope();
-
-            var services = scope.ServiceProvider;
-            var context = services.GetService<TContext>();
-            var logger = services.GetRequiredService<ILogger<TContext>>();
+            var provider = scope.ServiceProvider;
+            
+            var context = provider.GetService<TContext>();
+            var seeder = provider.GetService<IDbContextSeed<TContext>>();
+            var logger = provider.GetRequiredService<ILogger<TContext>>();
 
             try
             {
                 logger.LogInformation("Migrating database associated with context {DbContextName}", typeof(TContext).Name);
-
+                
                 if (inK8S)
                 {
-                    await InvokeSeeder(seeder, context, services);
+                    await InvokeSeederAsync(seeder, context);
                 }
                 else
                 {
@@ -44,7 +45,7 @@ namespace Libraries.IHostExtensions
                     //migration can't fail for network related exception. The retry options for DbContext only 
                     //apply to transient exceptions
                     // Note that this is NOT applied when running some orchestrators (let the orchestrator to recreate the failing service)
-                    await retry.ExecuteAsync(async () => await InvokeSeeder(seeder, context, services));
+                    await retry.ExecuteAsync(async () => await InvokeSeederAsync(seeder, context));
                 }
 
                 logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(TContext).Name);
@@ -56,17 +57,18 @@ namespace Libraries.IHostExtensions
             }
         }
 
-        static bool IsInKubernetes(this IHost webHost)
+        private static bool IsInKubernetes(this IHost webHost)
         {
             var cfg = webHost.Services.GetService<IConfiguration>();
             var orchestratorType = cfg.GetValue<string>("OrchestratorType");
             return orchestratorType?.ToUpper() == "K8S";
         }
 
-        static async Task InvokeSeeder<TContext>(Func<TContext, IServiceProvider, Task> seeder, TContext context, IServiceProvider services) where TContext : DbContext
+        private static async Task InvokeSeederAsync<TContext>(IDbContextSeed<TContext>? seeder, TContext? context) where TContext : DbContext?
         {
-            await context.Database.MigrateAsync();
-            await seeder(context, services);
+            await context?.Database.MigrateAsync();
+
+            if(seeder != default) await seeder.SeedAsync();
         }
     }
 }

@@ -5,39 +5,45 @@ using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer.Infrastructure.Seeds.Config;
 using IdentityServer.Models;
+using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer.Infrastructure.Seeds
 {
-    public static class ApplicationDbContextSeed
+    public class ApplicationDbContextSeed : IDbContextSeed<ApplicationDbContext>
     {
-        private const string Password = "Pass123$";
-        public static async Task SeedAsync(IServiceProvider serviceProvider)
-        {
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
+        public ApplicationDbContextSeed(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        private const string Password = "Pass123$";
+        public async Task SeedAsync()
+        {
             foreach (var user in ConfigIdentity.Users(Password))
             {
-                var stored = await userManager.FindByNameAsync(user.UserName);
+                var stored = await _userManager.FindByNameAsync(user.UserName);
                 if (stored != default) continue;
                    
-                var result = await userManager.CreateAsync(user, Password);
+                var result = await _userManager.CreateAsync(user, Password);
                 
                 if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
 
                 var roles = ConfigIdentity.GetRoles(user.UserName);
-                var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
                 foreach (var role in roles)
                 {
-                    if (await roleManager.FindByNameAsync(role) == default) await roleManager.CreateAsync(new IdentityRole { Name = role });
+                    if (await _roleManager.FindByNameAsync(role) == default) await _roleManager.CreateAsync(new IdentityRole { Name = role });
                     
-                    var roleResult = await userManager.IsInRoleAsync(user, role);
-                    if (!roleResult) await userManager.AddToRoleAsync(user, role);
+                    var roleResult = await _userManager.IsInRoleAsync(user, role);
+                    if (!roleResult) await _userManager.AddToRoleAsync(user, role);
                 }
                 
-                result = await userManager.AddClaimsAsync(user, new Claim[]{
+                result = await _userManager.AddClaimsAsync(user, new Claim[]{
                     new (JwtClaimTypes.Name, user?.Name ?? string.Empty),
                     new (JwtClaimTypes.GivenName, user?.GivenName ?? string.Empty),
                     new (JwtClaimTypes.FamilyName, user?.FamilyName ?? string.Empty)
