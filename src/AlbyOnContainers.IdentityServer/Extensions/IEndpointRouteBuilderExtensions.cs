@@ -19,8 +19,14 @@ namespace IdentityServer.Extensions
         public static void MapControllerRoute(this IEndpointRouteBuilder builder)
         {
             builder.MapControllerRoute(
+                "area",
+                "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+            
+            builder.MapControllerRoute(
                 "default",
-                "{controller=Home}/{action=Index}/{id?}");
+                "{controller=Home}/{action=Index}/{id?}",
+                new[] { "IdentityServer.Controllers" }
+            );
         }
     }
 }
