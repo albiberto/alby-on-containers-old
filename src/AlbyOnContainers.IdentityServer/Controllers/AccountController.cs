@@ -1,21 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
+﻿using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AlbyOnContainers.Messages;
-using IdentityModel;
-using IdentityServer;
-using IdentityServer.Extensions;
 using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
-using IdentityServer4;
-using IdentityServer4.Models;
 using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,32 +18,31 @@ namespace IdentityServer.Controllers
     [AllowAnonymous]
     public partial class AccountController : Controller
     {
-        private readonly EmailOptions _emailOptions;
-        private readonly IIdentityServerInteractionService _interaction;
-        private readonly ILogger<AccountController> _logger;
-        private readonly IEmailPublisher _publisher;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly TokenLifetimeOptions _tokenOptions;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IClientStore _clientStore;
+        readonly EmailOptions _emailOptions;
+        readonly IIdentityServerInteractionService _interaction;
+        readonly ILogger<AccountController> _logger;
+        readonly IEmailPublisher _publisher;
+        readonly SignInManager<ApplicationUser> _signInManager;
+        readonly UserManager<ApplicationUser> _userManager;
+        readonly IEventService _events;
+
 
         public AccountController(
             UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
             IEmailPublisher publisher, IIdentityServerInteractionService interaction,
-            IOptions<EmailOptions> emailOptions, IOptions<TokenLifetimeOptions> tokenOptions,
-            ILogger<AccountController> logger, IClientStore clientStore)
+            IOptions<EmailOptions> emailOptions,
+            ILogger<AccountController> logger, IEventService events)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _publisher = publisher;
             _interaction = interaction;
             _emailOptions = emailOptions.Value;
-            _tokenOptions = tokenOptions.Value;
             _logger = logger;
-            _clientStore = clientStore;
+            _events = events;
         }
 
-        private async Task PublishConfirmEmailMessage(ApplicationUser user, string? returnUrl = default)
+        async Task PublishConfirmEmailMessage(ApplicationUser user, string? returnUrl = default)
         {
             var userId = await _userManager.GetUserIdAsync(user);
 
@@ -70,7 +59,7 @@ namespace IdentityServer.Controllers
             await _publisher.SendAsync(message);
         }
 
-        private async Task PublishForgotPasswordEmailMessage(ApplicationUser user, string? returnUrl = default)
+        async Task PublishForgotPasswordEmailMessage(ApplicationUser user, string? returnUrl = default)
         {
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -84,8 +73,8 @@ namespace IdentityServer.Controllers
             var message = BuildEmailMessage(user, subject, body);
             await _publisher.SendAsync(message);
         }
-        
-        private EmailMessage BuildEmailMessage(ApplicationUser user, string subject, string body) =>
+
+        EmailMessage BuildEmailMessage(ApplicationUser user, string subject, string body) =>
             new()
             {
                 Sender = new MailAddress {Email = _emailOptions.Email, Name = _emailOptions.Address},

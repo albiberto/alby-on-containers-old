@@ -1,8 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using IdentityServer.ViewModels.AccountViewModels;
 using IdentityServer4.Models;
-using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Extensions
@@ -10,19 +8,11 @@ namespace IdentityServer.Extensions
     public static class Extensions
     {
         /// <summary>
-        /// Determines whether the client is configured to use PKCE.
+        /// Checks is client is PKCE.
         /// </summary>
-        /// <param name="store">The store.</param>
-        /// <param name="clientId">The client identifier.</param>
         /// <returns></returns>
-        public static async Task<bool> IsPkceClientAsync(this IClientStore store, string? clientId)
-        {
-            if (string.IsNullOrWhiteSpace(clientId)) return false;
-            
-            var client = await store.FindEnabledClientByIdAsync(clientId);
-            return client.RequirePkce;
-        }
-        
+        public static bool IsPkceClient(this Client client) => client?.RequirePkce == true;
+
         /// <summary>
         /// Checks if the redirect URI is for a native client.
         /// </summary>
@@ -33,7 +23,7 @@ namespace IdentityServer.Extensions
                    && !context.RedirectUri.StartsWith("http", StringComparison.Ordinal);
         }
 
-        public static IActionResult LoadingPage(this Controller controller, string viewName, string redirectUri)
+        public static IActionResult LoadingPage(this Controller controller, string viewName, string? redirectUri = default)
         {
             controller.HttpContext.Response.StatusCode = 200;
             controller.HttpContext.Response.Headers["Location"] = string.Empty;
