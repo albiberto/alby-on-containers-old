@@ -125,7 +125,7 @@ namespace IdentityServer.Areas.Manager.Controllers
         public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string code)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code))
-                RedirectToAction("Index", "Home");
+                RedirectToAction("Index", "Diagnostics");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound($"Unable to load user with ID '{userId}'.");

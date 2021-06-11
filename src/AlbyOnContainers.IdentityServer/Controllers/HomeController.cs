@@ -23,7 +23,7 @@ namespace IdentityServer.Controllers
         {
             if (returnUrl != null)
                 return Redirect(_redirectSvc.ExtractRedirectUriFromReturnUrl(returnUrl));
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Diagnostics");
         }
 
         /// <summary>

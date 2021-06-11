@@ -14,14 +14,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer.Areas.Grants.Controllers
 {
     [Area("Grants"), Authorize(Policy = "All")]
-    public class HomeController : Controller
+    public class GrantsController : Controller
     {
         readonly IIdentityServerInteractionService _interaction;
         readonly IClientStore _clients;
         readonly IResourceStore _resources;
         readonly IEventService _events;
 
-        public HomeController(IIdentityServerInteractionService interaction, IClientStore clients, IResourceStore resources, IEventService events)
+        public GrantsController(IIdentityServerInteractionService interaction, IClientStore clients, IResourceStore resources, IEventService events)
         {
             _interaction = interaction;
             _clients = clients;

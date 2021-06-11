@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Roles";
+    Layout = "_Layout";
+}
+<div class="container">
+
+    <div class="text-left">
+        <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
+    </div>
+
+    <div>
+        <div class="row">
+            <div class="col-3">
+                <partial name="_RolesNav"/>
+            </div>
+            <div class="col-9 pl-4">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+</div>

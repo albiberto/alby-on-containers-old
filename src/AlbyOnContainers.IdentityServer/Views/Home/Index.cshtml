@@ -10,7 +10,7 @@
 
     @if (_signInManager.IsSignedIn(User))
     {
-        <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Ciao @User?.Identity?.Name!</a>
+        <a class="nav-link text-dark" asp-controller="Diagnostics" asp-action="Index">Ciao @User?.Identity?.Name!</a>
         <p>Ciao @User?.Identity?.Name! Benvenuto nella tua area personale.</p>
     }
     else

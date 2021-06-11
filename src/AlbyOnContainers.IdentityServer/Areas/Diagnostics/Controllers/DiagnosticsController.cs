@@ -8,7 +8,7 @@ namespace IdentityServer.Areas.Diagnostics.Controllers
 
 {
     [Area("Diagnostics")]
-    public class HomeController : Controller
+    public class DiagnosticsController : Controller
     {
         public async Task<IActionResult> Index()
         {

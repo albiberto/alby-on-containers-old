@@ -12,12 +12,12 @@ using Microsoft.Extensions.Options;
 namespace IdentityServer.Areas.Manager.Controllers
 {
     [Authorize(Policy = "All"), Area("Manager")]
-    public class HomeController : Controller
+    public class ProfileController : Controller
     {
         readonly SignInManager<ApplicationUser> _signInManager;
         readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(IEmailPublisher email, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<EmailOptions> options)
+        public ProfileController(IEmailPublisher email, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<EmailOptions> options)
         {
             _userManager = userManager;
             _signInManager = signInManager;

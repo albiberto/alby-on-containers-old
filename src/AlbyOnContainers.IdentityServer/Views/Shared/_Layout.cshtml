@@ -34,16 +34,16 @@
                     @if (ViewContext.HttpContext.User.IsInRole("User"))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Grants" asp-controller="Home" asp-action="Index">Grants</a>
+                            <a class="nav-link text-dark" asp-area="Grants" asp-controller="Grants" asp-action="Index">Grants</a>
                         </li>
                     }
                     @if (ViewContext.HttpContext.User.IsInRole("Admin"))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                            <a class="nav-link text-dark" asp-area="Roles" asp-controller="Roles" asp-action="Index">Roles</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Diagnostics" asp-controller="Home" asp-action="Index">Diagnostics</a>
+                            <a class="nav-link text-dark" asp-area="Diagnostics" asp-controller="Diagnostics" asp-action="Index">Diagnostics</a>
                         </li>
                     }
                 </ul>

@@ -1,0 +1,105 @@
+@model IdentityServer.Areas.Roles.Models.UserRolesViewModel
+@using IdentityServer.Areas.Roles.Views
+
+@{
+    ViewData["Title"] = "User Roles";
+    ViewData["ActivePage"] = ManageNavPages.UserRoles;
+    Layout = "_RolesLayout";
+}
+
+@if (Model == default)
+{
+    <span>Loading ...</span>
+    return;
+}
+
+<div class="row px-3 mb-2">
+    <h4>@ViewData["Title"]</h4>
+</div>
+
+<div class="row px-3 mb-2">
+    <partial name="_ValidationSummary"/>
+</div>
+
+<div class="row mb-2">
+    <div class="col-12">
+        
+        <form method="post">
+            <div class="input-group">
+                
+                <input asp-for="Email" type="text" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="basic-addon2" />
+                    
+                <div class="input-group-append">
+                    <button asp-action="Search" type="submit" class="btn btn-outline-secondary">Search</button>
+                </div>
+                
+            </div>
+        </form>
+
+    </div>
+</div>
+
+@if (string.IsNullOrEmpty(Model.Email))
+{
+    return;
+}
+<div class="row mb-2">
+    <div class="col-12">
+        <div class="card">
+            
+            <form method="post">
+
+                <div class="card-header">
+                    <strong>Email:</strong>&nbsp;@Model.Email
+                </div>
+                
+                <div class="card-body">
+                
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                          <input type="text" readonly class="form-control" id="name" value="@Model.Name">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="surname" class="col-sm-2 col-form-label">Surname</label>
+                        <div class="col-sm-10">
+                          <input type="text" readonly class="form-control" id="surname" value="@Model.Surname">
+                        </div>
+                    </div>
+
+                    <input type="hidden" asp-for="Email"/>
+
+                    <div class="form-group">
+                        <label><strong>Roles:</strong></label>
+                    
+                        <ul class="list-group list-group-flush">
+                            @foreach (var role in Model.Roles)
+                            {
+                                <li class="list-group-item">
+
+                                    <label>
+                                        <input name="SelectedRoles" type="checkbox" value="@role.Name" checked="@role.Checked"/>
+                                        @role.Name
+                                    </label>
+
+                                    <input name="AllRoles" type="hidden" value="@role.Name">
+
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                </div>
+            
+                <div class="card-footer text-right">
+                    <button type="submit" asp-action="Save" class="btn btn-outline-success w-25">Save</button>
+                </div>
+            
+            </form>
+            
+        </div>
+    </div>
+
+</div>
