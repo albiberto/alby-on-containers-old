@@ -1,12 +1,28 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
-using IdentityServer.ViewModels.ManageViewModel;
+using IdentityServer.Areas.Manager.Models;
+using IdentityServer.Models;
+using IdentityServer.Options;
+using IdentityServer.Publishers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
-namespace IdentityServer.Controllers
+namespace IdentityServer.Areas.Manager.Controllers
 {
-    public partial class ManageController
+    [Authorize(Policy = "All"), Area("Manager")]
+    public class HomeController : Controller
     {
+        readonly SignInManager<ApplicationUser> _signInManager;
+        readonly UserManager<ApplicationUser> _userManager;
+
+        public HomeController(IEmailPublisher email, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<EmailOptions> options)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
+        
         [HttpGet]
         public async Task<IActionResult> Index()
         {

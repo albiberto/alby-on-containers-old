@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace IdentityServer.Views.Manage
+namespace IdentityServer.Areas.Manager.Views
 {
     public static class ManageNavPages
     {

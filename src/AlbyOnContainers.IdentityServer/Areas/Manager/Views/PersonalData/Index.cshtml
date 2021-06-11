@@ -1,4 +1,6 @@
-﻿@using IdentityServer.Views.Manage
+﻿@using IdentityServer.Areas.Manager.Views
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
 @{
     ViewData["Title"] = "Account";
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
@@ -19,12 +21,12 @@
                 <strong>Cancellando questi dati rimuoverai permanentemente il tuo account, e non potra essere ripristinato in futuro.</strong>
             </p>
 
-            <form id="download-data" class="form-group" method="post" asp-action="DownloadPersonalData">
-                <button class="btn btn-outline-primary w-25" type="submit">Download</button>
+            <form class="form-group" method="post">
+                <button type="submit" asp-action="DownloadPersonalData" class="btn btn-outline-primary w-25">Download</button>
             </form>
 
             <p>
-                <a id="delete" class="btn btn-outline-danger w-25" asp-controller="Manage" asp-action="PersonalDataDelete">Cancella</a>
+                <a id="delete" class="btn btn-outline-danger w-25" asp-action="PersonalDataDelete">Cancella</a>
             </p>
         </div>
     </div>

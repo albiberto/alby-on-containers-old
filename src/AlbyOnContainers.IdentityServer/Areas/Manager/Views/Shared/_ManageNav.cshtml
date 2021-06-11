@@ -1,0 +1,21 @@
+﻿@using IdentityServer.Areas.Manager.Views
+@using IdentityServer.Models
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> _signInManager
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item">
+        <a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-area="Manager" asp-controller="Home" asp-action="Index">Profilo</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-area="Manager" asp-controller="ChangeEmail" asp-action="Index">Email</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-area="Manager" asp-controller="ChangePassword" asp-action="Index">Password</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-area="Manager" asp-controller="PersonalData" asp-action="Index">Account</a>
+    </li>
+</ul>

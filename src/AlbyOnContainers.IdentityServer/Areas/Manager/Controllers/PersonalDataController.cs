@@ -2,22 +2,33 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using IdentityServer.Areas.Manager.Models;
 using IdentityServer.Models;
-using IdentityServer.ViewModels.ManageViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer.Controllers
+namespace IdentityServer.Areas.Manager.Controllers
 {
-    public partial class ManageController
+    [Authorize(Policy = "All"), Area("Manager")]
+    public class PersonalDataController : Controller
     {
+        readonly SignInManager<ApplicationUser> _signInManager;
+        readonly UserManager<ApplicationUser> _userManager;
+
+        public PersonalDataController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
+        
         [HttpGet]
-        public async Task<IActionResult> PersonalData()
+        public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            return View();
+            return View("Index");
         }
 
         [HttpPost]
@@ -47,7 +58,7 @@ namespace IdentityServer.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            return View();
+            return View("PersonalDataDelete");
         }
 
         [HttpPost]
@@ -61,19 +72,17 @@ namespace IdentityServer.Controllers
             if (!await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 ModelState.AddModelError(nameof(model.Password), "Password non valida");
-                return View();
+                return View("PersonalDataDelete");
             }
 
             var result = await _userManager.DeleteAsync(user);
 
             var userId = await _userManager.GetUserIdAsync(user);
-            if (!result.Succeeded)
-                throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
+            if (!result.Succeeded) throw new InvalidOperationException($"Unexpected error occurred deleting user with ID '{userId}'.");
 
             await _signInManager.SignOutAsync();
 
             return Redirect("~/");
         }
-
     }
 }

@@ -3,16 +3,37 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using AlbyOnContainers.Messages;
-using IdentityServer.ViewModels.ManageViewModel;
+using IdentityServer.Areas.Manager.Models;
+using IdentityServer.Models;
+using IdentityServer.Options;
+using IdentityServer.Publishers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 
-namespace IdentityServer.Controllers
+namespace IdentityServer.Areas.Manager.Controllers
 {
-    public partial class ManageController
+    [Authorize(Policy = "All"), Area("Manager")]
+
+    public class ChangeEmailController : Controller
     {
+        readonly IEmailPublisher _email;
+        readonly EmailOptions _options;
+        readonly SignInManager<ApplicationUser> _signInManager;
+        readonly UserManager<ApplicationUser> _userManager;
+
+        public ChangeEmailController(IEmailPublisher email, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IOptions<EmailOptions> options)
+        {
+            _email = email;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _options = options.Value;
+        }
+        
         [HttpGet]
-        public async Task<IActionResult> ChangeEmail()
+        public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == default) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -31,12 +52,12 @@ namespace IdentityServer.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == default) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid) return View("Index", model);
 
             if (string.Equals(model.Email, model.NewEmail, StringComparison.InvariantCultureIgnoreCase))
             {
                 ViewData["StatusMessage"] = "L'indirizzo inserito e' uguale al precedente!";
-                return View(model);
+                return View("Index", model);
             }
             
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
@@ -44,7 +65,7 @@ namespace IdentityServer.Controllers
 
             var callbackUrl = Url.Action(
                 "ChangeEmailConfirmation",
-                "Manage",
+                "ChangeEmail",
                 new {userId = user.Id, email = model.NewEmail, code},
                 Request.Scheme);
 
@@ -59,7 +80,7 @@ namespace IdentityServer.Controllers
             await _email.SendAsync(message);
 
             ViewData["StatusMessage"] = "Ti abbiamo inviato una mail di conferma. Controlla la tua casella di posta elettronica.";
-            return View(model);
+            return View("Index", model);
         }
 
         [HttpPost]
@@ -75,7 +96,7 @@ namespace IdentityServer.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            if (!ModelState.IsValid) return View("ChangeEmail", model);
+            if (!ModelState.IsValid) return View("Index", model);
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -97,7 +118,7 @@ namespace IdentityServer.Controllers
             await _email.SendAsync(message);
 
             ViewData["StatusMessage"] = "Email di verifica inviata. Controlla la tua casella di posta elettronica.";
-            return View("ChangeEmail", model);
+            return View("Index", model);
         }
 
         [HttpGet]
@@ -115,13 +136,13 @@ namespace IdentityServer.Controllers
             if (!result.Succeeded)
             {
                 ViewData["StatusMessage"] = "Errore durante il cambio mail.";
-                return View();
+                return View("ChangeEmailConfirmation");
             }
 
             await _signInManager.RefreshSignInAsync(user);
 
             ViewData["StatusMessage"] = "Grazie per aver confermato il cambio email.";
-            return View();
+            return View("ChangeEmailConfirmation");
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿@using IdentityServer.Views.Manage
-@model IdentityServer.ViewModels.ManageViewModel.DeletePersonalDataViewModel
+﻿@using IdentityServer.Areas.Manager.Views
+@model IdentityServer.Areas.Manager.Models.DeletePersonalDataViewModel
 
 @{
     ViewData["Title"] = "Elimina Account";
     ViewData["ActivePage"] = ManageNavPages.DeletePersonalData;
 
-    Layout = "_Layout";
+    Layout = "_ManageLayout";
 }
 
 <div class="alert alert-warning" role="alert">

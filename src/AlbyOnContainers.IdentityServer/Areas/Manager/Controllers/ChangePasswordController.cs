@@ -1,13 +1,29 @@
 using System.Threading.Tasks;
-using IdentityServer.ViewModels.ManageViewModel;
+using IdentityServer.Areas.Manager.Models;
+using IdentityServer.Models;
+using IdentityServer.Options;
+using IdentityServer.Publishers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
-namespace IdentityServer.Controllers
+namespace IdentityServer.Areas.Manager.Controllers
 {
-    public partial class ManageController
+    [Authorize(Policy = "All"), Area("Manager")]
+    public class ChangePasswordController : Controller
     {
+        readonly SignInManager<ApplicationUser> _signInManager;
+        readonly UserManager<ApplicationUser> _userManager;
+
+        public ChangePasswordController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
+        
         [HttpGet]
-        public async Task<IActionResult> ChangePassword()
+        public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -16,7 +32,7 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        public async Task<IActionResult> Index(ChangePasswordViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
