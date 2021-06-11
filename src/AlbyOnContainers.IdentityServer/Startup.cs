@@ -6,6 +6,7 @@ using IdentityServer.IoC;
 using IdentityServer.Options;
 using IdentityServer4.EntityFramework.DbContexts;
 using Libraries.IHostExtensions;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +51,12 @@ namespace IdentityServer
                 services.AddSingleton<IDbContextSeed<ApplicationDbContext>, ApplicationDbContextSeed>();
                 services.AddSingleton<IDbContextSeed<ConfigurationDbContext>, ConfigurationDbContextSeed>();
             }
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("All", policy =>
+                    policy.Requirements.Add(new RolesAuthorizationRequirement(new []{"Admin", "User"})));
+            });
             
             services.AddCors(options =>
             {

@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Areas.Grants.Controllers
 {
-    [Area("Grants"), Authorize(Roles = "User")]
+    [Area("Grants"), Authorize(Policy = "All")]
     public class HomeController : Controller
     {
         readonly IIdentityServerInteractionService _interaction;
