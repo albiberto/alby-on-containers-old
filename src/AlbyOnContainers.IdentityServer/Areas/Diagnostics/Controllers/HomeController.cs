@@ -5,6 +5,7 @@ using IdentityServer.Areas.Diagnostics.Models;
 using Microsoft.AspNetCore.Authentication;
 
 namespace IdentityServer.Areas.Diagnostics.Controllers
+
 {
     [Area("Diagnostics")]
     public class HomeController : Controller
@@ -17,7 +18,7 @@ namespace IdentityServer.Areas.Diagnostics.Controllers
                 return NotFound();
             }
 
-            var model = new HomeViewModel(await HttpContext.AuthenticateAsync());
+            var model = new DiagnosticsViewModel(await HttpContext.AuthenticateAsync());
             return View(model);
         }
     }

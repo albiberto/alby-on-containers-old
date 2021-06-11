@@ -1,0 +1,100 @@
+@model IdentityServer.Areas.Grants.Models.GrantsViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Diagnostics Home";
+    Layout = "_GrantsLayout";
+}
+
+@if (Model == default)
+{
+    <span>Loading ...</span>
+    return;
+}
+
+<div class="grants-page">
+    <div class="lead">
+        <h1>Client Application Permissions</h1>
+        <p>Below is the list of applications you have given permission to and the resources they have access to.</p>
+    </div>
+
+    @if (Model.Grants.Any() == false)
+    {
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="alert alert-info">
+                    You have not given access to any applications
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        foreach (var grant in Model.Grants)
+        {
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-sm-8 card-title">
+                            @if (!string.IsNullOrEmpty(grant.ClientLogoUrl))
+                            {
+                                <img src="@grant.ClientLogoUrl" alt="logo">
+                            }
+                            <strong>@grant.ClientName</strong>
+                        </div>
+
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @if (!string.IsNullOrEmpty(grant.Description))
+                        {
+                            <li class="list-group-item">
+                                <label>Description:</label> @grant.Description
+                            </li>   
+                        }
+                        <li class="list-group-item">
+                            <label>Created:</label> @grant.Created.ToString("yyyy-MM-dd")
+                        </li>
+                        @if (grant.Expires.HasValue)
+                        {
+                            <li class="list-group-item">
+                                <label>Expires:</label> @grant.Expires.Value.ToString("yyyy-MM-dd")
+                            </li>
+                        }
+                        @if (grant.IdentityGrantNames.Any())
+                        {
+                            <li class="list-group-item">
+                                <label>Identity Grants</label>
+                                <ul>
+                                    @foreach (var name in grant.IdentityGrantNames)
+                                    {
+                                        <li>@name</li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (grant.ApiGrantNames.Any())
+                        {
+                            <li class="list-group-item">
+                                <label>API Grants</label>
+                                <ul>
+                                    @foreach (var name in grant.ApiGrantNames)
+                                    {
+                                        <li>@name</li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="card-footer text-right">
+                    <form method="post">
+                        <button type="submit" asp-area="Grants" asp-controller="Home" asp-action="Revoke" asp-route-clientId="@grant.ClientId" class="btn btn-outline-danger w-25">Revoke Access</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+</div>
