@@ -8,7 +8,7 @@ namespace IdentityServer.Infrastructure.Seeds
 {
     public class ConfigurationDbContextSeed : IDbContextSeed<ConfigurationDbContext>
     {
-        private readonly ConfigurationDbContext _context;
+        readonly ConfigurationDbContext _context;
 
         public ConfigurationDbContextSeed(ConfigurationDbContext context)
         {

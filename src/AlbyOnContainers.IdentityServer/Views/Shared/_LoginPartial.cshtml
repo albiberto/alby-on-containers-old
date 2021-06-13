@@ -1,24 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using IdentityServer4.Extensions
 @inject SignInManager<ApplicationUser> _signInManager
 @inject UserManager<ApplicationUser> _userManager
 
 <ul class="navbar-nav">
-    @if (_signInManager.IsSignedIn(User))
+    @if (User.IsAuthenticated())
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Manager" asp-controller="Diagnostics" asp-action="Index">Ciao @User?.Identity?.Name!</a>
+            <a class="nav-link text-dark" asp-area="Manager" asp-controller="Profile" asp-action="Index">Ciao @User?.Identity?.Name!</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Logout" asp-action="Index">Logout</a>
         </li>
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Registrati</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Index">Registrati</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Index">Login</a>
         </li>
     }
 </ul>

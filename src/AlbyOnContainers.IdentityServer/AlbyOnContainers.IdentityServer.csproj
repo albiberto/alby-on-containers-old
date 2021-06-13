@@ -20,6 +20,8 @@
         <PackageReference Include="IdentityServer4.EntityFramework.Storage" Version="4.1.2" />
         <PackageReference Include="MassTransit.AspNetCore" Version="7.2.0" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
@@ -42,6 +44,11 @@
     <ItemGroup>
       <ProjectReference Include="..\AlbyOnContainers.Shared.Libraries\AlbyOnContainers.Shared.Libraries.csproj" />
       <ProjectReference Include="..\AlbyOnContainers.Shared.Messages\AlbyOnContainers.Shared.Messages.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Register\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Login\Index.cshtml" />
     </ItemGroup>
 
 </Project>

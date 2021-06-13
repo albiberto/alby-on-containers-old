@@ -1,0 +1,30 @@
+@model IdentityServer.ViewModels.LogoutViewModel
+
+@{
+    ViewData["Title"] = "Logout";
+    Layout = "_Layout";
+}
+
+<div class="container">
+
+    <div class="text-left">
+        <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
+        <h5>Vuoi disconneterti da AlbyOnContainers?</h5>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <form class="form-horizontal" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
+
+                <input type="hidden" name="logoutId" value="@Model.LogoutId"/>
+
+                <fieldset>
+                    <div class="form-group">
+                        <button class="btn btn-outline-danger w-25">Disconnettimi</button>
+                    </div>
+                </fieldset>
+
+            </form>
+        </div>
+    </div>
+</div>

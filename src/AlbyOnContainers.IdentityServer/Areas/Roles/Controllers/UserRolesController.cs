@@ -30,11 +30,11 @@ namespace IdentityServer.Areas.Roles.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search([Required, EmailAddress] string? email = default)
+        public async Task<IActionResult> Search([Required] string? email = default)
         {
             if (!ModelState.IsValid) return View("Index", new UserRolesViewModel());
 
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = (await _userManager.FindByEmailAsync(email)) ?? await _userManager.FindByIdAsync(email);
             if (user == default)
             {
                 ModelState.AddModelError(string.Empty, "User Not Found!");
@@ -55,7 +55,7 @@ namespace IdentityServer.Areas.Roles.Controllers
         {
             if (!ModelState.IsValid) return View("Index", new UserRolesViewModel());
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = (await _userManager.FindByEmailAsync(model.Email)) ?? await _userManager.FindByIdAsync(model.Email);
 
             foreach (var role in model.SelectedRoles)
             {

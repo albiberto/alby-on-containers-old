@@ -4,14 +4,17 @@ using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Seeds;
 using IdentityServer.IoC;
 using IdentityServer.Options;
+using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
 using Libraries.IHostExtensions;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer
 {
@@ -31,44 +34,65 @@ namespace IdentityServer
         public void ConfigureServices(IServiceCollection services)
         {
             var (healthChecksConfiguration, rabbitMqConfiguration, connection) = GetConfiguration();
-            
+
             services.AddIdentity(connection);
             services.AddIdentityServer(connection);
 
             services.AddHealthChecks(connection, healthChecksConfiguration);
-            
+
             services.AddMassTransit(rabbitMqConfiguration);
+            
+            services.ConfigureApplicationCookie(config =>
+            {
+                config.Cookie.Name = "AlbyOnContainers";
+                config.LoginPath = "/Login";
+                config.LogoutPath = "/Logout";
+            });
+
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                    
+                    options.ClientId = "516459164098-dm04ij4omekj0aii8gntjm5neujul5tn.apps.googleusercontent.com";
+                    options.ClientSecret = "1PNiGZSk1hjENrxnFdTUyHKY";
+                })
+                .AddFacebook(options =>
+                {
+                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+
+                    options.AppId = "191746359619007";
+                    options.AppSecret = "78a544dede886fe61f885e558980e6d4";
+                    options.AccessDeniedPath = "/AccessDeniedPathInfo";
+                });
 
             services.AddOptions(Configuration);
-            services.AddCustom();
+                    services.AddCustom();
 
-            services.AddHttpsRedirection(_env);
-            services.AddHsts();
-            services.AddReverseProxy();
+                    services.AddHttpsRedirection(_env);
+                    services.AddHsts();
+                    services.AddReverseProxy();
 
-            if (!_env.IsProduction())
-            {
-                services.AddSingleton<IDbContextSeed<ApplicationDbContext>, ApplicationDbContextSeed>();
-                services.AddSingleton<IDbContextSeed<ConfigurationDbContext>, ConfigurationDbContextSeed>();
-            }
-            
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("All", policy =>
-                    policy.Requirements.Add(new RolesAuthorizationRequirement(new []{"Admin", "User"})));
-            });
-            
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AlbyPolicy",
-                    builder =>
+                    if (!_env.IsProduction())
                     {
-                        builder.AllowAnyOrigin().WithMethods("GET", "POST").AllowAnyHeader();
-                    });
-            });
+                        services.AddSingleton<IDbContextSeed<ApplicationDbContext>, ApplicationDbContextSeed>();
+                        services.AddSingleton<IDbContextSeed<ConfigurationDbContext>, ConfigurationDbContextSeed>();
+                    }
 
-            services.AddControllersWithViews();
-        }
+                    services.AddAuthorization(options =>
+                    {
+                        options.AddPolicy("All", policy =>
+                            policy.Requirements.Add(new RolesAuthorizationRequirement(new[] {"Admin", "User"})));
+                    });
+
+                    services.AddCors(options =>
+                    {
+                        options.AddPolicy("AlbyPolicy",
+                            builder => { builder.AllowAnyOrigin().WithMethods("GET", "POST").AllowAnyHeader(); });
+                    });
+
+                    services.AddControllersWithViews();
+                }
 
         (HealthChecksConfiguration, RabbitMQConfiguration rabbitMqConfig, string connection) GetConfiguration()
         {
@@ -110,10 +134,16 @@ namespace IdentityServer
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             
-            app.UseRouting();
             app.UseIdentityServer();
-            app.UseAuthorization();
+            // Fix a problem with chrome. Chrome enabled a new feature "Cookies without SameSite must be secure", 
+            // the coockies shold be expided from https, but in eShop, the internal comunicacion in aks and docker compose is http.
+            // To avoid this problem, the policy of cookies shold be in Lax mode.
             
+            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+            // app.UseAuthorization();
+            
+            app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapIdentityHealthChecks();

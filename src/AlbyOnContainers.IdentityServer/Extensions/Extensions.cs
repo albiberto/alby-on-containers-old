@@ -1,5 +1,5 @@
 using System;
-using IdentityServer.ViewModels.AccountViewModels;
+using IdentityServer.ViewModels;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Mvc;
 

@@ -9,7 +9,7 @@ namespace AlbyOnContainers.Tools.Catalog.Pages.Products
 {
     public class ProductsComponent : ComponentBase
     {
-        [Inject] private GraphQLHttpClient Client { get; init; }
+        [Inject] GraphQLHttpClient Client { get; init; }
 
         protected ProductType[] _products;
 

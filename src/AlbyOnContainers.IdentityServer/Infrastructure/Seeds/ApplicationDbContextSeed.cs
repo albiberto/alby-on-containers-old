@@ -12,8 +12,8 @@ namespace IdentityServer.Infrastructure.Seeds
 {
     public class ApplicationDbContextSeed : IDbContextSeed<ApplicationDbContext>
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        readonly UserManager<ApplicationUser> _userManager;
+        readonly RoleManager<IdentityRole> _roleManager;
 
         public ApplicationDbContextSeed(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -21,7 +21,7 @@ namespace IdentityServer.Infrastructure.Seeds
             _roleManager = roleManager;
         }
 
-        private const string Password = "Pass123$";
+        const string Password = "Pass123$";
         public async Task SeedAsync()
         {
             foreach (var user in ConfigIdentity.Users(Password))

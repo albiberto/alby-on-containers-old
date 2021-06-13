@@ -102,8 +102,8 @@ namespace IdentityServer.Areas.Manager.Controllers
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
             var callbackUrl = Url.Action(
+                "Index",
                 "ConfirmEmail",
-                "Account",
                 new {user.Id, code},
                 Request.Scheme);
 

@@ -5,7 +5,7 @@ namespace IdentityServer.Areas.Roles.Models
 {
     public record UserRolesInputModel
     {
-        [Required, EmailAddress]
+        [Required]
         public string Email { get; init; } = null!;
 
         public IReadOnlyCollection<string> SelectedRoles { get; init; } = new HashSet<string>();

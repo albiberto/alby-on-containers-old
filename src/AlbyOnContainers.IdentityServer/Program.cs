@@ -11,9 +11,9 @@ using Serilog;
 
 namespace IdentityServer
 {
-    internal static class Program
+    static class Program
     {
-        private static async Task Main(string[] args)
+        static async Task Main(string[] args)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace IdentityServer
         // https://docs.microsoft.com/en-us/aspnet/core/security/docker-compose-https?view=aspnetcore-5.0
         // https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-5.0&tabs=visual-studio
         // https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-5.0&tabs=windows
-        private static IHostBuilder CreateHostBuilder(string[] args)
+        static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
                 .UseSerilog()

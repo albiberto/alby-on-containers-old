@@ -18,7 +18,7 @@ namespace IdentityServer.IoC
     // ReSharper disable once InconsistentNaming
     public static class IServiceCollectionExtensions
     {
-        private static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? string.Empty;
+        static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name ?? string.Empty;
 
         public static void AddOptions(this IServiceCollection services, IConfiguration configuration)
         {

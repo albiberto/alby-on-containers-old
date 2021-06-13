@@ -8,10 +8,10 @@ namespace IdentityServer.Infrastructure.Seeds.Config
 {
     public static class ConfigIdentity
     {
-        private const string Username1 = "Albiberto";
-        private const string Username2 = "Crespoy";
-        
-        private static readonly IPasswordHasher<ApplicationUser> PasswordHasher = new PasswordHasher<ApplicationUser>();
+        const string Username1 = "Albiberto";
+        const string Username2 = "Crespoy";
+
+        static readonly IPasswordHasher<ApplicationUser> PasswordHasher = new PasswordHasher<ApplicationUser>();
 
         public static IReadOnlyCollection<ApplicationUser> Users(string password)
         {

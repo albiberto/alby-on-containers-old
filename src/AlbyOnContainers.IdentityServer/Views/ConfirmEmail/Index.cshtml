@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Conferma Email";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="text-left">
+        <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
+        <p>@ViewData["StatusMessage"]</p>
+        <p>Per accedere <a asp-controller="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">premi qui!</a></p>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

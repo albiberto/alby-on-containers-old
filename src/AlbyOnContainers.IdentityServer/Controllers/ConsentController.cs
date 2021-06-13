@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Extensions;
-using IdentityServer.ViewModels.ConsentViewModels;
+using IdentityServer.ViewModels;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;

@@ -3,11 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Areas.Diagnostics.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IdentityServer.Areas.Diagnostics.Controllers
 
 {
-    [Area("Diagnostics")]
+    [Area("Diagnostics"), Authorize(Roles = "Admin")]
     public class DiagnosticsController : Controller
     {
         public async Task<IActionResult> Index()

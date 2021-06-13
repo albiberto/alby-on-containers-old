@@ -57,14 +57,14 @@ namespace Libraries.IHostExtensions
             }
         }
 
-        private static bool IsInKubernetes(this IHost webHost)
+        static bool IsInKubernetes(this IHost webHost)
         {
             var cfg = webHost.Services.GetService<IConfiguration>();
             var orchestratorType = cfg.GetValue<string>("OrchestratorType");
             return orchestratorType?.ToUpper() == "K8S";
         }
 
-        private static async Task InvokeSeederAsync<TContext>(IDbContextSeed<TContext>? seeder, TContext? context) where TContext : DbContext?
+        static async Task InvokeSeederAsync<TContext>(IDbContextSeed<TContext>? seeder, TContext? context) where TContext : DbContext?
         {
             await context?.Database.MigrateAsync();
 

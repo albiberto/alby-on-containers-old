@@ -16,7 +16,7 @@ namespace IdentityServer.Areas.Roles.Models
             Name = user?.GivenName ?? string.Empty;
             Surname = user?.FamilyName ?? string.Empty;
             Roles = roles?.ToArray() ?? Array.Empty<RoleViewModel>();
-            Email = user?.Email ?? string.Empty;
+            Email = user?.Email ?? user?.Id ?? string.Empty;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using IdentityServer4.Extensions
 @inject SignInManager<ApplicationUser> _signInManager
 
 @{
@@ -8,7 +9,7 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 
-    @if (_signInManager.IsSignedIn(User))
+    @if (User.IsAuthenticated())
     {
         <a class="nav-link text-dark" asp-controller="Diagnostics" asp-action="Index">Ciao @User?.Identity?.Name!</a>
         <p>Ciao @User?.Identity?.Name! Benvenuto nella tua area personale.</p>
