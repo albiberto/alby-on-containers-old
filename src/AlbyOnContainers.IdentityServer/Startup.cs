@@ -42,13 +42,6 @@ namespace IdentityServer
 
             services.AddMassTransit(rabbitMqConfiguration);
             
-            services.ConfigureApplicationCookie(config =>
-            {
-                config.Cookie.Name = "AlbyOnContainers";
-                config.LoginPath = "/Login";
-                config.LogoutPath = "/Logout";
-            });
-
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {

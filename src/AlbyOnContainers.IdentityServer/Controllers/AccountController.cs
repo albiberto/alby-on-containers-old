@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Extensions;
@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IdentityServer.Controllers
 {
     [AllowAnonymous]
-    public class LoginController : Controller
+    public class AccountController : Controller
     {
         readonly UserManager<ApplicationUser> _userManager;
         readonly SignInManager<ApplicationUser> _signInManager;
@@ -25,7 +25,7 @@ namespace IdentityServer.Controllers
         readonly IAuthenticationSchemeProvider _schemeProvider;
         readonly IEventService _events;
 
-        public LoginController(
+        public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IIdentityServerInteractionService interaction,
