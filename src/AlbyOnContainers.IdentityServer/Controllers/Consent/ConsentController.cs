@@ -33,7 +33,7 @@ namespace IdentityServer.Controllers.Consent
             
             return request != default 
                 ? View("Index", new ConsentViewModel(request))
-                : View("Error") ;
+                : View("Error");
         }
 
         [HttpPost]
