@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityServer
 {
@@ -41,12 +40,12 @@ namespace IdentityServer
             services.AddHealthChecks(connection, healthChecksConfiguration);
 
             services.AddMassTransit(rabbitMqConfiguration);
-            
+
             services.AddAuthentication()
                 .AddGoogle(options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                    
+
                     options.ClientId = "516459164098-dm04ij4omekj0aii8gntjm5neujul5tn.apps.googleusercontent.com";
                     options.ClientSecret = "1PNiGZSk1hjENrxnFdTUyHKY";
                 })

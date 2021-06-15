@@ -10,7 +10,7 @@
             <a class="nav-link text-dark" asp-area="Manager" asp-controller="Profile" asp-action="Index">Ciao @User?.Identity?.Name!</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Logout" asp-action="Index">Logout</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
         </li>
     }
     else
@@ -19,7 +19,7 @@
             <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Index">Registrati</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Index">Login</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
         </li>
     }
 </ul>

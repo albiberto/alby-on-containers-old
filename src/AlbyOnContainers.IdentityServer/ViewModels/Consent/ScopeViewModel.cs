@@ -3,7 +3,7 @@ using System.Linq;
 using IdentityServer4.Models;
 using IdentityServer4.Validation;
 
-namespace IdentityServer.ViewModels
+namespace IdentityServer.ViewModels.Consent
 {
     public record ScopeViewModel
     {

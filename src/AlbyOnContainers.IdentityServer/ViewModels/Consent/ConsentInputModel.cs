@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace IdentityServer.ViewModels
+namespace IdentityServer.ViewModels.Consent
 {
     public record ConsentInputModel
     {

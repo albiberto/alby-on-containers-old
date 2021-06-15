@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Extensions;
-using IdentityServer.ViewModels;
+using IdentityServer.ViewModels.Consent;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -9,7 +9,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer.Controllers
+namespace IdentityServer.Controllers.Consent
 {
     [Authorize]
     public class ConsentController : Controller

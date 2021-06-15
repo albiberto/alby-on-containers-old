@@ -22,6 +22,7 @@
         <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.6" />
         <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Https" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
@@ -49,6 +50,7 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Pages\Register\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Login\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Logout\Index.cshtml" />
     </ItemGroup>
 
 </Project>

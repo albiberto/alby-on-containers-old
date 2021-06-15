@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using IdentityServer4.Models;
 
-namespace IdentityServer.ViewModels
+namespace IdentityServer.ViewModels.Consent
 {
     public record ConsentViewModel : ConsentInputModel
     {
