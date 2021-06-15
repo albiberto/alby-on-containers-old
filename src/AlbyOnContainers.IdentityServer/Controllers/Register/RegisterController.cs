@@ -6,6 +6,7 @@ using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
 using IdentityServer.ViewModels;
+using IdentityServer.ViewModels.Register;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;

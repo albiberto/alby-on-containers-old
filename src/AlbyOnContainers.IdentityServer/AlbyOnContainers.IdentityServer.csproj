@@ -53,9 +53,4 @@
       <_ContentIncludedByDefault Remove="Views\Logout\Index.cshtml" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers\Password" />
-      <Folder Include="ViewModels\Password" />
-    </ItemGroup>
-
 </Project>

@@ -6,36 +6,38 @@ using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
 using IdentityServer.ViewModels;
+using IdentityServer.ViewModels.Passwords;
+using IdentityServer.ViewModels.Register;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
-namespace IdentityServer.Controllers
+namespace IdentityServer.Controllers.Passwords
 {
-    public class ForgotPasswordController : Controller
+    public class PasswordsController : Controller
     {
         readonly UserManager<ApplicationUser> _userManager;
         readonly IEmailPublisher _publisher;
         readonly EmailOptions _options;
 
-        public ForgotPasswordController(UserManager<ApplicationUser> userManager, IEmailPublisher publisher, IOptions<EmailOptions> options)
+        public PasswordsController(UserManager<ApplicationUser> userManager, IEmailPublisher publisher, IOptions<EmailOptions> options)
         {
             _userManager = userManager;
             _publisher = publisher;
             _options = options.Value;
         }
-
+        
         [HttpGet, AllowAnonymous]
-        public IActionResult Index(string? returnUrl = default)
+        public IActionResult ForgotPassword(string? returnUrl = default)
         {
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(ForgotPasswordViewModel model, string? returnUrl = default)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, string? returnUrl = default)
         {
             if (!ModelState.IsValid) return View(model);
 
@@ -48,13 +50,43 @@ namespace IdentityServer.Controllers
 
             return View("ForgotPasswordConfirmation", model.Email);
         }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string? code = default, string? returnUrl = default)
+        {
+            if (string.IsNullOrEmpty(code)) return BadRequest("A code must be supplied for password reset.");
+
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(new ResetPasswordViewModel
+            {
+                Code = code
+            });
+        }
+        
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model, string? returnUrl = default)
+        {
+            if (!ModelState.IsValid) return View();
+
+            // Don't reveal that the user does not exist
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null) return View("ResetPasswordConfirmation");
+
+            var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code));
+            var result = await _userManager.ResetPasswordAsync(user, code, model.Password);
+            
+            if (result.Succeeded) return View("ResetPasswordConfirmation");
+
+            foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+            return View();
+        }
         
         async Task PublishForgotPasswordEmailMessage(ApplicationUser user, string? returnUrl = default)
         {
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
             
-            var callbackUrl = Url.Action("Index", "ResetPassword", new {code, returnUrl}, Request.Scheme);
+            var callbackUrl = Url.Action("ResetPassword", "Passwords", new {code, returnUrl}, Request.Scheme);
             if(callbackUrl == default) return;
             
             const string subject = "Recupero Password";
@@ -63,7 +95,7 @@ namespace IdentityServer.Controllers
             var message = BuildEmailMessage(user, subject, body);
             await _publisher.SendAsync(message);
         }
-
+        
         EmailMessage BuildEmailMessage(ApplicationUser user, string subject, string body) =>
             new()
             {
