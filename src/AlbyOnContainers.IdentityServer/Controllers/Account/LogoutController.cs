@@ -50,7 +50,7 @@ namespace IdentityServer.Controllers.Account
             }
 
             // check if we need to trigger sign-out at an upstream identity provider
-            if (!vm.TriggerExternalSignOut) return RedirectToAction("LoggedOut", vm);
+            if (!vm.TriggerExternalSignOut) return View("LoggedOut", vm);
             
             // build a return URL so the upstream provider will redirect back
             // to us after the user has logged out. this allows us to then
@@ -61,9 +61,6 @@ namespace IdentityServer.Controllers.Account
             return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme ?? string.Empty);
         }
 
-        [HttpGet]
-        public IActionResult LoggedOut(LoggedOutViewModel model) => View(model);
-        
         async Task<LogoutViewModel> BuildLogoutViewModelAsync(string? logoutId = default)
         {
             var context = await _interaction.GetLogoutContextAsync(logoutId);

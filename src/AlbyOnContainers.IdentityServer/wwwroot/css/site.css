@@ -70,3 +70,35 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
+.welcome-page li {
+  list-style: none;
+  padding: 4px; }
+
+.welcome-page .h1 {
+  vertical-align:middle
+}
+
+.welcome-page .icon{
+  border-radius: 50%;
+  border: 1px solid rgb(108, 117, 125);
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.logged-out-page iframe {
+  display: none;
+  width: 0;
+  height: 0; }
+
+.grants-page .card {
+  margin-top: 20px;
+  border-bottom: 1px solid lightgray; }
+.grants-page .card .card-title {
+  font-size: 120%;
+  font-weight: bold; }
+.grants-page .card .card-title img {
+  width: 100px;
+  height: 100px; }
+.grants-page .card label {
+  font-weight: bold; }
+

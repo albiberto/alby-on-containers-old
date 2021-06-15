@@ -1,21 +1,33 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using System.Diagnostics
 @using IdentityServer4.Extensions
-@inject SignInManager<ApplicationUser> _signInManager
+@using Microsoft.CodeAnalysis.CSharp.Syntax
 
 @{
-    ViewData["Title"] = "Home Page";
+    var version = FileVersionInfo.GetVersionInfo(typeof(IdentityServer4.Hosting.IdentityServerMiddleware).Assembly.Location).ProductVersion?.Split('+').First();
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<div class="welcome-page">
+    
+    <p class="h2">
+        <img class="icon" src="~/icon.png" alt="icona sito">
+        Welcome to IdentityServer4
+        <small class="text-muted">(version @version)</small>
+    </p>
+    
+    @if (!User.IsAuthenticated())
+    {
+        <p class="lead text-muted">
+            <strong>Please, proceed to login.</strong>
+        </p>
+        
+        return;
+    }
 
-    @if (User.IsAuthenticated())
-    {
-        <a class="nav-link text-dark" asp-controller="Diagnostics" asp-action="Index">Ciao @User?.Identity?.Name!</a>
-        <p>Ciao @User?.Identity?.Name! Benvenuto nella tua area personale.</p>
-    }
-    else
-    {
-        <p>Per procedere registrati oppure accedi con le tue credenziali.</p>
-    }
+    <ul class="lead">
+        <li>
+            IdentityServer publishes a
+            <a href="~/.well-known/openid-configuration">discovery document</a>
+            where you can find metadata and links to all the endpoints, key material, etc.
+        </li>
+    </ul>
 </div>

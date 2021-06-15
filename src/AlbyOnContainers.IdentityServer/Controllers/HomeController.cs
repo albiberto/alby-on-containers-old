@@ -1,43 +1,46 @@
 ﻿using System.Threading.Tasks;
-using IdentityServer.Services;
 using IdentityServer.ViewModels;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityServer.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         readonly IIdentityServerInteractionService _interaction;
-        readonly IRedirectService _redirectSvc;
+        readonly IWebHostEnvironment _environment;
+        readonly ILogger _logger;
 
-        public HomeController(IIdentityServerInteractionService interaction, IRedirectService redirectSvc)
+        public HomeController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<HomeController> logger)
         {
             _interaction = interaction;
-            _redirectSvc = redirectSvc;
+            _environment = environment;
+            _logger = logger;
         }
 
-        public IActionResult Index(string returnUrl) => View();
+        [HttpGet]
+        public IActionResult Index() => View();
 
-        public IActionResult ReturnToOriginalApplication(string returnUrl)
-        {
-            if (returnUrl != null)
-                return Redirect(_redirectSvc.ExtractRedirectUriFromReturnUrl(returnUrl));
-            return RedirectToAction("Index", "Diagnostics");
-        }
-
-        /// <summary>
-        ///     Shows the error page
-        /// </summary>
+        [HttpGet]
         public async Task<IActionResult> Error(string errorId)
         {
-            var vm = new ErrorViewModel();
-
             // retrieve error details from identityserver
             var message = await _interaction.GetErrorContextAsync(errorId);
-            if (message != null) vm.Error = message;
+            
+            if (message == default) return View("Error", new ErrorViewModel());
+            
+            if (!_environment.IsDevelopment())
+            {
+                // only show in development
+                message.ErrorDescription = null;
+            }
 
-            return View("Error", vm);
+            return View("Error", new ErrorViewModel(message));
         }
     }
 }

@@ -36,7 +36,7 @@ namespace IdentityServer.Areas.Grants.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Revoke(string? clientId = default)
         {
-            if (string.IsNullOrEmpty(clientId)) return View("Error", new ErrorViewModel{Error = new ErrorMessage{ Error = "Invalid ClientId"}});
+            if (string.IsNullOrEmpty(clientId)) return View("Error", new ErrorViewModel("Invalid ClientId"));
             
             await _interaction.RevokeUserConsentAsync(clientId);
             await _events.RaiseAsync(new GrantsRevokedEvent(User.GetSubjectId(), clientId));
