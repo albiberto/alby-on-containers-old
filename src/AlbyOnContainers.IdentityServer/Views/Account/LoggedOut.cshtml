@@ -5,21 +5,30 @@
     ViewData["signed-out"] = true;
 }
 
-<div class="logged-out-page">
-    <h1>
-        Logout
-        <small>You are now logged out</small>
-    </h1>
+@if (Model == default)
+{
+    <span class="lead">Loading ...</span>
+    return;
+}
 
-    @if (Model.PostLogoutRedirectUri != null)
+<div class="logged-out-page">
+    <h1 class="lead display-3">Logout</h1>
+    <small class="lead">You are now logged out.</small>
+    
+    @if(Model.AutomaticRedirectAfterSignOut)
     {
-        <div>
-            Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a> to return to the
-            <span>@Model.ClientName</span> application.
-        </div>
+        <small class="lead">You will redirect to home in <strong id="count">5</strong> seconds</small>
     }
 
-    @if (Model.SignOutIframeUrl != null)
+    @if (!string.IsNullOrEmpty(Model.PostLogoutRedirectUri))
+    {
+        <p class="lead">
+            Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a> to return to the
+            <span>@Model.ClientName</span> home.
+        </p>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.SignOutIframeUrl))
     {
         <iframe width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
     }

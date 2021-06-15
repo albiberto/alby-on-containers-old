@@ -29,8 +29,8 @@ namespace IdentityServer.IoC
             services.AddOptions<EmailOptions>()
                 .Bind(configuration.GetSection("Email"));
 
-            services.AddOptions<AccountOptions>()
-                .Bind(configuration.GetSection("Controllers:Account"));
+            services.AddOptions<ControllersOptions>()
+                .Bind(configuration.GetSection("Controllers"));
         }
 
         public static void AddIdentity(this IServiceCollection services, string connection)

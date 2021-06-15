@@ -28,7 +28,7 @@ namespace IdentityServer.Controllers.Account
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            IOptions<AccountOptions> accountOptions)
+            IOptions<ControllersOptions> accountOptions)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -36,7 +36,7 @@ namespace IdentityServer.Controllers.Account
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
-            _accountOptions = accountOptions.Value;
+            _accountOptions = accountOptions.Value.Account ?? new AccountOptions();
         }
 
         [HttpGet]

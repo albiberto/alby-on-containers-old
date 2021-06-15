@@ -129,7 +129,7 @@ namespace IdentityServer.Controllers.Register
         EmailMessage BuildEmailMessage(ApplicationUser user, string subject, string body) =>
             new()
             {
-                Sender = new MailAddress {Email = _emailOptions.Email, Name = _emailOptions.Address},
+                Sender = new MailAddress {Email = _emailOptions.Name, Name = _emailOptions.Address},
                 Subject = subject,
                 Body = body,
                 To = new[] {new MailAddress {Name = user.UserName, Email = user.Email}}
