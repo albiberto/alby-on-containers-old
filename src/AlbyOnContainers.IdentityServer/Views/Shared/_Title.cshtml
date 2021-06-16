@@ -1,0 +1,8 @@
+@model IdentityServer.ViewModels.TitleViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="display-4">@(Model?.Title ?? "Page Title")</div>
+<p class="lead text-muted mt-1">@(Model?.Description ?? "Choose how to login")</p>

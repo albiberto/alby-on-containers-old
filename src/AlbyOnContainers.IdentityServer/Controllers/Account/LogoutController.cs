@@ -65,9 +65,9 @@ namespace IdentityServer.Controllers.Account
         {
             var context = await _interaction.GetLogoutContextAsync(logoutId);
 
-            var show = !(User.Identity?.IsAuthenticated != true || context?.ShowSignoutPrompt == false) && _accountOptions.ShowLogoutPrompt;
+            var show = _accountOptions.ShowLogoutPrompt && !(User.Identity?.IsAuthenticated != true || context?.ShowSignoutPrompt == false);
             
-            return new LogoutViewModel(show) { LogoutId = logoutId };
+            return new(show, logoutId);
         }
 
         async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string? logoutId = default)
@@ -97,7 +97,7 @@ namespace IdentityServer.Controllers.Account
                 }
             }
 
-            return new LoggedOutViewModel(logout?.ClientName ?? logout?.ClientId, logoutId, logout?.PostLogoutRedirectUri ?? "/", logout?.SignOutIFrameUrl, _accountOptions.AutomaticRedirectAfterSignOut, schema);
+            return new(logout?.ClientName ?? logout?.ClientId, logoutId, logout?.PostLogoutRedirectUri ?? "/", logout?.SignOutIFrameUrl, _accountOptions.AutomaticRedirectAfterSignOut, schema);
         }
     }
 }

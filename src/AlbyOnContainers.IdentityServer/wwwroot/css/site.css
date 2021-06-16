@@ -78,11 +78,11 @@ body {
   vertical-align:middle
 }
 
-.welcome-page .icon{
-  border-radius: 50%;
-  border: 1px solid rgb(108, 117, 125);
-  width: 1.5em;
-  height: 1.5em;
+.icon{
+  
+}
+
+.welcome-page .title-text {
 }
 
 .logged-out-page iframe {

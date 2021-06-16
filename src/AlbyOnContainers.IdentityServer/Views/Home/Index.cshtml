@@ -1,6 +1,5 @@
 ﻿@using System.Diagnostics
 @using IdentityServer4.Extensions
-@using Microsoft.CodeAnalysis.CSharp.Syntax
 
 @{
     var version = FileVersionInfo.GetVersionInfo(typeof(IdentityServer4.Hosting.IdentityServerMiddleware).Assembly.Location).ProductVersion?.Split('+').First();
@@ -8,26 +7,16 @@
 
 <div class="welcome-page">
     
-    <p class="h2">
-        <img class="icon" src="~/icon.png" alt="icona sito">
-        Welcome to IdentityServer4
-        <small class="text-muted">(version @version)</small>
-    </p>
+    <span class="display-4">Welcome to IdentityServer4<small class="text-muted lead">(version @version)</small></span>
     
-    @if (!User.IsAuthenticated())
-    {
-        <p class="lead text-muted">
-            <strong>Please, proceed to login.</strong>
-        </p>
-        
-        return;
-    }
-
     <ul class="lead">
-        <li>
-            IdentityServer publishes a
-            <a href="~/.well-known/openid-configuration">discovery document</a>
-            where you can find metadata and links to all the endpoints, key material, etc.
-        </li>
+          @if (!User.IsAuthenticated())
+          {
+              <li class="text-muted">Please, proceed to login.</li>
+          }
+          else
+          {
+              <li>IdentityServer publishes a <a href="~/.well-known/openid-configuration">discovery document</a> where you can find metadata and links to all the endpoints, key material, etc.</li>
+          }
     </ul>
 </div>

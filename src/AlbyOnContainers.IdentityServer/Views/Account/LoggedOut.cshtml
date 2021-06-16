@@ -12,10 +12,10 @@
 }
 
 <div class="logged-out-page">
-    <h1 class="lead display-3">Logout</h1>
-    <small class="lead">You are now logged out.</small>
-    
-    @if(Model.AutomaticRedirectAfterSignOut)
+    <partial name="_Title" model="@Model.ModelTitle" />
+
+
+    @if (Model.AutomaticRedirectAfterSignOut)
     {
         <small class="lead">You will redirect to home in <strong id="count">5</strong> seconds</small>
     }

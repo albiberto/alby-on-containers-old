@@ -131,7 +131,7 @@ namespace IdentityServer
             // the coockies shold be expided from https, but in eShop, the internal comunicacion in aks and docker compose is http.
             // To avoid this problem, the policy of cookies shold be in Lax mode.
             
-            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+            app.UseCookiePolicy(new() { MinimumSameSitePolicy = SameSiteMode.Lax });
             // app.UseAuthorization();
             
             app.UseRouting();

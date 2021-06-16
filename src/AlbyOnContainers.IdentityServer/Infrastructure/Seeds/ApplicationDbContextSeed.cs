@@ -31,13 +31,13 @@ namespace IdentityServer.Infrastructure.Seeds
                    
                 var result = await _userManager.CreateAsync(user, Password);
                 
-                if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
+                if (!result.Succeeded) throw new(result.Errors.First().Description);
 
                 var roles = ConfigIdentity.GetRoles(user.UserName);
 
                 foreach (var role in roles)
                 {
-                    if (await _roleManager.FindByNameAsync(role) == default) await _roleManager.CreateAsync(new IdentityRole { Name = role });
+                    if (await _roleManager.FindByNameAsync(role) == default) await _roleManager.CreateAsync(new() { Name = role });
                     
                     var roleResult = await _userManager.IsInRoleAsync(user, role);
                     if (!roleResult) await _userManager.AddToRoleAsync(user, role);
@@ -49,7 +49,7 @@ namespace IdentityServer.Infrastructure.Seeds
                     new (JwtClaimTypes.FamilyName, user?.FamilyName ?? string.Empty)
                 });
 
-                if (!result.Succeeded) throw new Exception(result.Errors.First().Description);
+                if (!result.Succeeded) throw new(result.Errors.First().Description);
             }
         }
     }

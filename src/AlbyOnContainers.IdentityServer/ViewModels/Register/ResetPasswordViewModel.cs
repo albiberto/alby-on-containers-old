@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace IdentityServer.ViewModels.Register
 {
-    public class ResetPasswordViewModel
+    public record ResetPasswordViewModel
     {
         [Required, Display(Name = "Email"), EmailAddress]
         public string Email { get; set; } = null!;

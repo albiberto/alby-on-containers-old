@@ -6,23 +6,28 @@ namespace IdentityServer.ViewModels.Account
 {
     public record LoginViewModel : LoginInputModel
     {
-        public LoginViewModel(bool allowRememberLogin = true, bool enableLocalLogin = true, IEnumerable<ExternalProvider>? externalProviders = default)
+        public readonly TitleViewModel Title = new("Login", "Inserisci le tue credenziali per accedere.");
+
+        public LoginViewModel(string? email, bool? rememberLogin, bool allowRememberLogin = true, bool enableLocalLogin = true, IEnumerable<ExternalProvider>? externalProviders = default)
         {
-            AllowRememberLogin = allowRememberLogin;
+            Email = email;
+            RememberLogin = rememberLogin ?? false;
+
             EnableLocalLogin = enableLocalLogin;
-            ExternalProviders = externalProviders?.ToHashSet() ?? new HashSet<ExternalProvider>();
-            
-            IsExternalLoginOnly = !EnableLocalLogin && ExternalProviders.Count == 1;
-            ExternalLoginScheme = IsExternalLoginOnly ? ExternalProviders.SingleOrDefault()?.AuthenticationScheme : default;
-            VisibleExternalProviders = ExternalProviders.Where(x => !string.IsNullOrWhiteSpace(x.DisplayName)).ToHashSet();
+            AllowRememberLogin = allowRememberLogin;
+
+            var providers = externalProviders?.ToHashSet() ?? new HashSet<ExternalProvider>();
+
+            IsExternalLoginOnly = !EnableLocalLogin && providers.Count == 1;
+            ExternalLoginScheme = IsExternalLoginOnly ? providers.SingleOrDefault()?.AuthenticationScheme : default;
+            VisibleExternalProviders = providers.Where(x => !string.IsNullOrWhiteSpace(x.DisplayName)).ToHashSet();
         }
-        
-        public IReadOnlyCollection<ExternalProvider> ExternalProviders { get; }
-        public IReadOnlyCollection<ExternalProvider> VisibleExternalProviders { get; }
-        
-        public bool AllowRememberLogin { get; } = true;
-        public bool EnableLocalLogin { get; } = true;
+
+        public bool EnableLocalLogin { get; }
+        public bool AllowRememberLogin { get; }
+
         public bool IsExternalLoginOnly { get; }
         public string? ExternalLoginScheme { get; }
+        public IReadOnlyCollection<ExternalProvider> VisibleExternalProviders { get; } = new HashSet<ExternalProvider>();
     }
 }

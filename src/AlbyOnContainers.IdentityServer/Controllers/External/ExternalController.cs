@@ -45,7 +45,7 @@ namespace IdentityServer.Controllers.External
             // validate returnUrl - either it is a valid OIDC URL or back to a local page
             if (!Url.IsLocalUrl(returnUrl) && !_interaction.IsValidReturnUrl(returnUrl))
                 // user might have clicked on a malicious link - should be logged
-                throw new Exception("invalid return URL");
+                throw new("invalid return URL");
 
             // start challenge and roundtrip the return URL and scheme 
             var props = new AuthenticationProperties
@@ -66,7 +66,7 @@ namespace IdentityServer.Controllers.External
         {
             // read external identity from the temporary cookie
             var result = await HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
-            if (!result?.Succeeded ?? true) throw new Exception("External authentication error");
+            if (!result?.Succeeded ?? true) throw new("External authentication error");
 
             // lookup our user and external provider info
             var (user, provider, providerUserId, claims) = await FindUserFromExternalProviderAsync(result);
@@ -123,7 +123,7 @@ namespace IdentityServer.Controllers.External
             // depending on the external provider, some other claim type might be used
             var userIdClaim = externalUser?.FindFirst(JwtClaimTypes.Subject) 
                               ?? externalUser?.FindFirst(ClaimTypes.NameIdentifier) 
-                              ?? throw new Exception("Unknown userid");
+                              ?? throw new("Unknown userid");
 
             // remove the user id claim so we don't include it as an extra claim if/when we provision the user
             var claims = externalUser.Claims.ToHashSet();
@@ -150,15 +150,15 @@ namespace IdentityServer.Controllers.External
             var phone = claims.FirstOrDefault(x => x.Type == JwtClaimTypes.PhoneNumber)?.Value ?? claims.FirstOrDefault(x => x.Type == ClaimTypes.MobilePhone)?.Value;
             
             if (!string.IsNullOrEmpty(name) || !string.IsNullOrEmpty(givenName) || !string.IsNullOrEmpty(familyName)) 
-                filtered.Add(new Claim(JwtClaimTypes.Name, name ?? $"{givenName} {familyName}".Trim()));
+                filtered.Add(new(JwtClaimTypes.Name, name ?? $"{givenName} {familyName}".Trim()));
             if (!string.IsNullOrEmpty(givenName)) 
-                filtered.Add(new Claim(JwtClaimTypes.Name, givenName));
+                filtered.Add(new(JwtClaimTypes.Name, givenName));
             if (!string.IsNullOrEmpty(familyName)) 
-                filtered.Add(new Claim(JwtClaimTypes.Name, familyName));
+                filtered.Add(new(JwtClaimTypes.Name, familyName));
             if (!string.IsNullOrEmpty(email)) 
-                filtered.Add(new Claim(JwtClaimTypes.Email, email));
+                filtered.Add(new(JwtClaimTypes.Email, email));
             if (!string.IsNullOrEmpty(phone)) 
-                filtered.Add(new Claim(JwtClaimTypes.Email, phone));
+                filtered.Add(new(JwtClaimTypes.Email, phone));
 
             var user = new ApplicationUser
             {
@@ -173,16 +173,16 @@ namespace IdentityServer.Controllers.External
             };
             
             var identityResult = await _userManager.CreateAsync(user);
-            if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+            if (!identityResult.Succeeded) throw new(identityResult.Errors.First().Description);
 
             if (filtered.Any())
             {
                 identityResult = await _userManager.AddClaimsAsync(user, filtered);
-                if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+                if (!identityResult.Succeeded) throw new(identityResult.Errors.First().Description);
             }
 
-            identityResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
-            if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+            identityResult = await _userManager.AddLoginAsync(user, new(provider, providerUserId, provider));
+            if (!identityResult.Succeeded) throw new(identityResult.Errors.First().Description);
 
             return user;
         }
@@ -194,7 +194,7 @@ namespace IdentityServer.Controllers.External
             // if the external system sent a session id claim, copy it over
             // so we can use it for single sign-out
             var sid = externalResult?.Principal?.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.SessionId);
-            if (sid != default) localClaims.Add(new Claim(JwtClaimTypes.SessionId, sid.Value));
+            if (sid != default) localClaims.Add(new(JwtClaimTypes.SessionId, sid.Value));
 
             // if the external provider issued an id_token, we'll keep it for signout
             var idToken = externalResult?.Properties?.GetTokenValue("id_token");

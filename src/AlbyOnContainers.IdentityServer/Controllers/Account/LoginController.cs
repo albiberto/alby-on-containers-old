@@ -63,7 +63,7 @@ namespace IdentityServer.Controllers.Account
             if (string.IsNullOrEmpty(returnUrl)) return Redirect("~/");
 
             // user might have clicked on a malicious link - should be logged
-            throw new Exception("invalid return URL");
+            throw new("invalid return URL");
 
         }
 
@@ -96,11 +96,7 @@ namespace IdentityServer.Controllers.Account
                 // this is meant to short circuit the UI and only trigger the one external IdP
                 var externalProvider = !local ? new[] {new ExternalProvider {AuthenticationScheme = context.IdP}} : default;
                 
-                return new LoginViewModel(_accountOptions.AllowRememberLogin, local, externalProvider)
-                {
-                    Email = model?.Email ?? context.LoginHint,
-                    RememberLogin = model?.RememberLogin ?? true
-                };
+                return new(model?.Email ?? context.LoginHint, model?.RememberLogin, _accountOptions.AllowRememberLogin, local, externalProvider);
             }
 
             var schemes = await _schemeProvider.GetAllSchemesAsync();
@@ -128,11 +124,7 @@ namespace IdentityServer.Controllers.Account
                 }
             }
 
-            return new LoginViewModel(_accountOptions.AllowRememberLogin, allowLocal && _accountOptions.AllowLocalLogin, providers)
-            {
-                Email = model?.Email ?? context?.LoginHint,
-                RememberLogin = model?.RememberLogin ?? true
-            };
+            return new(model?.Email ?? context?.LoginHint, model?.RememberLogin, _accountOptions.AllowRememberLogin, allowLocal && _accountOptions.AllowLocalLogin, providers);
         }
     }
 }

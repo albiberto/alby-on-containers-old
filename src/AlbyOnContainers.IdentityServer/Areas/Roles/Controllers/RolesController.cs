@@ -30,7 +30,7 @@ namespace IdentityServer.Areas.Roles.Controllers
         {
             if (!ModelState.IsValid) return View("Index", await BuildViewModelAsync());
 
-            await _roleManager.CreateAsync(new IdentityRole {Name = vm.SelectedRole});
+            await _roleManager.CreateAsync(new() {Name = vm.SelectedRole});
 
             return RedirectToAction("Index");
         }
@@ -49,7 +49,7 @@ namespace IdentityServer.Areas.Roles.Controllers
         async Task<RolesViewModel> BuildViewModelAsync()
         {
             var roles = await _roleManager.Roles.ToListAsync();
-            return new RolesViewModel(roles.Select(role => role.Name));
+            return new(roles.Select(role => role.Name));
         }
     }
 }

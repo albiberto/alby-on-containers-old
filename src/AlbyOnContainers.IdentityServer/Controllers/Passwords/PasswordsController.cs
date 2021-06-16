@@ -99,7 +99,7 @@ namespace IdentityServer.Controllers.Passwords
         EmailMessage BuildEmailMessage(ApplicationUser user, string subject, string body) =>
             new()
             {
-                Sender = new MailAddress {Email = _options.Name, Name = _options.Address},
+                Sender = new() {Email = _options.Name, Name = _options.Address},
                 Subject = subject,
                 Body = body,
                 To = new[] {new MailAddress {Name = user.UserName, Email = user.Email}}

@@ -2,7 +2,7 @@
 
 namespace IdentityServer.ViewModels.Register
 {
-    public class RegisterViewModel
+    public record RegisterViewModel
     {
         [Required, Display(Name="Nome")]
         public string? GivenName { get; set; }

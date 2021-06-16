@@ -64,7 +64,7 @@ namespace IdentityServer.Areas.Grants.Controllers
                 list.Add(item);
             }
 
-            return new GrantsViewModel(list);
+            return new(list);
         }
     }
 }

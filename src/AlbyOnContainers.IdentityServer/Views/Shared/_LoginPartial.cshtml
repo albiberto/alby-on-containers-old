@@ -1,25 +1,22 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using IdentityServer4.Extensions
-@inject SignInManager<ApplicationUser> _signInManager
-@inject UserManager<ApplicationUser> _userManager
+﻿@using IdentityServer4.Extensions
 
-<ul class="navbar-nav">
+<ul class="navbar-nav lead">
     @if (User.IsAuthenticated())
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Manager" asp-controller="Profile" asp-action="Index">Ciao @User?.Identity?.Name!</a>
+            <a class="nav-link text-dark" asp-area="Manager" asp-controller="Profile" asp-action="Index"><small><strong>@User.Identity.Name</strong></small></a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout"><small>Logout</small></a>
         </li>
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Register">Registrati</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Register"><small>Registrati</small></a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login"><small>Login</small></a>
         </li>
     }
 </ul>

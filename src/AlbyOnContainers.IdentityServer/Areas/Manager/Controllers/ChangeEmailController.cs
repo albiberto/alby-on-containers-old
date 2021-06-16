@@ -71,7 +71,7 @@ namespace IdentityServer.Areas.Manager.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress {Email = _options.Name, Name = _options.Address},
+                Sender = new() {Email = _options.Name, Name = _options.Address},
                 Subject = "Confermi la modifica della Email?",
                 Body = $"Ciao {user}, <br /> Per confermare il cambio di email <a href='{HtmlEncoder.Default.Encode(callbackUrl ?? string.Empty)}'>clicca qui!</a>.",
                 To = new[] {new MailAddress {Name = user.Name, Email = model.NewEmail}}
@@ -109,7 +109,7 @@ namespace IdentityServer.Areas.Manager.Controllers
 
             var message = new EmailMessage
             {
-                Sender = new MailAddress {Email = _options.Name, Name = _options.Address},
+                Sender = new() {Email = _options.Name, Name = _options.Address},
                 Subject = "Confermi la tua email?",
                 Body = $"Ciao {user}, <br /> Per confermare la email <a href='{HtmlEncoder.Default.Encode(callbackUrl ?? string.Empty)}'>clicca qui!</a>.",
                 To = new[] {new MailAddress {Name = user.UserName, Email = user.Email}}
