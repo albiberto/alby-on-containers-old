@@ -1,26 +1,22 @@
+@using IdentityServer.ViewModels.Shared
 @model IdentityServer.ViewModels.Account.LoggedOutViewModel
 
 @{ 
+    ViewData["Title"] = TitleViewModel.LoggedOut.Title;
+    
     // set this so the layout rendering sees an anonymous user
     ViewData["signed-out"] = true;
 }
 
-@if (Model == default)
-{
-    <span class="lead">Loading ...</span>
-    return;
-}
-
 <div class="logged-out-page">
-    <partial name="_Title" model="@Model.ModelTitle" />
-
-
-    @if (Model.AutomaticRedirectAfterSignOut)
+    <partial name="_Title" model="@TitleViewModel.LoggedOut" />
+    
+    @if (Model?.AutomaticRedirectAfterSignOut ?? false)
     {
         <small class="lead">You will redirect to home in <strong id="count">5</strong> seconds</small>
     }
 
-    @if (!string.IsNullOrEmpty(Model.PostLogoutRedirectUri))
+    @if (!string.IsNullOrEmpty(Model?.PostLogoutRedirectUri))
     {
         <p class="lead">
             Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a> to return to the
@@ -28,7 +24,7 @@
         </p>
     }
 
-    @if (!string.IsNullOrEmpty(Model.SignOutIframeUrl))
+    @if (!string.IsNullOrEmpty(Model?.SignOutIframeUrl))
     {
         <iframe width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
     }
@@ -36,7 +32,7 @@
 
 @section scripts
 {
-    @if (Model.AutomaticRedirectAfterSignOut)
+    @if (Model?.AutomaticRedirectAfterSignOut ?? false)
     {
         <script src="~/js/signout-redirect.js"></script>
     }

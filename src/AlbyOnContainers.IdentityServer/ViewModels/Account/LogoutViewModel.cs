@@ -1,9 +1,9 @@
-﻿namespace IdentityServer.ViewModels.Account
+﻿using IdentityServer.ViewModels.Shared;
+
+namespace IdentityServer.ViewModels.Account
 {
     public record LogoutViewModel : LogoutInputModel
     {
-        public readonly TitleViewModel TitleModel = new("Logout", "Would you like to logout of IdentityServer?");
-
         public LogoutViewModel(bool showLogoutPrompt, string? logoutId)
         {
             ShowLogoutPrompt = showLogoutPrompt;

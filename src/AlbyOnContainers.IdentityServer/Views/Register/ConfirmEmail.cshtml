@@ -1,15 +1,17 @@
-﻿@{
-    ViewData["Title"] = "Conferma Email";
+﻿@using IdentityServer.ViewModels.Shared
+@model IdentityServer.ViewModels.Register.ConfirmEmailViewModel
+
+@{
+    ViewData["Title"] = TitleViewModel.ConfirmEmail().Title;
     Layout = "_Layout";
 }
 
-<div class="container">
-    <div class="text-left">
-        <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
-        <p>@ViewData["StatusMessage"]</p>
-        <p>Per accedere <a asp-controller="Account" asp-route-returnurl="@ViewData["ReturnUrl"]">premi qui!</a></p>
-    </div>
-</div>
+<partial name="_Title" model="@TitleViewModel.ConfirmEmail(Model?.Succeed)" />
+
+@if (Model?.Succeed ?? false)
+{
+    <p class=" lead">Per accedere <a asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">premi qui!</a></p>
+}
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }

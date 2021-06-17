@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using IdentityServer.Models;
+using IdentityServer.ViewModels.Shared;
 
 namespace IdentityServer.ViewModels.Account
 {
     public record LoginViewModel : LoginInputModel
     {
-        public readonly TitleViewModel Title = new("Login", "Inserisci le tue credenziali per accedere.");
-
         public LoginViewModel(string? email, bool? rememberLogin, bool allowRememberLogin = true, bool enableLocalLogin = true, IEnumerable<ExternalProvider>? externalProviders = default)
         {
             Email = email;

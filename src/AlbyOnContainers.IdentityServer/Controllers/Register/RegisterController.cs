@@ -5,7 +5,6 @@ using AlbyOnContainers.Messages;
 using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
-using IdentityServer.ViewModels;
 using IdentityServer.ViewModels.Register;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +18,6 @@ namespace IdentityServer.Controllers.Register
         readonly EmailOptions _emailOptions;
         readonly IEmailPublisher _publisher;
         readonly UserManager<ApplicationUser> _userManager;
-
 
         public RegisterController(UserManager<ApplicationUser> userManager, IEmailPublisher publisher, IOptions<EmailOptions> emailOptions)
         {
@@ -38,9 +36,9 @@ namespace IdentityServer.Controllers.Register
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl = default)
+        public async Task<IActionResult> Register(RegisterInputModel model, string? returnUrl = default)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid) return View(model as RegisterViewModel);
 
             var user = new ApplicationUser
             {
@@ -61,7 +59,7 @@ namespace IdentityServer.Controllers.Register
 
             await PublishConfirmEmailMessage(user, returnUrl);
 
-            return View("RegisterConfirmation", model.Email);
+            return View("EmailConfirmation", model.Email);
         }
 
         #endregion
@@ -76,14 +74,14 @@ namespace IdentityServer.Controllers.Register
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResendEmail(ResendConfirmationEmailViewModel model, string? returnUrl = default)
+        public async Task<IActionResult> ResendEmail(ResendEmailInputModel model, string? returnUrl = default)
         {
-            if (!ModelState.IsValid) return ResendEmail();
+            if (!ModelState.IsValid) return View(model as ResendEmailViewModel);
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user != default) await PublishConfirmEmailMessage(user, returnUrl);
 
-            return View("ResendEmailConfirmation", model.Email);
+            return View("EmailConfirmation", model.Email);
         }
 
         #endregion
@@ -102,11 +100,7 @@ namespace IdentityServer.Controllers.Register
             
             var result = await _userManager.ConfirmEmailAsync(user, code);
 
-            ViewData["StatusMessage"] = result.Succeeded
-                ? "Grazie per aver confermato la tua email."
-                : "Ops... si e' verificato un errore durante la consegna della mail.";
-            
-            return View();
+            return View(new ConfirmEmailViewModel(result.Succeeded));
         }
         
         async Task PublishConfirmEmailMessage(ApplicationUser user, string? returnUrl = default)

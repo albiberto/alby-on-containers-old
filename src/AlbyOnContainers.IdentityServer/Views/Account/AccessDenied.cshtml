@@ -1,3 +1,7 @@
-@using IdentityServer.ViewModels
+@using IdentityServer.ViewModels.Shared
 
-<partial name="_Title" model=@(new TitleViewModel("Access Denied", "You do not have access to that resource.")) />
+@{
+    ViewData["Title"] = TitleViewModel.AccessDenied.Title;
+}
+
+<partial name="_Title" model="TitleViewModel.AccessDenied" />

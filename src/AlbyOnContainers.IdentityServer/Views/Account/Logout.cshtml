@@ -1,16 +1,14 @@
+@using IdentityServer.ViewModels.Shared
 @model IdentityServer.ViewModels.Account.LogoutViewModel
 
-@if (Model == default)
-{
-    <span class="lead">Loading ...</span>
-    return;
+@{
+    ViewData["Title"] = TitleViewModel.Logout.Title;
 }
-
 <div class="logout-page">
-    <partial name="_Title" model="@Model.TitleModel" />
+    <partial name="_Title" model="TitleViewModel.Logout" />
 
     <form asp-action="Logout">
-        <input type="hidden" name="logoutId" value="@Model?.LogoutId"/>
+        <input type="hidden" name="logoutId" value="@Model?.LogoutId" />
         <div class="form-group">
             <button class="btn btn-outline-secondary w-25">Yes</button>
         </div>

@@ -1,15 +1,13 @@
-﻿@model IdentityServer.ViewModels.Register.ResendConfirmationEmailViewModel
+﻿@using IdentityServer.ViewModels.Shared
+@model IdentityServer.ViewModels.Register.ResendEmailViewModel
 
 @{
-    ViewBag.Title = "Invia Email di Conferma";
+    ViewData["Title"] = TitleViewModel.ResendEmail.Title;
     Layout = "_Layout";
 }
 <div class="container">
 
-    <div class="text-left">
-        <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
-        <h5>Inserisci la tua email per continuare.</h5>
-    </div>
+    <partial name="_Title" model="@TitleViewModel.ResendEmail" />
 
     <div class="row">
         <div class="col-md-8">

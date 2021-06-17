@@ -4,19 +4,19 @@
     @if (User.IsAuthenticated())
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Manager" asp-controller="Profile" asp-action="Index"><small><strong>@User.Identity.Name</strong></small></a>
+            <a class="nav-link text-dark" asp-area="Manager" asp-controller="Profile" asp-action="Index"><strong>@User.Identity.Name</strong></a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout"><small>Logout</small></a>
+            <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
         </li>
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Register"><small>Registrati</small></a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Register" asp-action="Register">Registrati</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login"><small>Login</small></a>
+            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
         </li>
     }
 </ul>

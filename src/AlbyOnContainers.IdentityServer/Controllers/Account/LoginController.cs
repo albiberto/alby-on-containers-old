@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Extensions;
@@ -64,7 +63,6 @@ namespace IdentityServer.Controllers.Account
 
             // user might have clicked on a malicious link - should be logged
             throw new("invalid return URL");
-
         }
 
         [HttpPost, ValidateAntiForgeryToken]

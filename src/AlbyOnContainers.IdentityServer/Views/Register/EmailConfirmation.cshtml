@@ -1,0 +1,9 @@
+﻿@using IdentityServer.ViewModels.Shared
+@model string
+
+@{
+    ViewData["Title"] = TitleViewModel.EmailConfirmation().Title;
+    Layout = "_Layout";
+}
+
+<partial name="_Title" model="@TitleViewModel.EmailConfirmation(Model)" />

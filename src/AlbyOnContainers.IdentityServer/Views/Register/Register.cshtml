@@ -1,16 +1,14 @@
+@using IdentityServer.ViewModels.Shared
 @model IdentityServer.ViewModels.Register.RegisterViewModel
 
 @{
-    ViewData["Title"] = "Registrati";
+    ViewData["Title"] = TitleViewModel.Register.Title;
     Layout = "_Layout";
 }
 
 <div class="container">
 
-    <div class="text-left">
-        <h1 class="display-4 mb-2">@ViewData["Title"]</h1>
-        <h5>Completa i seguenti campi per registrarti</h5>
-    </div>
+    <partial name="_Title" model="@TitleViewModel.Register" />
 
     <div class="row">
         <div class="col-md-8">
@@ -57,11 +55,11 @@
 
                 <div class="form-group">
                     <div>
-                        <button type="submit" class="btn btn-outline-success w-25">Registarti</button>
+                        <button type="submit" class="btn btn-outline-primary w-25">Registarti</button>
                     </div>
                     <div class="float-right">
                         <div>
-                            <a asp-controller="Account" asp-route-returnurl="@ViewData["ReturnUrl"]">Ti sei gi&agrave; registarto?</a>
+                            <a class="lead" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]">Ti sei gi&agrave; registarto?</a>
                         </div>
                     </div>
                 </div>

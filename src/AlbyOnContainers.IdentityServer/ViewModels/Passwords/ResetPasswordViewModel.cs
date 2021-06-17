@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServer.ViewModels.Register
+namespace IdentityServer.ViewModels.Passwords
 {
     public record ResetPasswordViewModel
     {
