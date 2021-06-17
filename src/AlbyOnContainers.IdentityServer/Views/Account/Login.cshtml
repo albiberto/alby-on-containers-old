@@ -44,6 +44,18 @@
                             <button asp-action="Login" asp-route-ReturnUrl="@ViewData["ReturnUrl"]" class="btn btn-outline-primary w-25" type="submit">Login</button>
                             <button asp-action="Cancel" asp-route-ReturnUrl="@ViewData["ReturnUrl"]" class="btn btn-outline-secondary w-25" type="submit">Cancel</button>
                         </form>
+                        
+                        <div class="lead text-right">
+                            <div>
+                                <a asp-controller="Register" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]"><small>Non sei ancora registrato?</small></a>
+                            </div>
+                            <div>
+                                <a  asp-controller="Passwords" asp-action="ForgotPassword" asp-route-returnurl="@ViewData["ReturnUrl"]"><small>Password dimenticata?</small></a>
+                            </div>
+                            <div>
+                                <a  asp-controller="Register" asp-action="ResendEmail" asp-route-returnurl="@ViewData["ReturnUrl"]"><small>Non ti &egrave; arrivata la mail di conferma?</small></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

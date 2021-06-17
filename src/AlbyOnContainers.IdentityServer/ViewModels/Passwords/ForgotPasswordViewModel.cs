@@ -1,10 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace IdentityServer.ViewModels.Passwords
 {
-    public record ForgotPasswordViewModel
+    public record ForgotPasswordViewModel : ForgotPasswordInputModel
     {
-        [Required, EmailAddress, Display(Name = "Email")]
-        public string Email { get; set; } = null!;
     }
 }

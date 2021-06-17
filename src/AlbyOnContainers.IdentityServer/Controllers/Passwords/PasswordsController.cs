@@ -37,18 +37,18 @@ namespace IdentityServer.Controllers.Passwords
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, string? returnUrl = default)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordInputModel model, string? returnUrl = default)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid) return View(model as ForgotPasswordViewModel);
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             
             // Don't reveal that the user does not exist or is not confirmed
-            if (user == default || !await _userManager.IsEmailConfirmedAsync(user)) return View("ForgotPasswordConfirmation", model.Email);
+            if (user == default || !await _userManager.IsEmailConfirmedAsync(user)) return View("EmailConfirmation", model.Email);
 
             await PublishForgotPasswordEmailMessage(user, returnUrl);
 
-            return View("ForgotPasswordConfirmation", model.Email);
+            return View("EmailConfirmation", model.Email);
         }
 
         [HttpGet]
