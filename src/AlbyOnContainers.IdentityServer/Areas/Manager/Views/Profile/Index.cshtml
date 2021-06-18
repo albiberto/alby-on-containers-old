@@ -1,57 +1,58 @@
 ﻿@using IdentityServer.Areas.Manager.Views
+@using IdentityServer.ViewModels.Shared
 @model IdentityServer.Areas.Manager.Models.ProfileViewModel
 
 @{
-    ViewData["Title"] = "Profilo";
     ViewData["ActivePage"] = ManageNavPages.Index;
-
+    ViewData["Title"] = TitleViewModel.Profile.Title;
     Layout = "_ManageLayout";
 }
 
-<div class="container">
-
-    <div class="text-left">
-        <h3>@ViewData["Title"]</h3>
-    </div>
+<form id="profile-form" method="post">
 
     <partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
 
-    <div class="row">
-        <div class="col-md-9">
-            <form id="profile-form" method="post">
-
-                <div class="form-group">
-                    <label asp-for="Username"></label>
-                    <input asp-for="Username" class="form-control"/>
-                    <span asp-validation-for="Username" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="PhoneNumber"></label>
-
-                    <div class="input-group">
-                        <input asp-for="PhoneNumber" class="form-control"/>
-                        @if (Model.IsPhoneNumberConfirmed)
-                        {
-                            <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Verificato">
-                                <span class="input-group-text text-success font-weight-bold">✓</span>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Non Verificato">
-                                <span class="input-group-text text-danger font-weight-bold">X</span>
-                            </div>
-                        }
-                    </div>
-
-                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                </div>
-
-                <button id="update-profile-button" type="submit" class="btn btn-outline-primary w-25">Aggiorna</button>
-
-            </form>
-        </div>
+    <div class="form-group">
+        <label asp-for="Username"></label>
+        <input asp-for="Username" class="form-control"/>
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="GivenName"></label>
+        <input asp-for="GivenName" class="form-control"/>
+        <span asp-validation-for="GivenName" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="FamilyName"></label>
+        <input asp-for="FamilyName" class="form-control"/>
+        <span asp-validation-for="FamilyName" class="text-danger"></span>
     </div>
 
-</div>
+    <div class="form-group">
+        <label asp-for="PhoneNumber"></label>
+
+        <div class="input-group">
+            <input asp-for="PhoneNumber" class="form-control"/>
+            @if (Model?.PhoneNumberConfirmed ?? false)
+            {
+                <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Verificato">
+                    <span class="input-group-text text-success font-weight-bold">✓</span>
+                </div>
+            }
+            else
+            {
+                <div class="input-group-append" data-toggle="tooltip" data-placement="left" title="Non Verificato">
+                    <span class="input-group-text text-danger font-weight-bold">X</span>
+                </div>
+            }
+        </div>
+
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="text-right">
+        <button id="update-profile-button" type="submit" class="btn btn-outline-primary w-25">Aggiorna</button>
+    </div>
+</form>

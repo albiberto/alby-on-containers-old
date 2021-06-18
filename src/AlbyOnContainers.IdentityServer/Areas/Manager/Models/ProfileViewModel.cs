@@ -1,13 +1,21 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using IdentityServer.Models;
 
 namespace IdentityServer.Areas.Manager.Models
 {
-    public class ProfileViewModel
+    public record ProfileViewModel : ProfileInputModel
     {
-        [MinLength(3)] public string Username { get; set; }
-
-        [Phone, DisplayName("Telefono")] public string PhoneNumber { get; set; }
-        public bool IsPhoneNumberConfirmed { get; set; }
+        public ProfileViewModel(ApplicationUser user) : this(user.UserName, user.FamilyName, user.GivenName, user.PhoneNumber, user.PhoneNumberConfirmed)
+        {
+        }
+        public ProfileViewModel(string? username, string? familyName, string? givenName, string? phoneNumber, bool phoneNumberConfirmed)
+        {
+            Username = username;
+            FamilyName = familyName;
+            GivenName = givenName;
+            PhoneNumber = phoneNumber;
+            PhoneNumberConfirmed = phoneNumberConfirmed;
+        }
     }
 }

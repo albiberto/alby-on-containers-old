@@ -1,6 +1,6 @@
 namespace IdentityServer.ViewModels.Shared
 {
-    public record TitleViewModel(string Title, string Description)
+    public record TitleViewModel(string Title, string? Description = default)
     {
         public static readonly TitleViewModel Login = new("Login", "Inserisci le tue credenziali per accedere.");
         public static readonly TitleViewModel Logout = new("Logout", "Would you like to logout of IdentityServer?");
@@ -14,7 +14,11 @@ namespace IdentityServer.ViewModels.Shared
         
         public static readonly TitleViewModel Register = new ("Register", "Completa i seguenti campi per registrarti");
         public static readonly TitleViewModel ResendEmail = new ("Invia email di conferma", "Inserisci la tua email per continuare.");
-        
+
+        public static readonly TitleViewModel ChangeEmail = new("Email");
+        public static readonly TitleViewModel Profile = new("Profilo");
+        public static TitleViewModel Settings(string part) => new($"Impostazioni {part}");
+
         public static TitleViewModel EmailConfirmation(string? email = default)
         {
             var part = !string.IsNullOrEmpty(email)

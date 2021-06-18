@@ -1,8 +1,9 @@
 ﻿@using IdentityServer.Areas.Manager.Views
+@using IdentityServer.ViewModels.Shared
 @model IdentityServer.Areas.Manager.Models.ChangeEmailViewModel
 
 @{
-    ViewData["Title"] = "Email";
+    ViewData["Title"] = TitleViewModel.ChangeEmail;
     ViewData["ActivePage"] = ManageNavPages.Email;
 
     Layout = "_ManageLayout";
@@ -10,10 +11,7 @@
 
 <div class="container">
 
-    <div class="text-left">
-        <h3>@ViewData["Title"]</h3>
-    </div>
-
+    <partial name="_Title" model="TitleViewModel.ChangeEmail"/>
     <partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
 
     <div class="row">

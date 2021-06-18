@@ -4,5 +4,12 @@
     Layout = null;
 }
 
-<div class="display-4">@(Model?.Title ?? "Page Title")</div>
-<p class="lead text-muted mt-1">@(Model?.Description ?? "Choose how to login")</p>
+@if (!string.IsNullOrEmpty(Model?.Title))
+{
+    <div class="display-4">@Model.Title</div>
+    
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <p class="lead text-muted mt-1">@(Model?.Description ?? "Choose how to login")</p>
+    }
+}
