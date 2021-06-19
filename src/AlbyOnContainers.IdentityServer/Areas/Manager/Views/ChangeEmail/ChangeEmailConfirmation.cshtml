@@ -1,18 +1,12 @@
 ﻿@using IdentityServer.Areas.Manager.Views
+@using IdentityServer.ViewModels.Shared
 
 @{
-    ViewData["Title"] = "Conferma Email";
+    ViewData["Title"] = TitleViewModel.EmailConfirmation().Title;
     ViewData["ActivePage"] = ManageNavPages.Email;
 
     Layout = "_ManageLayout";
 }
 
-<div class="container">
+<partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
 
-    <div class="text-left">
-        <h3>@ViewData["Title"]</h3>
-    </div>
-
-    <partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
-
-</div>

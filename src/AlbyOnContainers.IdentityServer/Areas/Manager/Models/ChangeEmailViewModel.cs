@@ -1,14 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace IdentityServer.Areas.Manager.Models
+﻿namespace IdentityServer.Areas.Manager.Models
 {
-    public class ChangeEmailViewModel
+    public record ChangeEmailViewModel : ChangeEmailInputModel
     {
-        [Display(Name = "Nuova Email"), Required, EmailAddress]
-        public string NewEmail { get; set; } = string.Empty;
+        public ChangeEmailViewModel(ChangeEmailInputModel model, bool isEmailConfirmed = false) : this(model.Email, model.NewEmail, isEmailConfirmed)
+        {
+        }
 
-        [Required] public string Email { get; set; } = null!;
-
-        public bool IsEmailConfirmed { get; set; }
+        public ChangeEmailViewModel(string? email = default, string? newEmail = default, bool isEmailConfirmed = false)
+        {
+            Email = email ?? string.Empty;
+            NewEmail = newEmail ?? string.Empty;
+            IsEmailConfirmed = isEmailConfirmed;
+        }
+        
+        public bool IsEmailConfirmed { get; }
     }
 }

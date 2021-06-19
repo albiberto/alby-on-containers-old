@@ -38,26 +38,23 @@ namespace IdentityServer.Areas.Manager.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == default) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            return View(new ChangeEmailViewModel
-            {
-                Email = user.Email,
-                IsEmailConfirmed = user.EmailConfirmed,
-                NewEmail = string.Empty
-            });
+            return View(new ChangeEmailViewModel(user.Email, isEmailConfirmed: user.EmailConfirmed));
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangeEmail(ChangeEmailViewModel model)
+        public async Task<IActionResult> ChangeEmail(ChangeEmailInputModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == default) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            if (!ModelState.IsValid) return View("Index", model);
+            var vm = new ChangeEmailViewModel(model, user.EmailConfirmed);
+
+            if (!ModelState.IsValid) return View("Index", vm);
 
             if (string.Equals(model.Email, model.NewEmail, StringComparison.InvariantCultureIgnoreCase))
             {
                 ViewData["StatusMessage"] = "L'indirizzo inserito e' uguale al precedente!";
-                return View("Index", model);
+                return View("Index", vm);
             }
             
             var code = await _userManager.GenerateChangeEmailTokenAsync(user, model.NewEmail);
@@ -80,23 +77,19 @@ namespace IdentityServer.Areas.Manager.Controllers
             await _email.SendAsync(message);
 
             ViewData["StatusMessage"] = "Ti abbiamo inviato una mail di conferma. Controlla la tua casella di posta elettronica.";
-            return View("Index", model);
+            return View("Index", vm);
         }
 
         [HttpPost]
         public async Task<IActionResult> SendVerificationEmailAsync(string email)
         {
-            var model = new ChangeEmailViewModel
-            {
-                Email = email,
-                NewEmail = string.Empty,
-                IsEmailConfirmed = false
-            };
-            
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            if (user == default) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            if (string.Equals(email, user.Email, StringComparison.InvariantCultureIgnoreCase)) return BadRequest("Invalid email");
 
-            if (!ModelState.IsValid) return View("Index", model);
+            var vm = new ChangeEmailViewModel(email, isEmailConfirmed: user.EmailConfirmed);
+
+            if (!ModelState.IsValid) return View("Index", vm);
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -118,14 +111,13 @@ namespace IdentityServer.Areas.Manager.Controllers
             await _email.SendAsync(message);
 
             ViewData["StatusMessage"] = "Email di verifica inviata. Controlla la tua casella di posta elettronica.";
-            return View("Index", model);
+            return View("Index", vm);
         }
 
         [HttpGet]
         public async Task<IActionResult> ChangeEmailConfirmation(string userId, string email, string code)
         {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code))
-                RedirectToAction("Index", "Diagnostics");
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(code)) RedirectToAction("Index", "Diagnostics");
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null) return NotFound($"Unable to load user with ID '{userId}'.");

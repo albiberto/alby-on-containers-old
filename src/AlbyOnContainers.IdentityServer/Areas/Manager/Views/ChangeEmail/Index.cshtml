@@ -1,54 +1,49 @@
-﻿@using IdentityServer.Areas.Manager.Views
-@using IdentityServer.ViewModels.Shared
+﻿@using IdentityServer.ViewModels.Shared
+@using IdentityServer.Areas.Manager.Views
 @model IdentityServer.Areas.Manager.Models.ChangeEmailViewModel
 
 @{
-    ViewData["Title"] = TitleViewModel.ChangeEmail;
+    ViewData["Title"] = TitleViewModel.ChangeEmail.Title;
     ViewData["ActivePage"] = ManageNavPages.Email;
 
     Layout = "_ManageLayout";
 }
 
-<div class="container">
+<partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
 
-    <partial name="_Title" model="TitleViewModel.ChangeEmail"/>
-    <partial name="_StatusMessage" for="@ViewData["StatusMessage"]"/>
+<form class="form-horizontal" method="post">
 
-    <div class="row">
-        <div class="col-md-9">
-
-            <form id="email-form" class="form-horizontal" method="post">
-
-                <div class="form-group">
-                    <label asp-for="Email"></label>
-                        <div class="input-group">
-                            <input asp-for="Email" class="form-control" disabled/>
-                            <input asp-for="Email" type="hidden" />
-                            <input asp-for="IsEmailConfirmed" type="hidden" />
-                            <div class="input-group-append">
-                                @if (Model.IsEmailConfirmed)
-                                {
-                                    <span class="input-group-text text-success font-weight-bold">✓</span>
-                                }
-                                else
-                                {
-                                    <span class="input-group-text text-danger font-weight-bold">X</span>
-                                }
-                            </div>
-                        </div>
-                        <button id="email-verification" class="btn btn-link" type="submit" asp-action="SendVerificationEmail">Non ti &egrave; arrivata la mail di conferma?</button>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="NewEmail"></label>
-                    <input asp-for="NewEmail" class="form-control"/>
-                    <span asp-validation-for="NewEmail" class="text-danger"></span>
-                </div>
-
-                <button id="change-email-button" class="btn btn-outline-primary w-25" type="submit">Cambia</button>
-
-            </form>
+    <div class="form-group mb-0">
+        <label asp-for="Email"></label>
+        <div class="input-group">
+            <input asp-for="Email" class="form-control" disabled/>
+            <input asp-for="Email" type="hidden"/>
+            <input asp-for="IsEmailConfirmed" type="hidden"/>
+            <div class="input-group-append">
+                @if (Model?.IsEmailConfirmed ?? false)
+                {
+                    <span class="input-group-text text-success font-weight-bold">✓</span>
+                }
+                else
+                {
+                    <span class="input-group-text text-danger font-weight-bold">X</span>
+                }
+            </div>
         </div>
+        <form method="post">
+            <div class="text-right"><a class="lead" asp-action="SendVerificationEmail">Non ti &egrave; arrivata la mail di conferma?</a></div>
+        </form>
+        
     </div>
 
-</div>
+    <div class="form-group">
+        <label asp-for="NewEmail"></label>
+        <input asp-for="NewEmail" class="form-control"/>
+        <span asp-validation-for="NewEmail" class="text-danger"></span>
+    </div>
+
+    <div class="text-right">
+        <button id="change-email-button" class="btn btn-outline-primary w-25" type="submit">Cambia</button>
+    </div>
+
+</form>
