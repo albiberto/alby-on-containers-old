@@ -3,9 +3,9 @@
     Layout = "_Layout";
 }
 
-<partial name="_Title" model="@(TitleViewModel.Settings($"{ViewData["Title"]}"))"/>
+<partial name="_Title" model="@(new TitleViewModel($"{ViewData["Title"]}"))" />
 
-<div class="row mt-2">
+<div class="row mt-4">
     <div class="col-3">
         <partial name="_ManageNav"/>
     </div>
