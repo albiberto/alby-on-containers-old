@@ -1,9 +1,7 @@
-﻿@using IdentityServer.Areas.Manager.Views
-@using IdentityServer.ViewModels.Shared
+﻿@using IdentityServer.ViewModels.Shared
 
 @{
-    ViewData["Title"] = TitleViewModel.EmailConfirmation().Title;
-    ViewData["ActivePage"] = ManageNavPages.Email;
+    ViewData["ActivePage"] = TitleViewModel.EmailConfirmation().Title;
 
     Layout = "_ManageLayout";
 }

@@ -1,11 +1,8 @@
 ﻿@using IdentityServer.ViewModels.Shared
-@using IdentityServer.Areas.Manager.Views
 @model IdentityServer.Areas.Manager.Models.DeletePersonalDataInputModel
 
 @{
-    ViewData["Title"] = TitleViewModel.DeletePersonalData.Title;
-    ViewData["ActivePage"] = ManageNavPages.DeletePersonalData;
-
+    ViewData["ActivePage"] = TitleViewModel.DeletePersonalData.Title;
     Layout = "_ManageLayout";
 }
 

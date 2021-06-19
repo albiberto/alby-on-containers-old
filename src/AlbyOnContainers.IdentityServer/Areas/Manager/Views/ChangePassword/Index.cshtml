@@ -1,10 +1,8 @@
 ﻿@using IdentityServer.ViewModels.Shared
-@using IdentityServer.Areas.Manager.Views
 @model IdentityServer.Areas.Manager.Models.ChangePasswordViewModel
 
 @{
-    ViewData["Title"] = TitleViewModel.ChangePassword.Title;
-    ViewData["ActivePage"] = ManageNavPages.ChangePassword;
+    ViewData["ActivePage"] = TitleViewModel.ChangePassword.Title;
 
     Layout = "_ManageLayout";
 }

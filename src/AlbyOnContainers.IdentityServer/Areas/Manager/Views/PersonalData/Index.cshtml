@@ -1,8 +1,7 @@
 ﻿@using IdentityServer.ViewModels.Shared
-@using IdentityServer.Areas.Manager.Views
+
 @{
-    ViewData["Title"] = TitleViewModel.PersonalData.Title;
-    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+    ViewData["ActivePage"] = TitleViewModel.PersonalData.Title;
 
     Layout = "_ManageLayout";
 }

@@ -1,10 +1,8 @@
 ﻿@using IdentityServer.ViewModels.Shared
-@using IdentityServer.Areas.Manager.Views
 @model IdentityServer.Areas.Manager.Models.ChangeEmailViewModel
 
 @{
-    ViewData["Title"] = TitleViewModel.ChangeEmail.Title;
-    ViewData["ActivePage"] = ManageNavPages.Email;
+    ViewData["ActivePage"] = TitleViewModel.ChangeEmail.Title;
 
     Layout = "_ManageLayout";
 }

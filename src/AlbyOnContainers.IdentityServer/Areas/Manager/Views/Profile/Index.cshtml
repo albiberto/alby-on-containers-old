@@ -1,10 +1,8 @@
-﻿@using IdentityServer.Areas.Manager.Views
-@using IdentityServer.ViewModels.Shared
+﻿@using IdentityServer.ViewModels.Shared
 @model IdentityServer.Areas.Manager.Models.ProfileViewModel
 
 @{
-    ViewData["ActivePage"] = ManageNavPages.Index;
-    ViewData["Title"] = TitleViewModel.Profile.Title;
+    ViewData["ActivePage"] = TitleViewModel.Profile.Title;
     Layout = "_ManageLayout";
 }
 
