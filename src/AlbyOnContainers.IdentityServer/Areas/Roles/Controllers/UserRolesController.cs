@@ -60,7 +60,8 @@ namespace IdentityServer.Areas.Roles.Controllers
             {
                 if (await _userManager.IsInRoleAsync(user, role)) await _userManager.RemoveFromRoleAsync(user, role);
             }
-            
+
+            ViewData["StatusMessage"] = "Ruoli aggiornati con successo";
             return View("Index",  await BuildViewModelAsync(user));
         }
         

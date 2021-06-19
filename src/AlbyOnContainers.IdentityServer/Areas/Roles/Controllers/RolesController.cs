@@ -33,6 +33,7 @@ namespace IdentityServer.Areas.Roles.Controllers
 
             await _roleManager.CreateAsync(new() {Name = selectedRole});
 
+            ViewData["StatusMessage"] = "Ruolo creato con successo";
             return View("Index", await BuildViewModelAsync());
         }
 
@@ -43,7 +44,8 @@ namespace IdentityServer.Areas.Roles.Controllers
 
             var identityRole = await _roleManager.FindByNameAsync(vm.SelectedRole);
             await _roleManager.DeleteAsync(identityRole);
-
+            
+            ViewData["StatusMessage"] = "Ruolo eliminato con successo";
             return View("Index", await BuildViewModelAsync());
         }
         
