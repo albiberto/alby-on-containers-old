@@ -32,28 +32,27 @@ namespace IdentityServer.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(ChangePasswordViewModel model)
+        public async Task<IActionResult> Index(ChangePasswordInputModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
 
-            if (!ModelState.IsValid) return View(model);
+            var vm = model as ChangePasswordViewModel;
+            
+            if (!ModelState.IsValid) return View(vm);
 
             var checkPasswordResult = await _userManager.CheckPasswordAsync(user, model.OldPassword);
             if (!checkPasswordResult)
             {
                 ModelState.AddModelError(nameof(model.OldPassword), "Password non valida");
-                return View(model);
+                return View(vm);
             }
 
-            var changePasswordResult =
-                await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                foreach (var error in changePasswordResult.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                return View(model);
+                foreach (var error in changePasswordResult.Errors) ModelState.AddModelError(string.Empty, error.Description);
+                return View(vm);
             }
 
             await _signInManager.RefreshSignInAsync(user);

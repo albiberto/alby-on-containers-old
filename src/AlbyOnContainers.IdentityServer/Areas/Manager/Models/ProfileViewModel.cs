@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using IdentityServer.Models;
+﻿using IdentityServer.Models;
 
 namespace IdentityServer.Areas.Manager.Models
 {
@@ -9,6 +7,7 @@ namespace IdentityServer.Areas.Manager.Models
         public ProfileViewModel(ApplicationUser user) : this(user.UserName, user.FamilyName, user.GivenName, user.PhoneNumber, user.PhoneNumberConfirmed)
         {
         }
+        
         public ProfileViewModel(string? username, string? familyName, string? givenName, string? phoneNumber, bool phoneNumberConfirmed)
         {
             Username = username;
