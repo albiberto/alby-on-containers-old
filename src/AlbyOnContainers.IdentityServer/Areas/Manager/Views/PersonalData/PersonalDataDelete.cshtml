@@ -1,29 +1,28 @@
-﻿@using IdentityServer.Areas.Manager.Views
-@model IdentityServer.Areas.Manager.Models.DeletePersonalDataViewModel
+﻿@using IdentityServer.ViewModels.Shared
+@using IdentityServer.Areas.Manager.Views
+@model IdentityServer.Areas.Manager.Models.DeletePersonalDataInputModel
 
 @{
-    ViewData["Title"] = "Elimina Account";
+    ViewData["Title"] = TitleViewModel.PersonalData.Title;
     ViewData["ActivePage"] = ManageNavPages.DeletePersonalData;
 
     Layout = "_ManageLayout";
 }
 
-<div class="alert alert-warning" role="alert">
-    <p>
-        <strong>Procedendo si cancella permanentemente il proprio account, e non potr&agrave; essere recuperato in seguito.</strong>
-    </p>
-</div>
+<p class="alert alert-danger">
+    <strong>Procedendo si cancella permanentemente il proprio account, e non potr&agrave; essere recuperato in seguito.</strong>
+</p>
 
-<div>
-    <form id="delete-user" class="form-group" method="post">
+<form id="delete-user" class="form-group" method="post">
 
-        <div class="form-group">
-            <label asp-for="Password"></label>
-            <input asp-for="Password" class="form-control"/>
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
 
-        <button class="btn btn-outline-danger w-25" type="submit">Elimina</button>
-
-    </form>
-</div>
+    <div class="text-right">
+        <button class="btn btn-outline-danger w-25" type="submit">Cancella</button>
+    </div>
+    
+</form>

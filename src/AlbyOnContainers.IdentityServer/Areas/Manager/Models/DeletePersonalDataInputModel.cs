@@ -2,9 +2,9 @@
 
 namespace IdentityServer.Areas.Manager.Models
 {
-    public class DeletePersonalDataViewModel
+    public record DeletePersonalDataInputModel
     {
         [Required, DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string Password { get; init; } = string.Empty;
     }
 }

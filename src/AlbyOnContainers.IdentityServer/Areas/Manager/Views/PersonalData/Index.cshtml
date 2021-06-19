@@ -1,34 +1,17 @@
-﻿@using IdentityServer.Areas.Manager.Views
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
+﻿@using IdentityServer.ViewModels.Shared
+@using IdentityServer.Areas.Manager.Views
 @{
-    ViewData["Title"] = "Account";
+    ViewData["Title"] = TitleViewModel.PersonalData.Title;
     ViewData["ActivePage"] = ManageNavPages.PersonalData;
 
     Layout = "_ManageLayout";
 }
 
-<div class="container">
+<p class="lead">Il tuo account contiene i tuoi dati personali che puoi trovare qui. Questa pagina ti permette di scaricarli o di cancellarli.</p>
+<p class="lead"><strong>Cancellando questi dati rimuoverai permanentemente il tuo account, e non potra essere ripristinato in futuro.</strong></p>
 
-    <div class="text-left">
-        <h3>@ViewData["Title"]</h3>
-    </div>
+<form class="form-group text-right" method="post">
+    <button type="submit" class="btn btn-outline-primary w-25" asp-action="DownloadPersonalData">Download</button>
+</form>
 
-    <div class="row">
-        <div class="col-md-9">
-            <p>Il tuo account contiene i tuoi dati personali che puoi trovare qui. Questa pagina ti permette di scaricarli o di cancellarli.</p>
-            <p>
-                <strong>Cancellando questi dati rimuoverai permanentemente il tuo account, e non potra essere ripristinato in futuro.</strong>
-            </p>
-
-            <form class="form-group" method="post">
-                <button type="submit" asp-action="DownloadPersonalData" class="btn btn-outline-primary w-25">Download</button>
-            </form>
-
-            <p>
-                <a id="delete" class="btn btn-outline-danger w-25" asp-action="PersonalDataDelete">Cancella</a>
-            </p>
-        </div>
-    </div>
-
-</div>
+<p class="text-right"><a class="btn btn-outline-danger w-25" asp-action="PersonalDataDelete">Cancella</a></p>

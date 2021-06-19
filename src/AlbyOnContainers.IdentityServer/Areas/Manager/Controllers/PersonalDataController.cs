@@ -62,7 +62,7 @@ namespace IdentityServer.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PersonalDataDelete(DeletePersonalDataViewModel model)
+        public async Task<IActionResult> PersonalDataDelete(DeletePersonalDataInputModel model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
