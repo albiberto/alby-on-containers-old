@@ -20,6 +20,9 @@ namespace IdentityServer.ViewModels.Shared
         public static readonly TitleViewModel ChangePassword = new("Cambio Password");
         public static readonly TitleViewModel PersonalData = new("Dati Personali");
         public static readonly TitleViewModel DeletePersonalData = new("Elimina Account");
+        
+        public static readonly TitleViewModel Roles = new("Ruoli");
+        public static readonly TitleViewModel UserRoles = new("Ruoli Utente");
 
         public static TitleViewModel EmailConfirmation(string? email = default)
         {

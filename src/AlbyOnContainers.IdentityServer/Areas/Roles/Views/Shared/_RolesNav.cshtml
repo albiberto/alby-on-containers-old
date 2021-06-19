@@ -1,10 +1,13 @@
 ﻿@using IdentityServer.Areas.Roles.Views
+@using IdentityServer.ViewModels.Shared
 
 <ul class="nav nav-pills flex-column">
+    
     <li class="nav-item">
-        <a class="nav-link @ManageNavPages.RolesNavClass(ViewContext)" asp-controller="Roles" asp-action="Index">Add/Remove</a>
+        <a class="lead nav-link @ManageNavPages.RolesNavClass(ViewContext)" asp-area="Roles" asp-controller="Roles" asp-action="Index">@TitleViewModel.Roles.Title</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link @ManageNavPages.UserRolesNavClass(ViewContext)" asp-controller="UserRoles" asp-action="Index">Manage User Role</a>
+        <a class="lead nav-link @ManageNavPages.UserRolesNavClass(ViewContext)" asp-area="Roles" asp-controller="UserRoles" asp-action="Index">@TitleViewModel.UserRoles.Title</a>
     </li>
+
 </ul>

@@ -4,6 +4,7 @@ using IdentityServer.Areas.Roles.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Areas.Roles.Controllers
@@ -26,13 +27,13 @@ namespace IdentityServer.Areas.Roles.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddRoleAsync(RolesInputModel vm)
+        public async Task<IActionResult> AddRoleAsync(string selectedRole)
         {
             if (!ModelState.IsValid) return View("Index", await BuildViewModelAsync());
 
-            await _roleManager.CreateAsync(new() {Name = vm.SelectedRole});
+            await _roleManager.CreateAsync(new() {Name = selectedRole});
 
-            return RedirectToAction("Index");
+            return View("Index", await BuildViewModelAsync());
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -43,7 +44,7 @@ namespace IdentityServer.Areas.Roles.Controllers
             var identityRole = await _roleManager.FindByNameAsync(vm.SelectedRole);
             await _roleManager.DeleteAsync(identityRole);
 
-            return RedirectToAction("Index");
+            return View("Index", await BuildViewModelAsync());
         }
         
         async Task<RolesViewModel> BuildViewModelAsync()

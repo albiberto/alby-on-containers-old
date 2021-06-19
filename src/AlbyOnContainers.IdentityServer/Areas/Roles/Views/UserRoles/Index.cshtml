@@ -1,25 +1,12 @@
 @model IdentityServer.Areas.Roles.Models.UserRolesViewModel
-@using IdentityServer.Areas.Roles.Views
+@using IdentityServer.ViewModels.Shared
 
 @{
-    ViewData["Title"] = "User Roles";
-    ViewData["ActivePage"] = ManageNavPages.UserRoles;
+    ViewData["ActivePage"] = TitleViewModel.UserRoles.Title;
     Layout = "_RolesLayout";
 }
 
-@if (Model == default)
-{
-    <span>Loading ...</span>
-    return;
-}
-
-<div class="row px-3 mb-2">
-    <h4>@ViewData["Title"]</h4>
-</div>
-
-<div class="row px-3 mb-2">
-    <partial name="_ValidationSummary"/>
-</div>
+<partial name="_ValidationSummary"/>
 
 <div class="row mb-2">
     <div class="col-12">
@@ -39,10 +26,11 @@
     </div>
 </div>
 
-@if (string.IsNullOrEmpty(Model.Email))
+@if (string.IsNullOrEmpty(Model?.Email))
 {
     return;
 }
+
 <div class="row mb-2">
     <div class="col-12">
         <div class="card">

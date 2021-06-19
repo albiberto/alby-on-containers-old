@@ -1,78 +1,42 @@
-@using IdentityServer.Areas.Roles.Views
+@using IdentityServer.ViewModels.Shared
 @model IdentityServer.Areas.Roles.Models.RolesViewModel
 
 @{
-    ViewData["Title"] = "Add/Remove Role";
-    ViewData["ActivePage"] = ManageNavPages.Roles;
+    ViewData["ActivePage"] = TitleViewModel.Roles.Title;
     Layout = "_RolesLayout";
 }
 
-@if(Model == default)
-{
-    <span>Loading ...</span>
-    return;
-}
+<partial name="_ValidationSummary"/>
 
-<div class="row mb-2 px-3 lead">
-    <h4>@ViewData["Title"]</h4>
-</div>  
+<form method="post" asp-action="AddRole">
 
-<div class="row mb-2 px-3">
-    <partial name="_ValidationSummary"/>
-</div>
-
-<div class="row mb-2">
-    <div class="col-12">
-        <form method="post">
-            
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-default">Role</span>
-                </div>
-                
-                <input asp-for="SelectedRole" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" />
-                
-                <div class="input-group-append">
-                    <button asp-action="AddRole" class="btn btn-outline-success" type="submit">Add</button>
-                </div>
-            
-            </div>
-
-        </form>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <form method="post">
-
-                <div class="card-header">
-                    <strong>Delete Role</strong>
-                </div>
-                
-                <div class="card-body">
-                                        
-                    <label><strong>Roles:</strong></label>
-
-                    <ul class="list-group list-group-flush">
-                        @foreach (var (value, _) in Model.Roles)
-                        {
-                            <li class="list-group-item">
-                                <input type="radio" asp-for="SelectedRole" value="@value"/>
-                                @value
-                            </li>
-                        }
-                    </ul>
-                
-                </div>
-                
-                <div class="card-footer text-right">
-                    <button asp-action="DeleteRole" type="submit" class="btn btn-outline-danger w-25">Delete Role</button>
-                </div>
-    
-            </form>
-            
+    <div class="input-group mb-3">
+        <input type="text" asp-for="SelectedRole" class="form-control" placeholder="Ruolo" aria-label="Nome del nuovo ruolo" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+            <button type="submit" id="basic-addon2" class="btn btn-outline-primary">Aggiungi</button>
         </div>
     </div>
-</div>
+
+</form>
+
+<form method="post">
+
+    <label>
+        <strong>Roles:</strong>
+    </label>
+
+    <ul class="list-group list-group-flush">
+        @foreach (var value in Model?.Roles ?? new List<string>())
+        {
+            <li class="list-group-item">
+                <input type="radio" asp-for="SelectedRole" value="@value"/>
+                @value
+            </li>
+        }
+    </ul>
+
+    <div class="text-right mt-2">
+        <button asp-action="DeleteRole" type="submit" class="btn btn-outline-danger w-25">Cancella</button>
+    </div>
+
+</form>

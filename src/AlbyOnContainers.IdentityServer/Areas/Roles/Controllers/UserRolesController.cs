@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,11 +22,9 @@ namespace IdentityServer.Areas.Roles.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index()
-        {
-            return View("Index", new UserRolesViewModel());
-        }
-
+        [HttpGet]
+        public IActionResult Index() => View("Index", new UserRolesViewModel());
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Search([Required] string? email = default)
@@ -40,40 +37,41 @@ namespace IdentityServer.Areas.Roles.Controllers
                 ModelState.AddModelError(string.Empty, "User Not Found!");
                 return View("Index", new UserRolesViewModel());
             }
-            
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var allRoles = await _roleManager.Roles.ToListAsync();
-            
-            var roles = allRoles.Select(role => new RoleViewModel(role.Name, userRoles.Contains(role.Name)));
 
-            return View("Index", new UserRolesViewModel(user, roles));
+            var vm = await BuildViewModelAsync(user);
+            return View("Index", vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Save(UserRolesInputModel model)
         {
-            if (!ModelState.IsValid) return View("Index", new UserRolesViewModel());
-
             var user = (await _userManager.FindByEmailAsync(model.Email)) ?? await _userManager.FindByIdAsync(model.Email);
+            if (user == default) return NotFound("User not found");
+
+            if (!ModelState.IsValid) return View("Index",  await BuildViewModelAsync(user));
 
             foreach (var role in model.SelectedRoles)
             {
-                if (!await _userManager.IsInRoleAsync(user, role))
-                {
-                    await _userManager.AddToRoleAsync(user, role);
-                }
+                if (!await _userManager.IsInRoleAsync(user, role)) await _userManager.AddToRoleAsync(user, role);
             }
             
             foreach (var role in model.AllRoles.Except(model.SelectedRoles))
             {
-                if (await _userManager.IsInRoleAsync(user, role))
-                {
-                    await _userManager.RemoveFromRoleAsync(user, role);
-                }
+                if (await _userManager.IsInRoleAsync(user, role)) await _userManager.RemoveFromRoleAsync(user, role);
             }
             
-            return RedirectToAction("Index", new UserRolesViewModel(user));
+            return View("Index",  await BuildViewModelAsync(user));
+        }
+        
+        async Task<UserRolesViewModel> BuildViewModelAsync(ApplicationUser user)
+        {
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var allRoles = await _roleManager.Roles.ToListAsync();
+
+            var roles = allRoles.Select(role => new RoleViewModel(role.Name, userRoles.Contains(role.Name)));
+
+            return new (user, roles);
         }
     }
 }
