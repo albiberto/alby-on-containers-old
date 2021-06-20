@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using IdentityModel;
+using IdentityServer.Resources;
 using IdentityServer4;
 using IdentityServer4.Models;
 

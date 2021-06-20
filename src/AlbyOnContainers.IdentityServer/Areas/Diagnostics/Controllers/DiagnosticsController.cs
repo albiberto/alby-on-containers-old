@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace IdentityServer.Areas.Diagnostics.Controllers
 
 {
-    [Area("Diagnostics"), Authorize(Roles = "Admin")]
+    [Area("Diagnostics"), Authorize(Policy = "Admin")]
     public class DiagnosticsController : Controller
     {
         public async Task<IActionResult> Index()

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Areas.Roles.Controllers
 {
-    [Authorize(Roles = "Admin"), Area("Roles")]
+    [Authorize(Policy = "Admin"), Area("Roles")]
     public class RolesController : Controller
     {
         readonly RoleManager<IdentityRole> _roleManager;

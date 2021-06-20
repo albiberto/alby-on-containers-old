@@ -90,15 +90,11 @@ body {
   width: 0;
   height: 0; }
 
-.grants-page .card {
-  margin-top: 20px;
-  border-bottom: 1px solid lightgray; }
-.grants-page .card .card-title {
-  font-size: 120%;
-  font-weight: bold; }
-.grants-page .card .card-title img {
-  width: 100px;
-  height: 100px; }
-.grants-page .card label {
-  font-weight: bold; }
+.logo{
+  border-radius: 50%;
+  border: 0.1em solid rgb(108, 117, 125);
+  width: 1.5em;
+  height: 1.5em;
+  margin-bottom: 4px;
+}
 

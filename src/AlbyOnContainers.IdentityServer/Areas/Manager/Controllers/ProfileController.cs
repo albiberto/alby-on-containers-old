@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Areas.Manager.Controllers
 {
-    [Authorize(Policy = "All"), Area("Manager")]
+    [Authorize, Area("Manager")]
     public class ProfileController : Controller
     {
         readonly SignInManager<ApplicationUser> _signInManager;

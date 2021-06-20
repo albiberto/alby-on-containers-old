@@ -5,13 +5,12 @@ using IdentityServer.Areas.Grants.Models;
 using IdentityServer.ViewModels;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
-using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IdentityServer.Areas.Grants.Controllers
+namespace IdentityServer.Controllers.Grants
 {
     [Authorize]
     public class GrantsController : Controller

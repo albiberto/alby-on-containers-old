@@ -6,6 +6,7 @@ using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
 using IdentityServer.ViewModels.Register;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Controllers.Register
 {
+    [AllowAnonymous]
     public class RegisterController : Controller
     {
         readonly EmailOptions _emailOptions;

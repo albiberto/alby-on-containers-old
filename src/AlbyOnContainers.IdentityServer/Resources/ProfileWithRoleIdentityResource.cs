@@ -1,7 +1,7 @@
 ﻿using IdentityModel;
 using IdentityServer4.Models;
 
-namespace IdentityServer
+namespace IdentityServer.Resources
 {
     public class ProfileWithRoleIdentityResource : IdentityResources.Profile
     {

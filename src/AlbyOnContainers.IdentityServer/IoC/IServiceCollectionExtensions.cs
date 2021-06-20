@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Reflection;
+using IdentityServer.Filters;
 using IdentityServer.Infrastructure;
+using IdentityServer.Infrastructure.Seeds;
 using IdentityServer.Models;
 using IdentityServer.Options;
 using IdentityServer.Publishers;
 using IdentityServer.Services;
+using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.Services;
+using Libraries.IHostExtensions;
 using MassTransit;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Hosting;
 
 namespace IdentityServer.IoC
 {
@@ -56,8 +62,8 @@ namespace IdentityServer.IoC
                     x.IssuerUri = "null";
                     x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
                 })
-                .AddDeveloperSigningCredential()  // not recommended for production - you need to store your key material somewhere secure
-                // .AddSigningCredential(CertificateManager.Get())
+                .AddDeveloperSigningCredential()  // TODO: not recommended for production - you need to store your key material somewhere secure
+                // TODO: .AddSigningCredential(CertificateManager.Get())
                 .AddDeveloperSigningCredential()
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(o =>
@@ -110,10 +116,25 @@ namespace IdentityServer.IoC
             services.AddMassTransitHostedService(true);
         }
 
-        public static void AddCustom(this IServiceCollection services)
+        public static void AddCustomServices(this IServiceCollection services, IWebHostEnvironment env)
         {
+            if (!env.IsProduction())
+            {
+                services.AddSingleton<IDbContextSeed<ApplicationDbContext>, ApplicationDbContextSeed>();
+                services.AddSingleton<IDbContextSeed<ConfigurationDbContext>, ConfigurationDbContextSeed>();
+            }
+            
             services.AddScoped<IEmailPublisher, EmailPublisher>();
-            services.AddTransient<IRedirectService, RedirectService>();
+        }
+
+        public static void AddControllersWithViewsAndFilters(this IServiceCollection services)
+        {
+            services.AddSingleton<SecurityHeadersFilter>();
+
+            services.AddControllersWithViews(o =>
+            {
+                o.Filters.AddService<SecurityHeadersFilter>();
+            });
         }
     }
 }

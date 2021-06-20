@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Areas.Manager.Controllers
 {
-    [Authorize(Policy = "All"), Area("Manager")]
+    [Authorize, Area("Manager")]
     public class PersonalDataController : Controller
     {
         readonly SignInManager<ApplicationUser> _signInManager;

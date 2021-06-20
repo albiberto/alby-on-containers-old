@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 
 namespace IdentityServer.Controllers.Passwords
 {
+    [AllowAnonymous]
     public class PasswordsController : Controller
     {
         readonly UserManager<ApplicationUser> _userManager;
