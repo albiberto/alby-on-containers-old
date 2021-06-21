@@ -51,6 +51,11 @@
       <_ContentIncludedByDefault Remove="Pages\Register\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Login\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Logout\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Controllers\Grants\Views\Shared\_GrantsLayout.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Grants\Index.cshtml" />
     </ItemGroup>
 
 </Project>

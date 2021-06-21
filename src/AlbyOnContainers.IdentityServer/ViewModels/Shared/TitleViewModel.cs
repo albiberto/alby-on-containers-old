@@ -23,7 +23,9 @@ namespace IdentityServer.ViewModels.Shared
         
         public static readonly TitleViewModel Roles = new("Ruoli");
         public static readonly TitleViewModel UserRoles = new("Ruoli Utente");
+        
         public static readonly TitleViewModel Diagnostics = new("Diagnostica");
+        public static readonly TitleViewModel Grants = new("Grants", "Below is the list of applications you have given permission to and the resources they have access to.");
 
         public static TitleViewModel EmailConfirmation(string? email = default)
         {

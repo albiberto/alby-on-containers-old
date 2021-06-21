@@ -1,0 +1,87 @@
+@using IdentityServer.ViewModels.Shared
+@using IdentityServer.Areas.Grants.Models
+@model IdentityServer.Areas.Grants.Models.GrantsViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+<partial name="_Title" model="TitleViewModel.Grants"/>
+
+
+@if (!(Model?.Grants.Any() ?? false))
+{
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="alert alert-info lead">
+                You have not given access to any applications
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    foreach (var grant in Model?.Grants ?? new List<GrantViewModel>())
+    {
+        <div class="card">
+            <div class="card-header">
+                @if (!string.IsNullOrEmpty(grant.ClientLogoUrl))
+                {
+                    <img src="@grant.ClientLogoUrl" alt="logo">
+                }
+                <label class="lead">
+                    <strong>@grant.ClientName</strong>
+                </label>
+            </div>
+
+            <div class="card-body">
+                <ul class="list-group list-group-flush lead">
+                    @if (!string.IsNullOrEmpty(grant.Description))
+                    {
+                        <li class="list-group-item">
+                            <label><strong>Description:</strong></label> @grant.Description
+                        </li>
+                    }
+                    <li class="list-group-item">
+                        <label><strong>Created:</strong></label> @grant.Created.ToString("yyyy-MM-dd")
+                    </li>
+                    @if (grant.Expires.HasValue)
+                    {
+                        <li class="list-group-item">
+                            <label><strong>Expires:</strong></label> @grant.Expires.Value.ToString("yyyy-MM-dd")
+                        </li>
+                    }
+                    @if (grant.IdentityGrantNames.Any())
+                    {
+                        <li class="list-group-item">
+                            <label><strong>Identity Grants:</strong></label>
+                            <ul>
+                                @foreach (var name in grant.IdentityGrantNames)
+                                {
+                                    <li>@name</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (grant.ApiGrantNames.Any())
+                    {
+                        <li class="list-group-item">
+                            <label><strong>API Grants</strong></label>
+                            <ul>
+                                @foreach (var name in grant.ApiGrantNames)
+                                {
+                                    <li>@name</li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="card-footer text-right">
+                <form method="post">
+                    <button type="submit" asp-controller="Grants" asp-action="Revoke" asp-route-clientId="@grant.ClientId" class="btn btn-outline-danger w-25">Revoke Access</button>
+                </form>
+            </div>
+        </div>
+    }
+}
