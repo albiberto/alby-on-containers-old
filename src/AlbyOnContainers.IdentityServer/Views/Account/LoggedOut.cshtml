@@ -8,7 +8,6 @@
     ViewData["signed-out"] = true;
 }
 
-<div class="logged-out-page">
     <partial name="_Title" model="@TitleViewModel.LoggedOut" />
     
     @if (Model?.AutomaticRedirectAfterSignOut ?? false)
@@ -28,7 +27,6 @@
     {
         <iframe width="0" height="0" class="signout" src="@Model.SignOutIframeUrl"></iframe>
     }
-</div>
 
 @section scripts
 {

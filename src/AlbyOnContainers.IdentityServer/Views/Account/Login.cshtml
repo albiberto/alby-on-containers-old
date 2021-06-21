@@ -45,15 +45,15 @@
                             <button asp-action="Cancel" asp-route-ReturnUrl="@ViewData["ReturnUrl"]" class="btn btn-outline-secondary w-25" type="submit">Cancel</button>
                         </form>
                         
-                        <div class="lead text-right">
+                        <div class=" lead text-right mt-4">
                             <div>
-                                <a asp-controller="Register" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]"><small>Non sei ancora registrato?</small></a>
+                                <a asp-controller="Register" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]">Non sei ancora registrato?</a>
                             </div>
                             <div>
-                                <a  asp-controller="Passwords" asp-action="ForgotPassword" asp-route-returnurl="@ViewData["ReturnUrl"]"><small>Password dimenticata?</small></a>
+                                <a  asp-controller="Passwords" asp-action="ForgotPassword" asp-route-returnurl="@ViewData["ReturnUrl"]">Password dimenticata?</a>
                             </div>
                             <div>
-                                <a  asp-controller="Register" asp-action="ResendEmail" asp-route-returnurl="@ViewData["ReturnUrl"]"><small>Non ti &egrave; arrivata la mail di conferma?</small></a>
+                                <a  asp-controller="Register" asp-action="ResendEmail" asp-route-returnurl="@ViewData["ReturnUrl"]">Non ti &egrave; arrivata la mail di conferma?</a>
                             </div>
                         </div>
                     </div>

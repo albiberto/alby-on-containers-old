@@ -4,13 +4,11 @@
 @{
     ViewData["Title"] = TitleViewModel.Logout.Title;
 }
-<div class="logout-page">
-    <partial name="_Title" model="TitleViewModel.Logout" />
+<partial name="_Title" model="TitleViewModel.Logout"/>
 
-    <form asp-action="Logout">
-        <input type="hidden" name="logoutId" value="@Model?.LogoutId" />
-        <div class="form-group">
-            <button class="btn btn-outline-secondary w-25">Yes</button>
-        </div>
-    </form>
-</div>
+<form asp-action="Logout">
+    <input type="hidden" name="logoutId" value="@Model?.LogoutId"/>
+    <div class="form-group">
+        <button class="btn btn-outline-secondary w-25">Yes</button>
+    </div>
+</form>
