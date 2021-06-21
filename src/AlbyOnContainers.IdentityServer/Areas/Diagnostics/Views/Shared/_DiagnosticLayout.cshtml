@@ -1,6 +1,16 @@
+@using IdentityServer.ViewModels.Shared
+
 @{
-    ViewData["Title"] = "Diagnostics";
     Layout = "_Layout";
 }
 
-<div class="row">@RenderBody()</div>
+<partial name="_Title" model="@(new TitleViewModel($"{ViewData["ActivePage"]}"))" />
+
+<div class="row mt-4">
+    <div class="col-3">
+        <partial name="_ManageNav"/>
+    </div>
+    <div class="col-9">
+        @RenderBody()
+    </div>
+</div>

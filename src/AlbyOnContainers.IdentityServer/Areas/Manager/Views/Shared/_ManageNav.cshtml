@@ -1,18 +1,19 @@
 ﻿@using IdentityServer.Areas.Manager.Views
+@using IdentityServer.ViewModels.Shared
 
 <ul class="nav nav-pills flex-column">
     
     <li class="nav-item">
-        <a class="lead nav-link @ManageNavPages.IndexNavClass(ViewContext)" asp-area="Manager" asp-controller="Profile" asp-action="Index">Profilo</a>
+        <a class="lead nav-link @ManageNavPages.IndexNavClass(ViewContext)" asp-area="Manager" asp-controller="Profile" asp-action="Index">@TitleViewModel.Profile.Title</a>
     </li>
     <li class="nav-item">
-        <a class="lead nav-link @ManageNavPages.EmailNavClass(ViewContext)" asp-area="Manager" asp-controller="ChangeEmail" asp-action="Index">Email</a>
+        <a class="lead nav-link @ManageNavPages.EmailNavClass(ViewContext)" asp-area="Manager" asp-controller="ChangeEmail" asp-action="Index">@TitleViewModel.ChangeEmail.Title</a>
     </li>
     <li class="nav-item">
-        <a class="lead nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" asp-area="Manager" asp-controller="ChangePassword" asp-action="Index">Password</a>
+        <a class="lead nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" asp-area="Manager" asp-controller="ChangePassword" asp-action="Index">@TitleViewModel.ForgotPassword.Title</a>
     </li>
     <li class="nav-item">
-        <a class="lead nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" asp-area="Manager" asp-controller="PersonalData" asp-action="Index">Account</a>
+        <a class="lead nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" asp-area="Manager" asp-controller="PersonalData" asp-action="Index">@TitleViewModel.PersonalData.Title</a>
     </li>
 
 </ul>

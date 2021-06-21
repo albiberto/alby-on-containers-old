@@ -1,73 +1,59 @@
-﻿@using System.Security.Claims
+﻿@using IdentityServer.ViewModels.Shared
+@using System.Security.Claims
+@using System.Collections.Immutable
 @model IdentityServer.Areas.Diagnostics.Models.DiagnosticsViewModel
 
 @{
-    ViewData["Title"] = "Diagnostics Home";
+    ViewData["ActivePage"] = TitleViewModel.Diagnostics.Title;
     Layout = "_DiagnosticLayout";
 }
 
-@if (Model == default)
-{
-    <span>Loading ...</span>
-    return;
-}
-
-<div class="diagnostics-page">
-    <div class="lead">
-        <h1>Authentication Cookie</h1>
-    </div>
-
-    <div class="row">
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Claims</h2>
-                </div>
-                <div class="card-body">
-                    <dl>
-                        @foreach (var claim in Model.AuthenticateResult.Principal?.Claims ?? new List<Claim>())
-                        {
-                            <dt>@claim.Type</dt>
-                            <dd>@claim.Value</dd>
-                        }
-                    </dl>
-                </div>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <div class="lead"><strong>Claims</strong></div>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    @foreach (var claim in Model?.AuthenticateResult.Principal?.Claims ?? new List<Claim>())
+                    {
+                        <li class="list-group-item lead"><strong>@claim.Type: </strong>@claim.Value</li>
+                    }
+                </ul>
             </div>
         </div>
-        
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <h2>Properties</h2>
-                </div>
-                <div class="card-body">
-                    <dl>
-                        @foreach (var prop in Model.AuthenticateResult?.Properties?.Items ?? new Dictionary<string, string?>())
-                        {
-                            <dt>@prop.Key</dt>
-                            <dd>@prop.Value</dd>
-                        }
-                        @if (Model.Clients.Any())
-                        {
-                            <dt>Clients</dt>
-                            <dd>
+    </div>
+
+    <div class="col mt-2">
+        <div class="card">
+            <div class="card-header">
+                <div class="lead"><strong>Properties</strong></div>
+            </div>
+            <div class="card-body">
+                <li class="list-group list-group-flush">
+                    
+                    @foreach (var (key, value) in Model?.AuthenticateResult.Properties?.Items ?? new Dictionary<string, string?>())
+                    {
+                        <ul class="list-group-item lead"><strong>@key: </strong>@value</ul>
+                    }
+                    
+                    @if (Model?.Clients.Any() ?? false)
+                    {
+                        <div class="lead"><strong>Clients</strong></div>
+                            <li class="list-group list-group-flush">
                             @{
-                                var clients = Model.Clients.ToArray();
-                                for(var i = 0; i < clients.Length; i++)
+                                var clients = Model.Clients.ToImmutableArray();
+                                            
+                                foreach (var t in clients)
                                 {
-                                    <text>@clients[i]</text>
-                                    if (i < clients.Length - 1)
-                                    {
-                                        <text>, </text>
-                                    }
+                                    <ul class="list-group-item">@t</ul>
                                 }
                             }
-                            </dd>
-                        }
-                    </dl>
-                </div>
+                            </li>
+                    }
+                </li>    
             </div>
         </div>
     </div>
 </div>
-

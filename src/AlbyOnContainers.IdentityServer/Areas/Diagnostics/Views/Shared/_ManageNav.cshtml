@@ -1,0 +1,10 @@
+﻿@using IdentityServer.Areas.Diagnostics.Views
+@using IdentityServer.ViewModels.Shared
+
+<ul class="nav nav-pills flex-column">
+    
+    <li class="nav-item">
+        <a class="lead nav-link @ManageNavPages.DiagnosticsNavClass(ViewContext)" asp-area="Diagnostics" asp-controller="Diagnostics" asp-action="Index">@TitleViewModel.Diagnostics.Title</a>
+    </li>
+
+</ul>
