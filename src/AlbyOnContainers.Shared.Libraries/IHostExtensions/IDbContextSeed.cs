@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Libraries.IHostExtensions
 {
-    public interface IDbContextSeed<TContext> where TContext: DbContext?
+    public interface IDbContextSeed<TContext> where TContext: DbContext
     {
         public Task SeedAsync();
     }

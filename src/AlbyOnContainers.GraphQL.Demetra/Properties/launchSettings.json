@@ -1,0 +1,16 @@
+﻿{
+
+  "profiles": {
+    "AlbyOnContainers.GraphQL.Demetra": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5006/graphql",
+      "hotReloadProfile": "aspnetcore",
+      "applicationUrl": "http://localhost:5006",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Debug"
+      }
+    }
+  }
+}
