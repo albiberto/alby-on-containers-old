@@ -64,10 +64,9 @@ namespace Libraries.IHostExtensions
             return orchestratorType?.ToUpper() == "K8S";
         }
 
-        static async Task InvokeSeederAsync<TContext>(IDbContextSeed<TContext>? seeder, TContext? context) where TContext : DbContext?
+        static async Task InvokeSeederAsync<TContext>(IDbContextSeed<TContext>? seeder, TContext? context) where TContext : DbContext
         {
-            await context?.Database.MigrateAsync();
-
+            if(context?.Database != null) await context.Database.MigrateAsync();
             if(seeder != default) await seeder.SeedAsync();
         }
     }

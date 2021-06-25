@@ -23,7 +23,7 @@ namespace Demetra
         public void ConfigureServices(IServiceCollection services)
         {
             var connection = Configuration.GetConnectionString("DefaultDatabase");
-            services.AddDbContext<ApplicationDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connection), ServiceLifetime.Transient);
+            services.AddPooledDbContextFactory<ApplicationDbContext>(optionsBuilder => optionsBuilder.UseNpgsql(connection));
             
             services
                 .AddGraphQLServer()
