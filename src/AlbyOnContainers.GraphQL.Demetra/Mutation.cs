@@ -12,11 +12,7 @@ namespace Demetra
         public async Task<AddProductPayload> AddProductAsync(AddProductInput input, [ScopedService] ApplicationDbContext context)
         {
             var (name, description) = input;
-            var product = new Product
-            {
-                Name = name,
-                Description = description
-            };
+            var product = new Product(name, description);
 
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();
