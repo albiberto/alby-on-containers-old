@@ -11,6 +11,7 @@ namespace Demetra.Model
             Description = description;
             ParentId = parentId;
         }
+        
         public string? Name { get; }
         public string? Description { get; }
         public Guid? ParentId { get; }
