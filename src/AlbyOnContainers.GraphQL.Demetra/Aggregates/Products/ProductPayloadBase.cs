@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Demetra.Common;
 using Demetra.Model;
 
-namespace Demetra.Products
+namespace Demetra.Aggregates.Products
 {
     public class ProductPayloadBase: Payload
     {

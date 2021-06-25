@@ -5,10 +5,10 @@ using Demetra.Model;
 using HotChocolate;
 using HotChocolate.Types;
 
-namespace Demetra.Products
+namespace Demetra.Aggregates.Products
 {
     [ExtendObjectType(Name = "Mutation")]
-    public class ProductMutation
+    public class ProductMutations
     {
         [UseApplicationDbContext]
         public async Task<Model.AddProductPayload> AddProductAsync(AddProductInput input, [ScopedService] ApplicationDbContext context)

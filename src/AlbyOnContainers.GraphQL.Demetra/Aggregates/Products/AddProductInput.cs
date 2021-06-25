@@ -1,4 +1,4 @@
-namespace Demetra.Products
+namespace Demetra.Aggregates.Products
 {
     public record AddProductInput(string Name, string? Description);
 }

@@ -1,6 +1,7 @@
+using Demetra.Aggregates.Products;
 using Demetra.DataLoader;
 using Demetra.Infrastructure;
-using Demetra.Products;
+using Demetra.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -31,8 +32,12 @@ namespace Demetra
                 .AddGraphQLServer()
                 .AddQueryType<Query>()
                 .AddMutationType(d => d.Name("Mutation"))
-                .AddTypeExtension<ProductMutation>()
-                .AddDataLoader<ProductByIdDataLoader>();
+                .AddTypeExtension<ProductMutations>()
+                .AddType<ProductType>()
+                .EnableRelaySupport()
+                .AddTypeExtension<ProductMutations>()
+                .AddDataLoader<ProductByIdDataLoader>()
+                .AddDataLoader<AttrDescrByIdDataLoader>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
