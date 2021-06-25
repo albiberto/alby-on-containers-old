@@ -3,13 +3,15 @@ using Demetra.Extensions;
 using Demetra.Infrastructure;
 using Demetra.Model;
 using HotChocolate;
+using HotChocolate.Types;
 
-namespace Demetra
+namespace Demetra.Products
 {
-    public class Mutation
+    [ExtendObjectType(Name = "Mutation")]
+    public class ProductMutation
     {
         [UseApplicationDbContext]
-        public async Task<AddProductPayload> AddProductAsync(AddProductInput input, [ScopedService] ApplicationDbContext context)
+        public async Task<Model.AddProductPayload> AddProductAsync(AddProductInput input, [ScopedService] ApplicationDbContext context)
         {
             var (name, description) = input;
             var product = new Product(name, description);

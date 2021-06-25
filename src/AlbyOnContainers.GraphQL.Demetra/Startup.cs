@@ -1,5 +1,6 @@
 using Demetra.DataLoader;
 using Demetra.Infrastructure;
+using Demetra.Products;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,8 @@ namespace Demetra
             services
                 .AddGraphQLServer()
                 .AddQueryType<Query>()
-                .AddMutationType<Mutation>()
+                .AddMutationType(d => d.Name("Mutation"))
+                .AddTypeExtension<ProductMutation>()
                 .AddDataLoader<ProductByIdDataLoader>();
         }
 
