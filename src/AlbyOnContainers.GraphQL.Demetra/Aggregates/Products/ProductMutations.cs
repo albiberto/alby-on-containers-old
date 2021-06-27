@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Demetra.Extensions;
 using Demetra.Infrastructure;
@@ -13,8 +14,8 @@ namespace Demetra.Aggregates.Products
         [UseApplicationDbContext]
         public async Task<Model.AddProductPayload> AddProductAsync(AddProductInput input, [ScopedService] ApplicationDbContext context)
         {
-            var (name, description) = input;
-            var product = new Product(name, description);
+            var (name, description, categoryId) = input;
+            var product = new Product(name, description, categoryId);
 
             await context.Products.AddAsync(product);
             await context.SaveChangesAsync();

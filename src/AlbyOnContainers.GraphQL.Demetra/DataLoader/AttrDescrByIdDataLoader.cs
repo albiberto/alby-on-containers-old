@@ -15,10 +15,7 @@ namespace Demetra.DataLoader
     {
         readonly IDbContextFactory<ApplicationDbContext> _dbContextFactory;
 
-        public AttrDescrByIdDataLoader(
-            IBatchScheduler batchScheduler, 
-            IDbContextFactory<ApplicationDbContext> dbContextFactory)
-            : base(batchScheduler)
+        public AttrDescrByIdDataLoader(IBatchScheduler batchScheduler, IDbContextFactory<ApplicationDbContext> dbContextFactory) : base(batchScheduler)
         {
             _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
         }

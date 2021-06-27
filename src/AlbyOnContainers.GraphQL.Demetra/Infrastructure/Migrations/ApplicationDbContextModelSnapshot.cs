@@ -102,7 +102,7 @@ namespace Demetra.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CategoryId")
+                    b.Property<Guid>("CategoryId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
@@ -152,9 +152,13 @@ namespace Demetra.Infrastructure.Migrations
 
             modelBuilder.Entity("Demetra.Model.Product", b =>
                 {
-                    b.HasOne("Demetra.Model.Category", null)
+                    b.HasOne("Demetra.Model.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Demetra.Model.Attr", b =>

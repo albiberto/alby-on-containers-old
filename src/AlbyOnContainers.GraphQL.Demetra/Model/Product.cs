@@ -5,10 +5,11 @@ namespace Demetra.Model
 {
     public class Product : EntityBase
     {
-        public Product(string name, string? description)
+        public Product(string name, string? description, Guid categoryId)
         {
             Name = name;
             Description = description;
+            CategoryId = categoryId;
         }
 
         public string? Name { get; }
@@ -16,5 +17,9 @@ namespace Demetra.Model
 
         readonly List<AttrDescr> _descrs  = new();
         public IReadOnlyCollection<AttrDescr> Descrs => _descrs;
+        
+        
+        public Category? Category { get; set; }
+        public Guid CategoryId { get; }
     }
 }

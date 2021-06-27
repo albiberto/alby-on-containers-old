@@ -17,6 +17,13 @@ namespace Demetra.Infrastructure
             product.Property(p => p.Description);
 
             product
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+
+            product
                 .HasMany(p => p.Descrs)
                 .WithOne(d => d.Product)
                 .HasForeignKey(d => d.ProductId)

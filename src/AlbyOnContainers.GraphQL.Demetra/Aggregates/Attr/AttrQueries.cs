@@ -5,21 +5,22 @@ using System.Threading.Tasks;
 using Demetra.DataLoader;
 using Demetra.Extensions;
 using Demetra.Infrastructure;
-using Demetra.Model;
 using HotChocolate;
+using HotChocolate.Types;
 using HotChocolate.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 
-namespace Demetra
+namespace Demetra.Aggregates.Attr
 {
-    public class Query
+    [ExtendObjectType(Name = "Query")]
+    public class AttrQueries
     {
         [UseApplicationDbContext]
-        public Task<List<Product>> GetProductsAsync([ScopedService] ApplicationDbContext context) => context.Products.ToListAsync();
+        public Task<List<Model.Attr>> GetAttrAsync([ScopedService] ApplicationDbContext context) => context.Attrs.ToListAsync();
         
-        public Task<Product> GetProductAsync(
-            [ID(nameof(Product))]Guid id,
-            ProductByIdDataLoader dataLoader,
+        public Task<Model.Attr> GetAttrAsync(
+            [ID(nameof(Model.Attr))]Guid id,
+            AttrByIdDataLoader dataLoader,
             CancellationToken cancellationToken) =>
             dataLoader.LoadAsync(id, cancellationToken);
     }

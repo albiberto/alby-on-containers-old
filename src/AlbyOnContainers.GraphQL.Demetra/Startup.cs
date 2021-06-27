@@ -1,3 +1,4 @@
+using Demetra.Aggregates.Attr;
 using Demetra.Aggregates.Products;
 using Demetra.DataLoader;
 using Demetra.Infrastructure;
@@ -30,13 +31,20 @@ namespace Demetra
             
             services
                 .AddGraphQLServer()
-                .AddQueryType<Query>()
+                .AddQueryType(d => d.Name("Query"))
+                .AddTypeExtension<ProductQueries>()
+                .AddTypeExtension<AttrQueries>()
                 .AddMutationType(d => d.Name("Mutation"))
                 .AddTypeExtension<ProductMutations>()
-                .AddType<ProductType>()
                 .EnableRelaySupport()
+                .AddType<ProductType>()
+                .AddType<CategoryType>()
+                .AddType<AttrType>()
+                .AddType<AttrDescrType>()
                 .AddTypeExtension<ProductMutations>()
                 .AddDataLoader<ProductByIdDataLoader>()
+                .AddDataLoader<CategoryByIdDataLoader>()
+                .AddDataLoader<AttrByIdDataLoader>()
                 .AddDataLoader<AttrDescrByIdDataLoader>();
         }
 
