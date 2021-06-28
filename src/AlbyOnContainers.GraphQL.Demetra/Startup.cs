@@ -36,6 +36,7 @@ namespace Demetra
                 .AddTypeExtension<AttrQueries>()
                 .AddMutationType(d => d.Name("Mutation"))
                 .AddTypeExtension<ProductMutations>()
+                .AddTypeExtension<AttrMutations>()
                 .EnableRelaySupport()
                 .AddType<ProductType>()
                 .AddType<CategoryType>()
