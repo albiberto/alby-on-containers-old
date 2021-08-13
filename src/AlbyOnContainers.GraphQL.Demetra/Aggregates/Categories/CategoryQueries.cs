@@ -10,17 +10,17 @@ using HotChocolate.Types;
 using HotChocolate.Types.Relay;
 using Microsoft.EntityFrameworkCore;
 
-namespace Demetra.Aggregates.Attr
+namespace Demetra.Aggregates.Categories
 {
     [ExtendObjectType(Name = "Query")]
-    public class AttrQueries
+    public class CategoryQueries
     {
         [UseApplicationDbContext]
-        public Task<List<Model.Attr>> GetAttrsAsync([ScopedService] ApplicationDbContext context) => context.Attrs.ToListAsync();
+        public Task<List<Model.Category>> GetCategoriesAsync([ScopedService] ApplicationDbContext context) => context.Categories.ToListAsync();
         
-        public Task<Model.Attr> GetAttrAsync(
+        public Task<Model.Category> GetCategoryAsync(
             [ID(nameof(Model.Attr))]Guid id,
-            AttrByIdDataLoader dataLoader,
+            CategoryByIdDataLoader dataLoader,
             CancellationToken cancellationToken) =>
             dataLoader.LoadAsync(id, cancellationToken);
     }

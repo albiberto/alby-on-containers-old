@@ -1,4 +1,6 @@
 using Demetra.Aggregates.Attr;
+using Demetra.Aggregates.AttrDescr;
+using Demetra.Aggregates.Categories;
 using Demetra.Aggregates.Products;
 using Demetra.DataLoader;
 using Demetra.Infrastructure;
@@ -34,15 +36,18 @@ namespace Demetra
                 .AddQueryType(d => d.Name("Query"))
                 .AddTypeExtension<ProductQueries>()
                 .AddTypeExtension<AttrQueries>()
+                .AddTypeExtension<AttrDescrQueries>()
+                .AddTypeExtension<CategoryQueries>()
                 .AddMutationType(d => d.Name("Mutation"))
                 .AddTypeExtension<ProductMutations>()
                 .AddTypeExtension<AttrMutations>()
+                .AddTypeExtension<AttrDescrMutation>()
+                .AddTypeExtension<CategoryMutation>()
                 .EnableRelaySupport()
                 .AddType<ProductType>()
                 .AddType<CategoryType>()
                 .AddType<AttrType>()
                 .AddType<AttrDescrType>()
-                .AddTypeExtension<ProductMutations>()
                 .AddDataLoader<ProductByIdDataLoader>()
                 .AddDataLoader<CategoryByIdDataLoader>()
                 .AddDataLoader<AttrByIdDataLoader>()

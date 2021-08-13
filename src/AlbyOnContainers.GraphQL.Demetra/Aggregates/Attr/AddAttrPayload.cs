@@ -1,19 +1,15 @@
-using Demetra.Common;
 using Demetra.Model;
 
 namespace Demetra.Aggregates.Attr
 {
-    public class AddAttrPayload: Payload
+    public class AddAttrPayload: AttrPayloadBase
     {
-        public AddAttrPayload(Model.Attr attr)
+        public AddAttrPayload(Model.Attr attr) : base(attr)
         {
-            Attr = attr;
         }
-
+        
         public AddAttrPayload(UserError error) : base(new[] { error })
         {
         }
-
-        public Model.Attr? Attr { get; }
     }
 }

@@ -20,7 +20,7 @@ namespace Libraries.IHostExtensions
             using var scope = host.Services.CreateScope();
             var provider = scope.ServiceProvider;
             
-            var context = provider.GetService<TContext>();
+            var context = provider.GetRequiredService<IDbContextFactory<TContext>>();
             var seeder = provider.GetService<IDbContextSeed<TContext>>();
             var logger = provider.GetRequiredService<ILogger<TContext>>();
 
@@ -30,7 +30,7 @@ namespace Libraries.IHostExtensions
                 
                 if (inK8S)
                 {
-                    await InvokeSeederAsync(seeder, context);
+                    await InvokeSeederAsync(seeder, context.CreateDbContext());
                 }
                 else
                 {
@@ -45,7 +45,7 @@ namespace Libraries.IHostExtensions
                     //migration can't fail for network related exception. The retry options for DbContext only 
                     //apply to transient exceptions
                     // Note that this is NOT applied when running some orchestrators (let the orchestrator to recreate the failing service)
-                    await retry.ExecuteAsync(async () => await InvokeSeederAsync(seeder, context));
+                    await retry.ExecuteAsync(async () => await InvokeSeederAsync(seeder, context.CreateDbContext()));
                 }
 
                 logger.LogInformation("Migrated database associated with context {DbContextName}", typeof(TContext).Name);

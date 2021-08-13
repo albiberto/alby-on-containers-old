@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Demetra.Model
 {
-    public class Category : EntityBase
+    public class Category
     {
         public Category(string name, string? description, Guid? parentId = default)
         {
@@ -12,12 +12,13 @@ namespace Demetra.Model
             ParentId = parentId;
         }
         
+        public Guid Id { get; set; }
         public string? Name { get; }
         public string? Description { get; }
         public Guid? ParentId { get; }
         public Category? Parent { get; set; }
         
-        readonly List<Product> _products  = new();
+        readonly HashSet<Product> _products  = new();
         public IReadOnlyCollection<Product> Products => _products;
     }
 }
